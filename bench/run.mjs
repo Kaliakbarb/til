@@ -63,7 +63,7 @@ for (const task of tasks) {
 const ok = results.filter(r => r.ok)
 const tot = enc => Object.fromEntries(LANGS.map(l => [l.name, ok.reduce((s, r) => s + r.langs[l.name][enc], 0)]))
 const totals = { o200k: tot('o200k'), cl100k: tot('cl100k'), chars: tot('chars') }
-const pct = (a, b) => (100 * (1 - a / b)).toFixed(1) + '%'
+const pct = (a, b) => { const d = 100 * (1 - a / b); return (d >= 0 ? '−' : '+') + Math.abs(d).toFixed(1) + '%' }
 
 const L = []
 L.push('# til benchmark — tokens for identical, output-verified programs')
@@ -77,9 +77,9 @@ L.push('| task | til | python | js | til vs py | til vs js |')
 L.push('|---|---:|---:|---:|---:|---:|')
 for (const r of ok) {
   const t = r.langs.til.o200k, p = r.langs.py.o200k, j = r.langs.js.o200k
-  L.push(`| ${r.task} | ${t} | ${p} | ${j} | −${pct(t, p)} | −${pct(t, j)} |`)
+  L.push(`| ${r.task} | ${t} | ${p} | ${j} | ${pct(t, p)} | ${pct(t, j)} |`)
 }
-L.push(`| **total** | **${totals.o200k.til}** | **${totals.o200k.py}** | **${totals.o200k.js}** | **−${pct(totals.o200k.til, totals.o200k.py)}** | **−${pct(totals.o200k.til, totals.o200k.js)}** |`)
+L.push(`| **total** | **${totals.o200k.til}** | **${totals.o200k.py}** | **${totals.o200k.js}** | **${pct(totals.o200k.til, totals.o200k.py)}** | **${pct(totals.o200k.til, totals.o200k.js)}** |`)
 L.push('')
 L.push('## cl100k_base (GPT-4 / 3.5)')
 L.push('')
@@ -87,13 +87,13 @@ L.push('| task | til | python | js | til vs py | til vs js |')
 L.push('|---|---:|---:|---:|---:|---:|')
 for (const r of ok) {
   const t = r.langs.til.cl100k, p = r.langs.py.cl100k, j = r.langs.js.cl100k
-  L.push(`| ${r.task} | ${t} | ${p} | ${j} | −${pct(t, p)} | −${pct(t, j)} |`)
+  L.push(`| ${r.task} | ${t} | ${p} | ${j} | ${pct(t, p)} | ${pct(t, j)} |`)
 }
-L.push(`| **total** | **${totals.cl100k.til}** | **${totals.cl100k.py}** | **${totals.cl100k.js}** | **−${pct(totals.cl100k.til, totals.cl100k.py)}** | **−${pct(totals.cl100k.til, totals.cl100k.js)}** |`)
+L.push(`| **total** | **${totals.cl100k.til}** | **${totals.cl100k.py}** | **${totals.cl100k.js}** | **${pct(totals.cl100k.til, totals.cl100k.py)}** | **${pct(totals.cl100k.til, totals.cl100k.js)}** |`)
 L.push('')
 L.push('## characters')
 L.push('')
-L.push(`til ${totals.chars.til} · python ${totals.chars.py} (−${pct(totals.chars.til, totals.chars.py)}) · js ${totals.chars.js} (−${pct(totals.chars.til, totals.chars.js)})`)
+L.push(`til ${totals.chars.til} · python ${totals.chars.py} (${pct(totals.chars.til, totals.chars.py)}) · js ${totals.chars.js} (${pct(totals.chars.til, totals.chars.js)})`)
 L.push('')
 L.push('## method & fairness')
 L.push('')
@@ -108,7 +108,7 @@ fs.writeFileSync(path.join(here, 'results.json'), JSON.stringify(results, null, 
 
 console.log('')
 if (mismatches) { console.log(`✗ ${mismatches} task(s) not verified — report written but INVALID`); process.exit(1) }
-console.log(`✓ all ${ok.length} tasks verified · o200k totals: til ${totals.o200k.til} vs py ${totals.o200k.py} (−${pct(totals.o200k.til, totals.o200k.py)}) vs js ${totals.o200k.js} (−${pct(totals.o200k.til, totals.o200k.js)})`)
+console.log(`✓ all ${ok.length} tasks verified · o200k totals: til ${totals.o200k.til} vs py ${totals.o200k.py} (${pct(totals.o200k.til, totals.o200k.py)}) vs js ${totals.o200k.js} (${pct(totals.o200k.til, totals.o200k.js)})`)
 console.log(`report: bench/report.md`)
 
 // bonus: how big is the language card?

@@ -11,7 +11,7 @@ Token counts are for full source files, measured with real tokenizers (`gpt-toke
 | brackets | 97 | 100 | 136 | −3.0% | −28.7% |
 | clean | 29 | 45 | 65 | −35.6% | −55.4% |
 | csv | 53 | 60 | 90 | −11.7% | −41.1% |
-| fib | 35 | 32 | 47 | −-9.4% | −25.5% |
+| fib | 35 | 32 | 47 | +9.4% | −25.5% |
 | fizzbuzz | 57 | 63 | 74 | −9.5% | −23.0% |
 | inventory | 98 | 100 | 133 | −2.0% | −26.3% |
 | json | 40 | 49 | 55 | −18.4% | −27.3% |
@@ -27,7 +27,7 @@ Token counts are for full source files, measured with real tokenizers (`gpt-toke
 | brackets | 97 | 99 | 133 | −2.0% | −27.1% |
 | clean | 29 | 43 | 60 | −32.6% | −51.7% |
 | csv | 53 | 57 | 87 | −7.0% | −39.1% |
-| fib | 35 | 32 | 47 | −-9.4% | −25.5% |
+| fib | 35 | 32 | 47 | +9.4% | −25.5% |
 | fizzbuzz | 57 | 63 | 74 | −9.5% | −23.0% |
 | inventory | 98 | 100 | 129 | −2.0% | −24.0% |
 | json | 40 | 47 | 53 | −14.9% | −24.5% |

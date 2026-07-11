@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>til — тіл · a language engineered for AI agents</title>
+<meta name="description" content="til: the whole language fits in a 1,550-token prompt, costs fewer tokens than Python or JS, and returns errors designed for agent self-repair. Try it in the browser.">
+<style>
+  :root {
+    --bg: #0b0c0e; --panel: #101216; --line: #1e2128;
+    --text: #e8eaed; --dim: #8b919c; --faint: #565c66;
+    --accent: #2dd4bf; --accent-dim: #14b8a622; --red: #f87171; --yellow: #fbbf24;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); display: flex; flex-direction: column; }
+  header { display: flex; align-items: baseline; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  header h1 { font-size: 18px; font-weight: 700; letter-spacing: .02em; }
+  header h1 .kz { color: var(--accent); font-weight: 500; }
+  header .tag { color: var(--dim); font-size: 13px; }
+  header .spacer { flex: 1; }
+  .badge { font-family: var(--mono); font-size: 11.5px; color: var(--dim); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; white-space: nowrap; }
+  .badge b { color: var(--accent); font-weight: 600; }
+  main { flex: 1; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); min-height: 0; }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; grid-template-rows: minmax(45vh, 1fr) minmax(0, 1fr); } }
+  .pane { display: flex; flex-direction: column; min-height: 0; }
+  .pane + .pane { border-left: 1px solid var(--line); }
+  @media (max-width: 860px) { .pane + .pane { border-left: 0; border-top: 1px solid var(--line); } }
+  .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .bar .title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; }
+  .bar .spacer { flex: 1; }
+  select, button { font-family: var(--sans); font-size: 12.5px; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+  select:hover, button:hover { border-color: var(--faint); }
+  button.run { background: var(--accent); color: #04231f; font-weight: 700; border-color: transparent; padding: 5px 16px; }
+  button.run:hover { filter: brightness(1.1); }
+  textarea { flex: 1; width: 100%; background: transparent; color: var(--text); border: 0; outline: none; resize: none; padding: 14px 16px; font-family: var(--mono); font-size: 13.5px; line-height: 1.55; tab-size: 2; white-space: pre; }
+  #out { flex: 1; overflow: auto; padding: 14px 16px; font-family: var(--mono); font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  #out .err { color: var(--red); }
+  #out .warn { color: var(--yellow); }
+  #out .ok { color: var(--accent); }
+  #out .dim { color: var(--dim); }
+  footer { padding: 10px 20px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12px; display: flex; gap: 16px; flex-wrap: wrap; }
+  footer a { color: var(--dim); text-decoration: none; border-bottom: 1px dotted var(--faint); }
+  footer a:hover { color: var(--accent); }
+  kbd { font-family: var(--mono); font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 1px 5px; color: var(--dim); }
+</style>
+</head>
+<body>
+<header>
+  <h1>til <span class="kz">тіл</span></h1>
+  <span class="tag">a scripting language engineered for AI agents</span>
+  <span class="spacer"></span>
+  <span class="badge">whole language = <b>1,550 tokens</b></span>
+  <span class="badge">10 tasks, same output: til <b>543</b> · python 607 · js 990</span>
+</header>
+<main>
+  <section class="pane">
+    <div class="bar">
+      <span class="title">editor</span>
+      <select id="examples"></select>
+      <span class="spacer"></span>
+      <button id="teach" title="copy LLM.md — the complete language card — to paste into a system prompt">copy language card</button>
+      <button id="check">check</button>
+      <button class="run" id="run">run ⌘⏎</button>
+    </div>
+    <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+  </section>
+  <section class="pane">
+    <div class="bar"><span class="title">output</span><span class="spacer"></span><span class="badge" id="stat"></span></div>
+    <div id="out"><span class="dim">⌘⏎ / ctrl+enter to run. errors here are the product: structured, located, with did-you-mean and locals — built to be pasted back to a model.</span></div>
+  </section>
+</main>
+<footer>
+  <span>no server — the real interpreter runs in your tab</span>
+  <a href="LLM.md" target="_blank">LLM.md — the language in 1,550 tokens</a>
+  <span>zero deps · node ≥18 · MIT</span>
+  <span>тіл = “language” (Kazakh)</span>
+</footer>
+
+<script type="module">
+import { parse, check, run, runEgs, createRuntime, formatError, TilError, VERSION } from './til.mjs'
+
+const $ = s => document.querySelector(s)
+const srcEl = $('#src'), outEl = $('#out'), statEl = $('#stat')
+
+const FILES = {
+  'input.txt': 'the quick brown fox jumps over the lazy dog\nthe fox sleeps and the dog watches the fox\n',
+  'users.json': '[{"name":"Aliya","email":"a@ex.com","active":true},{"name":"Bek","email":"b@ex.com","active":false},{"name":"Dana","email":"d@ex.com","active":true}]',
+  'sales.csv': 'region,amount\neu,120\nus,80\neu,200\nkz,400\nus,150\n',
+}
+
+const EXAMPLES = {
+  'word frequency': `# top words — pipes pass data as the LAST argument
+read "input.txt" | lower | words | counts | top 3
+| each {p -> print "{p.k} {p.v}"}`,
+  'json → report': `users = json (read "users.json")
+active = users | keep {it.active}
+print "{len active} active of {len users}"
+for u in active { print "  {u.name} <{u.email}>" }
+print (tojson (active | map {u -> u.name}))`,
+  'csv group + sum': `rows = read "sales.csv" | lines | skip 1 | map (split ",")
+for p in (group {it[0]} rows) {
+  print "{p.k}: {p.v | map {num it[1]} | sum}"
+}`,
+  'contracts + eg tests': `fn slug s {
+  ensure type s == "str"
+  s | trim | lower | replace " " "-"
+}
+eg slug "Hello World" == "hello-world"
+eg slug "  Til Lang " == "til-lang"
+
+print (slug "TIL for Agents")
+print (slug 42 catch "contract caught the bug")`,
+  'fibonacci + multi-assign': `a, b = 0, 1
+out = []
+for _ in range 0 12 {
+  push a out
+  a, b = b, a + b
+}
+print (join " " out)`,
+  'error UX (broken on purpose)': `# run `+'`check`'+` or `+'`run`'+` — the error names the fix
+nums = "3 1 4 1 5 9 2 6" | words | map num
+print "mean {roundTo 2 (maen nums)}"`,
+}
+
+const sel = $('#examples')
+for (const k of Object.keys(EXAMPLES)) sel.add(new Option(k, k))
+sel.onchange = () => { if (!EXAMPLES[sel.value]) return; srcEl.value = EXAMPLES[sel.value]; save(); runNow(false) }
+
+function host(outLines) {
+  const files = new Map(Object.entries(FILES))
+  return {
+    print: s => outLines.push({ t: 'out', s }),
+    read: p => { if (!files.has(p)) { const e = new Error('ENOENT'); e.code = 'ENOENT'; throw e } return files.get(p) },
+    write: (p, s) => { files.set(p, s); outLines.push({ t: 'dim', s: `→ wrote ${p} (${s.length} chars, virtual fs)` }) },
+    append: (p, s) => files.set(p, (files.get(p) || '') + s),
+    env: () => null, stdin: () => '', now: () => Date.now(), rand: () => Math.random(),
+  }
+}
+
+function render(lines) {
+  outEl.innerHTML = ''
+  for (const l of lines) {
+    const div = document.createElement('div')
+    if (l.t !== 'out') div.className = l.t
+    div.textContent = l.s
+    outEl.appendChild(div)
+  }
+}
+
+function runNow(execute = true) {
+  const src = srcEl.value
+  const lines = []
+  const t0 = performance.now()
+  let ast
+  try { ast = parse(src, { file: 'play.til' }) }
+  catch (e) { lines.push({ t: 'err', s: formatError(e, src, { file: 'play.til' }) }); render(lines); statEl.textContent = 'syntax error'; return }
+  const { errors, warnings } = check(ast)
+  for (const w of warnings) lines.push({ t: 'warn', s: formatError({ ...w, message: 'warning: ' + w.msg }, src, { file: 'play.til' }) })
+  if (errors.length) {
+    for (const er of errors) lines.push({ t: 'err', s: formatError({ ...er, message: er.msg }, src, { file: 'play.til' }) })
+    render(lines); statEl.textContent = `check: ${errors.length} error${errors.length > 1 ? 's' : ''}`; return
+  }
+  if (!execute) { lines.push({ t: 'ok', s: '✓ check passed' }); render(lines); statEl.textContent = 'check ok'; return }
+  const h = host(lines)
+  try {
+    const { rt } = run(src, { ast, host: h, file: 'play.til', args: [] })
+    let egNote = ''
+    if (rt.egs.length) {
+      const rs = runEgs(rt)
+      const pass = rs.filter(r => r.pass).length
+      egNote = ` · eg ${pass}/${rs.length}`
+      for (const r of rs.filter(x => !x.pass)) {
+        lines.push({ t: 'err', s: `✗ eg ${r.src}${r.left !== undefined ? `\n  left:  ${r.left}\n  right: ${r.right}` : ''}${r.error ? '\n  ' + r.error : ''}` })
+      }
+      if (pass === rs.length) lines.push({ t: 'ok', s: `✓ all ${rs.length} eg pass` })
+    }
+    statEl.textContent = `ran in ${(performance.now() - t0).toFixed(1)}ms${egNote}`
+  } catch (e) {
+    if (!(e instanceof TilError)) throw e
+    lines.push({ t: 'err', s: formatError(e, src, { file: 'play.til' }) })
+    statEl.textContent = 'runtime error'
+  }
+  if (!lines.length) lines.push({ t: 'dim', s: '(no output — try print)' })
+  render(lines)
+}
+
+$('#run').onclick = () => runNow(true)
+$('#check').onclick = () => runNow(false)
+$('#teach').onclick = async () => {
+  const md = await (await fetch('LLM.md')).text()
+  await navigator.clipboard.writeText(md)
+  const b = $('#teach'); const old = b.textContent
+  b.textContent = '✓ copied — paste into your system prompt'
+  setTimeout(() => b.textContent = old, 2200)
+}
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); runNow(true) }
+})
+srcEl.addEventListener('keydown', e => {
+  if (e.key === 'Tab') { e.preventDefault(); const { selectionStart: s, selectionEnd: en } = srcEl
+    srcEl.setRangeText('  ', s, en, 'end') }
+})
+const save = () => localStorage.setItem('til-src', srcEl.value)
+srcEl.addEventListener('input', save)
+
+const stored = localStorage.getItem('til-src')
+srcEl.value = stored || EXAMPLES['word frequency']
+if (stored && !Object.values(EXAMPLES).includes(stored)) {
+  sel.add(new Option('· your code', '·', true, true))
+} else if (stored) {
+  sel.value = Object.keys(EXAMPLES).find(k => EXAMPLES[k] === stored)
+}
+document.title = `til ${VERSION} — тіл`
+runNow(false)
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# mini agent task: parse JSON, aggregate, emit a report — one screen of til
+data = json '[
+  {"region": "eu", "amount": 120, "ok": true},
+  {"region": "us", "amount": 80,  "ok": true},
+  {"region": "eu", "amount": 200, "ok": false},
+  {"region": "kz", "amount": 400, "ok": true}
+]'
+
+paid = data | keep {it.ok}
+byRegion = paid | group {it.region}
+
+print "revenue by region:"
+for p in byRegion {
+  total = p.v | map {it.amount} | sum
+  print "  {p.k}: {total}"
+}
+print "total: {paid | map {it.amount} | sum}"
+
+eg (paid | map {it.amount} | sum) == 600
+eg keys byRegion == ["eu", "us", "kz"]

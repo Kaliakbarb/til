@@ -1,0 +1,20 @@
+{
+  "name": "til-lang",
+  "version": "0.1.0",
+  "description": "TIL (тіл) — a scripting language engineered for AI agents: whole spec fits in a prompt, half the tokens of Python, errors designed for self-repair.",
+  "type": "module",
+  "bin": {
+    "til": "bin/til"
+  },
+  "scripts": {
+    "test": "node bin/til test tests/lang.til && node bin/til test examples",
+    "bench": "node bench/run.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "gpt-tokenizer": "^3.4.0"
+  }
+}

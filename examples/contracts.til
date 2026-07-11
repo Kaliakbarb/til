@@ -1,0 +1,18 @@
+# contracts + inline tests: ensure guards run always, eg lines run under `til test`
+fn slug s {
+  ensure type s == "str"
+  s | trim | lower | replace " " "-"
+}
+eg slug "Hello World" == "hello-world"
+eg slug "  Til Lang  " == "til-lang"
+eg (slug 42 catch "contract violation") == "contract violation"
+
+fn mean xs {
+  ensure len xs > 0
+  sum xs / len xs
+}
+eg mean [1, 2, 3] == 2
+eg (mean [] catch null) == null
+
+print (slug "TIL — a language for agents" | replace "—" "" | replace "--" "-")
+print (mean [4, 8, 15, 16, 23, 42])

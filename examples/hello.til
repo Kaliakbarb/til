@@ -1,0 +1,7 @@
+# hello, til
+name = "TIL"
+print "hello from {name}"
+
+# pipelines are the idiom: data flows left to right
+range 1 6 | map {it * it} | sum | print
+eg (range 1 6 | map {it * it} | sum) == 55

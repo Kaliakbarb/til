@@ -1,0 +1,8 @@
+# word frequency — the canonical agent micro-task
+fn top n text = text | words | map lower | counts | items | sortBy {p -> -p.v} | take n
+
+eg top 2 "a b a c a b" == [{k: "a", v: 3}, {k: "b", v: 2}]
+eg top 1 "" == []
+
+sample = "the quick brown fox jumps over the lazy dog the end"
+top 3 sample | each {p -> print "{p.k} {p.v}"}

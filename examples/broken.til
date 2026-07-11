@@ -1,0 +1,3 @@
+# deliberately broken — demo of agent-repair errors: til check examples/broken.til --json
+fn top5 text = text | words | map lower | counts | itmes | sortBy {p -> -p.v} | take 5
+print (top5 "a b a")

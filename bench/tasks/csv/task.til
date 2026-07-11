@@ -1,0 +1,4 @@
+rows = read "sales.csv" | lines | skip 1 | map (split ",")
+for p in (group {it[0]} rows) {
+  print "{p.k} {p.v | map {num it[1]} | sum}"
+}

@@ -1,0 +1,12 @@
+fn balanced s {
+  close = {")": "(", "]": "[", "}": '{'}
+  stack = []
+  for c in s {
+    if has c "([\{" { push c stack }
+    elif has c close {
+      if pop stack != close[c] { return false }
+    }
+  }
+  empty stack
+}
+read "cases.txt" | lines | each {s -> print (if balanced s { "ok" } else { "bad" })}

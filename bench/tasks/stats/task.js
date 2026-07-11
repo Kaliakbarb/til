@@ -1,0 +1,11 @@
+import fs from "node:fs";
+const xs = fs.readFileSync("numbers.txt", "utf8").trim().split("\n").map(Number).sort((a, b) => a - b);
+const n = xs.length;
+const mean = xs.reduce((s, x) => s + x, 0) / n;
+const median = n % 2 ? xs[(n - 1) / 2] : (xs[n / 2 - 1] + xs[n / 2]) / 2;
+const sd = Math.sqrt(xs.reduce((s, x) => s + (x - mean) ** 2, 0) / n);
+const r = x => Math.round(x * 100) / 100;
+console.log("count", n);
+console.log("mean", r(mean));
+console.log("median", r(median));
+console.log("stdev", r(sd));

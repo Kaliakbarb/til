@@ -1,0 +1,1 @@
+read "messy.txt" | lines | map trim | keep {it and not starts "#" it} | uniq | sort | each print

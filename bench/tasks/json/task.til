@@ -1,0 +1,3 @@
+users = json (read "users.json")
+active = users | keep {it.active} | map {u -> {name: u.name, email: u.email}}
+print (tojson active)

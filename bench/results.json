@@ -1,0 +1,302 @@
+[
+  {
+    "task": "anagrams",
+    "langs": {
+      "til": {
+        "o200k": 43,
+        "cl100k": 43,
+        "chars": 132,
+        "lines": 4,
+        "out": "listen silent enlist inlets\ngoogle elgoog\nstone tones notes onset seton\ndear read dare\nnight thing\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 50,
+        "cl100k": 50,
+        "chars": 183,
+        "lines": 6,
+        "out": "listen silent enlist inlets\ngoogle elgoog\nstone tones notes onset seton\ndear read dare\nnight thing\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 94,
+        "cl100k": 92,
+        "chars": 326,
+        "lines": 8,
+        "out": "listen silent enlist inlets\ngoogle elgoog\nstone tones notes onset seton\ndear read dare\nnight thing\n",
+        "error": null
+      }
+    },
+    "ok": true
+  },
+  {
+    "task": "brackets",
+    "langs": {
+      "til": {
+        "o200k": 97,
+        "cl100k": 97,
+        "chars": 304,
+        "lines": 12,
+        "out": "ok\nbad\nok\nok\nbad\nbad\nbad\nok\nbad\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 100,
+        "cl100k": 99,
+        "chars": 371,
+        "lines": 12,
+        "out": "ok\nbad\nok\nok\nbad\nbad\nbad\nok\nbad\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 136,
+        "cl100k": 133,
+        "chars": 430,
+        "lines": 14,
+        "out": "ok\nbad\nok\nok\nbad\nbad\nbad\nok\nbad\n",
+        "error": null
+      }
+    },
+    "ok": true
+  },
+  {
+    "task": "clean",
+    "langs": {
+      "til": {
+        "o200k": 29,
+        "cl100k": 29,
+        "chars": 97,
+        "lines": 1,
+        "out": "alpha\nbeta\ndelta\ngamma\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 45,
+        "cl100k": 43,
+        "chars": 151,
+        "lines": 4,
+        "out": "alpha\nbeta\ndelta\ngamma\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 65,
+        "cl100k": 60,
+        "chars": 222,
+        "lines": 4,
+        "out": "alpha\nbeta\ndelta\ngamma\n",
+        "error": null
+      }
+    },
+    "ok": true
+  },
+  {
+    "task": "csv",
+    "langs": {
+      "til": {
+        "o200k": 53,
+        "cl100k": 53,
+        "chars": 139,
+        "lines": 4,
+        "out": "eu 410\nus 230\nkz 460\nsg 300\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 60,
+        "cl100k": 57,
+        "chars": 223,
+        "lines": 6,
+        "out": "eu 410\nus 230\nkz 460\nsg 300\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 90,
+        "cl100k": 87,
+        "chars": 317,
+        "lines": 7,
+        "out": "eu 410\nus 230\nkz 460\nsg 300\n",
+        "error": null
+      }
+    },
+    "ok": true
+  },
+  {
+    "task": "fib",
+    "langs": {
+      "til": {
+        "o200k": 35,
+        "cl100k": 35,
+        "chars": 64,
+        "lines": 5,
+        "out": "0\n1\n1\n2\n3\n5\n8\n13\n21\n34\n55\n89\n144\n233\n377\n610\n987\n1597\n2584\n4181\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 32,
+        "cl100k": 32,
+        "chars": 65,
+        "lines": 4,
+        "out": "0\n1\n1\n2\n3\n5\n8\n13\n21\n34\n55\n89\n144\n233\n377\n610\n987\n1597\n2584\n4181\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 47,
+        "cl100k": 47,
+        "chars": 92,
+        "lines": 5,
+        "out": "0\n1\n1\n2\n3\n5\n8\n13\n21\n34\n55\n89\n144\n233\n377\n610\n987\n1597\n2584\n4181\n",
+        "error": null
+      }
+    },
+    "ok": true
+  },
+  {
+    "task": "fizzbuzz",
+    "langs": {
+      "til": {
+        "o200k": 57,
+        "cl100k": 57,
+        "chars": 130,
+        "lines": 3,
+        "out": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n16\n17\nFizz\n19\nBuzz\nFizz\n22\n23\nFizz\nBuzz\n26\nFizz\n28\n29\nFizzBuzz\n31\n32\nFizz\n34\nBuzz\nFizz\n37\n38\nFizz\nBuzz\n41\nFizz\n43\n44\nFizzBuzz\n46\n47\nFizz\n49\nBuzz\nFizz\n52\n53\nFizz\nBuzz\n56\nFizz\n58\n59\nFizzBuzz\n61\n62\nFizz\n64\nBuzz\nFizz\n67\n68\nFizz\nBuzz\n71\nFizz\n73\n74\nFizzBuzz\n76\n77\nFizz\n79\nBuzz\nFizz\n82\n83\nFizz\nBuzz\n86\nFizz\n88\n89\nFizzBuzz\n91\n92\nFizz\n94\nBuzz\nFizz\n97\n98\nFizz\nBuzz\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 63,
+        "cl100k": 63,
+        "chars": 183,
+        "lines": 9,
+        "out": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n16\n17\nFizz\n19\nBuzz\nFizz\n22\n23\nFizz\nBuzz\n26\nFizz\n28\n29\nFizzBuzz\n31\n32\nFizz\n34\nBuzz\nFizz\n37\n38\nFizz\nBuzz\n41\nFizz\n43\n44\nFizzBuzz\n46\n47\nFizz\n49\nBuzz\nFizz\n52\n53\nFizz\nBuzz\n56\nFizz\n58\n59\nFizzBuzz\n61\n62\nFizz\n64\nBuzz\nFizz\n67\n68\nFizz\nBuzz\n71\nFizz\n73\n74\nFizzBuzz\n76\n77\nFizz\n79\nBuzz\nFizz\n82\n83\nFizz\nBuzz\n86\nFizz\n88\n89\nFizzBuzz\n91\n92\nFizz\n94\nBuzz\nFizz\n97\n98\nFizz\nBuzz\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 74,
+        "cl100k": 74,
+        "chars": 193,
+        "lines": 6,
+        "out": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n16\n17\nFizz\n19\nBuzz\nFizz\n22\n23\nFizz\nBuzz\n26\nFizz\n28\n29\nFizzBuzz\n31\n32\nFizz\n34\nBuzz\nFizz\n37\n38\nFizz\nBuzz\n41\nFizz\n43\n44\nFizzBuzz\n46\n47\nFizz\n49\nBuzz\nFizz\n52\n53\nFizz\nBuzz\n56\nFizz\n58\n59\nFizzBuzz\n61\n62\nFizz\n64\nBuzz\nFizz\n67\n68\nFizz\nBuzz\n71\nFizz\n73\n74\nFizzBuzz\n76\n77\nFizz\n79\nBuzz\nFizz\n82\n83\nFizz\nBuzz\n86\nFizz\n88\n89\nFizzBuzz\n91\n92\nFizz\n94\nBuzz\nFizz\n97\n98\nFizz\nBuzz\n",
+        "error": null
+      }
+    },
+    "ok": true
+  },
+  {
+    "task": "inventory",
+    "langs": {
+      "til": {
+        "o200k": 98,
+        "cl100k": 98,
+        "chars": 268,
+        "lines": 7,
+        "out": "+ rivets 50\n- washers\n~ nuts 120->95\n~ anchors 12->30\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 100,
+        "cl100k": 100,
+        "chars": 310,
+        "lines": 12,
+        "out": "+ rivets 50\n- washers\n~ nuts 120->95\n~ anchors 12->30\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 133,
+        "cl100k": 129,
+        "chars": 420,
+        "lines": 6,
+        "out": "+ rivets 50\n- washers\n~ nuts 120->95\n~ anchors 12->30\n",
+        "error": null
+      }
+    },
+    "ok": true
+  },
+  {
+    "task": "json",
+    "langs": {
+      "til": {
+        "o200k": 40,
+        "cl100k": 40,
+        "chars": 133,
+        "lines": 3,
+        "out": "[{\"name\":\"Aliya\",\"email\":\"aliya@ex.com\"},{\"name\":\"Dana\",\"email\":\"dana@ex.com\"},{\"name\":\"Erlan\",\"email\":\"erlan@ex.com\"}]\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 49,
+        "cl100k": 47,
+        "chars": 182,
+        "lines": 4,
+        "out": "[{\"name\":\"Aliya\",\"email\":\"aliya@ex.com\"},{\"name\":\"Dana\",\"email\":\"dana@ex.com\"},{\"name\":\"Erlan\",\"email\":\"erlan@ex.com\"}]\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 55,
+        "cl100k": 53,
+        "chars": 217,
+        "lines": 4,
+        "out": "[{\"name\":\"Aliya\",\"email\":\"aliya@ex.com\"},{\"name\":\"Dana\",\"email\":\"dana@ex.com\"},{\"name\":\"Erlan\",\"email\":\"erlan@ex.com\"}]\n",
+        "error": null
+      }
+    },
+    "ok": true
+  },
+  {
+    "task": "stats",
+    "langs": {
+      "til": {
+        "o200k": 61,
+        "cl100k": 58,
+        "chars": 176,
+        "lines": 5,
+        "out": "count 12\nmean 5.12\nmedian 5.1\nstdev 2.66\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 72,
+        "cl100k": 71,
+        "chars": 234,
+        "lines": 7,
+        "out": "count 12\nmean 5.12\nmedian 5.1\nstdev 2.66\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 190,
+        "cl100k": 188,
+        "chars": 504,
+        "lines": 11,
+        "out": "count 12\nmean 5.12\nmedian 5.1\nstdev 2.66\n",
+        "error": null
+      }
+    },
+    "ok": true
+  },
+  {
+    "task": "wordfreq",
+    "langs": {
+      "til": {
+        "o200k": 30,
+        "cl100k": 30,
+        "chars": 84,
+        "lines": 1,
+        "out": "the 11\ndata 6\nmarket 4\npipeline 3\nand 3\n",
+        "error": null
+      },
+      "py": {
+        "o200k": 36,
+        "cl100k": 36,
+        "chars": 145,
+        "lines": 4,
+        "out": "the 11\ndata 6\nmarket 4\npipeline 3\nand 3\n",
+        "error": null
+      },
+      "js": {
+        "o200k": 106,
+        "cl100k": 101,
+        "chars": 303,
+        "lines": 5,
+        "out": "the 11\ndata 6\nmarket 4\npipeline 3\nand 3\n",
+        "error": null
+      }
+    },
+    "ok": true
+  }
+]

@@ -1,0 +1,7 @@
+old = json (read "old.json")
+new = json (read "new.json")
+for p in new { if not has p.k old { print "+ {p.k} {p.v}" } }
+for p in old { if not has p.k new { print "- {p.k}" } }
+for p in old {
+  if has p.k new and new[p.k] != p.v { print "~ {p.k} {p.v}->{new[p.k]}" }
+}

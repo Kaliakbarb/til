@@ -1,0 +1,1 @@
+read "input.txt" | lower | words | counts | top 5 | each {p -> print "{p.k} {p.v}"}

@@ -1,0 +1,4 @@
+groups = read "words.txt" | words | group {chars it | sort | join ""}
+for p in groups {
+  if len p.v > 1 { print (join " " p.v) }
+}

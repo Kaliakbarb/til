@@ -1,0 +1,4 @@
+The market data pipeline reads market data from the source and the pipeline
+writes clean data to the store so the next pipeline stage can read the clean
+data again and the cycle repeats until the market closes and the data store
+holds the final clean market data for the day

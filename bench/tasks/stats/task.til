@@ -1,0 +1,5 @@
+xs = read "numbers.txt" | lines | map num
+print "count {len xs}"
+print "mean {roundTo 2 (mean xs)}"
+print "median {roundTo 2 (median xs)}"
+print "stdev {roundTo 2 (stdev xs)}"

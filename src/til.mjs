@@ -30,7 +30,7 @@ function terr(code, msg, at, extra = {}) {
 // Lexer
 // ---------------------------------------------------------------------------
 
-const KEYWORDS = new Set(['fn', 'if', 'else', 'match', 'for', 'in', 'while', 'return',
+const KEYWORDS = new Set(['fn', 'if', 'else', 'elif', 'match', 'for', 'in', 'while', 'return',
   'ensure', 'eg', 'and', 'or', 'not', 'true', 'false', 'null', 'catch', 'break', 'continue'])
 
 const PUNCT2 = ['==', '!=', '<=', '>=', '->']
@@ -229,6 +229,20 @@ class Parser {
       }
     }
     const e = this.expr()
+    if (this.at('punct', ',')) {
+      // multi-assignment: a, b = b, a + b (right side evaluates fully first)
+      const targets = [e]
+      while (this.at('punct', ',')) { this.eat(); this.skipNl(); targets.push(this.expr()) }
+      const eq = this.expect('punct', '=', '= after assignment targets')
+      for (const t of targets) if (!['Name', 'Index', 'Dot'].includes(t.k))
+        terr('E_SYNTAX', 'invalid assignment target', eq, { hint: 'assign to names, m.key, or xs[i]' })
+      this.skipNl()
+      const exprs = [this.expr()]
+      while (this.at('punct', ',')) { this.eat(); this.skipNl(); exprs.push(this.expr()) }
+      if (exprs.length !== targets.length)
+        terr('E_SYNTAX', `${targets.length} targets but ${exprs.length} values`, eq)
+      return { k: 'MultiAssign', targets, exprs, line: e.line, col: e.col }
+    }
     if (this.at('punct', '=')) {
       const eq = this.eat()
       if (!['Name', 'Index', 'Dot'].includes(e.k))
@@ -295,16 +309,16 @@ class Parser {
 
   orE() {
     let l = this.andE()
-    while (this.at('kw', 'or')) { const op = this.eat(); this.skipNl(); l = { k: 'Logic', op: 'or', l, r: this.andE(), line: op.line, col: op.col } }
+    while (this.at('kw', 'or')) { const op = this.eat(); this.skipNl(); const r = this.andE(); l = { k: 'Logic', op: 'or', l, r, line: op.line, col: op.col, s: l.s, e: r.e } }
     return l
   }
   andE() {
     let l = this.notE()
-    while (this.at('kw', 'and')) { const op = this.eat(); this.skipNl(); l = { k: 'Logic', op: 'and', l, r: this.notE(), line: op.line, col: op.col } }
+    while (this.at('kw', 'and')) { const op = this.eat(); this.skipNl(); const r = this.notE(); l = { k: 'Logic', op: 'and', l, r, line: op.line, col: op.col, s: l.s, e: r.e } }
     return l
   }
   notE() {
-    if (this.at('kw', 'not')) { const op = this.eat(); return { k: 'Un', op: 'not', expr: this.notE(), line: op.line, col: op.col } }
+    if (this.at('kw', 'not')) { const op = this.eat(); const x = this.notE(); return { k: 'Un', op: 'not', expr: x, line: op.line, col: op.col, s: op.s, e: x.e } }
     return this.cmpE()
   }
   cmpE() {
@@ -316,7 +330,8 @@ class Parser {
     }
     if (p.t === 'kw' && p.v === 'in') {
       this.eat(); this.skipNl()
-      return { k: 'Bin', op: 'in', l, r: this.addE(), line: p.line, col: p.col }
+      const r = this.addE()
+      return { k: 'Bin', op: 'in', l, r, line: p.line, col: p.col, s: l.s, e: r.e }
     }
     return l
   }
@@ -509,7 +524,9 @@ class Parser {
     const cond = this.header()
     const then = this.block()
     let els = null
-    if (this.at('kw', 'else') || this.contAfterNl('kw', 'else')) {
+    if (this.at('kw', 'elif') || this.contAfterNl('kw', 'elif')) {
+      els = this.ifE() // elif parses like a nested if
+    } else if (this.at('kw', 'else') || this.contAfterNl('kw', 'else')) {
       this.eat()
       els = this.at('kw', 'if') ? this.ifE() : this.block()
     }
@@ -615,6 +632,7 @@ function collectAssigned(node, out) {
   if (!node || typeof node !== 'object') return
   if (node.k === 'Fn' || node.k === 'Lam') return
   if (node.k === 'Assign' && node.target.k === 'Name') out.add(node.target.name)
+  if (node.k === 'MultiAssign') for (const t of node.targets) if (t.k === 'Name') out.add(t.name)
   if (node.k === 'For') out.add(node.name)
   for (const key of Object.keys(node)) {
     if (key === 'k') continue
@@ -669,6 +687,14 @@ export function check(ast, opts = {}) {
           warnings.push({ code: 'W_SHADOW', msg: `assignment to \`${st.target.name}\` shadows a builtin — later calls like \`${st.target.name} xs\` will use your value`, line: st.line, col: st.col })
         if (st.target.k !== 'Name') walkExpr(st.target, scope, inFn, inLoop)
         walkExpr(st.expr, scope, inFn, inLoop); return
+      case 'MultiAssign':
+        for (const t of st.targets) {
+          if (t.k === 'Name' && builtinNames.has(t.name))
+            warnings.push({ code: 'W_SHADOW', msg: `assignment to \`${t.name}\` shadows a builtin`, line: st.line, col: st.col })
+          if (t.k !== 'Name') walkExpr(t, scope, inFn, inLoop)
+        }
+        for (const x of st.exprs) walkExpr(x, scope, inFn, inLoop)
+        return
       case 'ExprStmt': case 'Ensure': case 'Eg':
         if (st.k === 'Eg' && inFn) warnings.push({ code: 'W_EG', msg: 'eg inside a function never runs as a test; move it to top level', line: st.line, col: st.col })
         walkExpr(st.expr, scope, inFn, inLoop); return
@@ -859,19 +885,24 @@ export const BUILTIN_SPECS = {
   sum: { arity: 1, sig: 'sum xs', doc: '' },
   min: { arity: 1, sig: 'min xs', doc: 'smallest (error on empty)' },
   max: { arity: 1, sig: 'max xs', doc: '' },
+  mean: { arity: 1, sig: 'mean xs', doc: 'average (error on empty)' },
+  median: { arity: 1, sig: 'median xs', doc: 'middle value; even length averages the two middles' },
+  stdev: { arity: 1, sig: 'stdev xs', doc: 'population standard deviation' },
   sort: { arity: 1, sig: 'sort xs', doc: 'ascending; all nums or all strs' },
   sortBy: { arity: 2, sig: 'sortBy f xs', doc: 'sort by key f x (use -key for desc)' },
   rev: { arity: 1, sig: 'rev x', doc: 'reverse list or str' },
   uniq: { arity: 1, sig: 'uniq xs', doc: 'dedupe, keeps first, preserves order' },
   group: { arity: 2, sig: 'group f xs', doc: 'map of str(f x) → list of x' },
   counts: { arity: 1, sig: 'counts xs', doc: 'map of value → occurrences' },
+  top: { arity: 2, sig: 'top n m', doc: 'n highest {k, v} items of a map, by v descending' },
   zip: { arity: 2, sig: 'zip xs ys', doc: 'list of [x, y] pairs (shorter length)' },
   flat: { arity: 1, sig: 'flat xs', doc: 'flatten one level' },
   first: { arity: 1, sig: 'first xs', doc: 'first element or null' },
   last: { arity: 1, sig: 'last xs', doc: '' },
   take: { arity: 2, sig: 'take n x', doc: 'first n of list/str' },
   skip: { arity: 2, sig: 'skip n x', doc: 'all but first n' },
-  push: { arity: 2, sig: 'push x xs', doc: 'new list with x appended' },
+  push: { arity: 2, sig: 'push x xs', doc: 'append x to xs IN PLACE; returns xs' },
+  pop: { arity: 1, sig: 'pop xs', doc: 'remove and return last element (null if empty); mutates' },
   has: { arity: 2, sig: 'has x coll', doc: 'elem in list / substr in str / key in map' },
   find: { arity: 2, sig: 'find f xs', doc: 'first element where f x truthy, else null' },
   pos: { arity: 2, sig: 'pos x xs', doc: 'index of x in list/str, else null' },
@@ -961,6 +992,22 @@ function makeBuiltins(rt) {
   def('sum', (rt2, [xs], node) => { want(xs, ['list'], 'sum', 'xs', node); let s = 0; for (const x of xs) { want(x, ['num'], 'sum', 'element', node); s += x } return s })
   def('min', (rt2, [xs], node) => extremum(xs, node, 'min', (a, b) => a < b))
   def('max', (rt2, [xs], node) => extremum(xs, node, 'max', (a, b) => a > b))
+  const wantNums = (xs, name, node) => {
+    want(xs, ['list'], name, 'xs', node)
+    if (!xs.length) terr('E_EMPTY', `\`${name}\` of an empty list`, node, { hint: 'guard with `if xs { … }` or use catch' })
+    for (const x of xs) want(x, ['num'], name, 'element', node)
+  }
+  def('mean', (rt2, [xs], node) => { wantNums(xs, 'mean', node); return xs.reduce((s, x) => s + x, 0) / xs.length })
+  def('median', (rt2, [xs], node) => {
+    wantNums(xs, 'median', node)
+    const a = [...xs].sort((x, y) => x - y), n = a.length
+    return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2
+  })
+  def('stdev', (rt2, [xs], node) => {
+    wantNums(xs, 'stdev', node)
+    const m = xs.reduce((s, x) => s + x, 0) / xs.length
+    return Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / xs.length)
+  })
   function extremum(xs, node, name, lt) {
     want(xs, ['list'], name, 'xs', node)
     if (!xs.length) terr('E_EMPTY', `\`${name}\` of an empty list`, node, { hint: 'guard with `if xs { … }` or use catch' })
@@ -989,13 +1036,23 @@ function makeBuiltins(rt) {
     return m
   })
   def('counts', (rt2, [xs], node) => { want(xs, ['list'], 'counts', 'xs', node); const m = new Map(); for (const x of xs) { const k = keyStr(x); m.set(k, (m.get(k) || 0) + 1) } return m })
+  def('top', (rt2, [n, m], node) => {
+    want(n, ['num'], 'top', 'n', node)
+    let pairs
+    if (T(m) === 'map') pairs = [...m.entries()].map(([k, v]) => new Map([['k', k], ['v', v]]))
+    else if (T(m) === 'list') pairs = m.map(p => { if (T(p) !== 'map' || !p.has('v')) terr('E_TYPE', '`top` needs a map or a list of {k, v} items', node); return p })
+    else terr('E_TYPE', `\`top\` needs a map or a list of {k, v} items, got ${T(m)}`, node)
+    for (const p of pairs) cmpGuard(p.get('v'), pairs[0]?.get('v'), node, 'top')
+    return pairs.sort((a, b) => a.get('v') < b.get('v') ? 1 : a.get('v') > b.get('v') ? -1 : 0).slice(0, Math.max(0, n))
+  })
   def('zip', (rt2, [a, b], node) => { want(a, ['list'], 'zip', 'xs', node); want(b, ['list'], 'zip', 'ys', node); const n = Math.min(a.length, b.length), out = []; for (let i = 0; i < n; i++) out.push([a[i], b[i]]); return out })
   def('flat', (rt2, [xs], node) => { want(xs, ['list'], 'flat', 'xs', node); return xs.flatMap(x => Array.isArray(x) ? x : [x]) })
   def('first', (rt2, [xs], node) => { want(xs, ['list', 'str'], 'first', 'xs', node); return xs.length ? xs[0] : null })
   def('last', (rt2, [xs], node) => { want(xs, ['list', 'str'], 'last', 'xs', node); return xs.length ? xs[xs.length - 1] : null })
   def('take', (rt2, [n, x], node) => { want(n, ['num'], 'take', 'n', node); want(x, ['list', 'str'], 'take', 'x', node); return x.slice(0, Math.max(0, n)) })
   def('skip', (rt2, [n, x], node) => { want(n, ['num'], 'skip', 'n', node); want(x, ['list', 'str'], 'skip', 'x', node); return x.slice(Math.max(0, n)) })
-  def('push', (rt2, [x, xs], node) => { want(xs, ['list'], 'push', 'xs', node); return [...xs, x] })
+  def('push', (rt2, [x, xs], node) => { want(xs, ['list'], 'push', 'xs', node); xs.push(x); return xs })
+  def('pop', (rt2, [xs], node) => { want(xs, ['list'], 'pop', 'xs', node); return xs.length ? xs.pop() : null })
   def('has', (rt2, [x, coll], node) => hasImpl(x, coll, node))
   function hasImpl(x, coll, node) {
     const t = T(coll)
@@ -1177,6 +1234,11 @@ export function createRuntime(opts = {}) {
       case 'Assign': {
         const v = evalNode(st.expr, env)
         assign(st.target, v, env)
+        return null
+      }
+      case 'MultiAssign': {
+        const vs = st.exprs.map(x => evalNode(x, env)) // all values first: swap-safe
+        st.targets.forEach((t, i) => assign(t, vs[i], env))
         return null
       }
       case 'ExprStmt': return evalNode(st.expr, env)

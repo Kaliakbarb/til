@@ -1,7 +1,7 @@
 # til — тіл
 
 **A scripting language engineered for AI agents.** The whole language fits in a
-1,728-token prompt card, programs cost measurably fewer tokens than Python or JS,
+1,728-token prompt card, programs match Python on tokens (and cost ~40% fewer than JS),
 hallucinated names are caught *before* execution, and every error is structured data
 designed to be fed back to a model for one-shot self-repair.
 
@@ -9,7 +9,7 @@ designed to be fed back to a model for one-shot self-repair.
 read "input.txt" | lower | words | counts | top 5 | each {p -> print "{p.k} {p.v}"}
 ```
 
-That's the whole word-frequency program. 30 tokens. The Python equivalent is 36; the JS is 106.
+That's the whole word-frequency program. 30 tokens. The Python equivalent is 33; the JS is 98.
 
 ## The numbers (measured, not vibes)
 
@@ -19,13 +19,18 @@ stdout** (verified by `npm run bench` on every run). Token counts via real token
 
 | | til | Python | JS |
 |---|---:|---:|---:|
-| o200k_base (GPT-4o/o-series) | **543** | 607 (til −10.5%) | 990 (til −45.2%) |
-| cl100k_base (GPT-4) | **540** | 598 (til −9.7%) | 964 (til −44.0%) |
+| o200k_base (GPT-4o/o-series) | **543** | 556 (til −2.3%) | 909 (til −40.3%) |
+| cl100k_base (GPT-4) | **540** | 551 (til −2.0%) | 885 (til −39.0%) |
 
 Full per-task table + fairness methodology: [bench/report.md](bench/report.md).
-Honest caveat: Python is *extremely* token-efficient (tokenizers were trained on it).
-til beats it by winning the pipeline tasks (−12% to −36%) and refusing to lose the
-rest. The bigger wins are elsewhere:
+Honest caveat: Python is *extremely* token-efficient (tokenizers were trained on it),
+and after an adversarial auditor pass re-optimized every Python/JS baseline (each
+replacement byte-verified against reference output), til's edge over Python shrank
+from the old headline of roughly one token in ten to −2.3% — parity, within noise. til wins the pipeline-shaped tasks
+(−6% to −14%) and loses the control-flow-heavy ones (fizzbuzz +12%, fib +9%,
+brackets +7%, inventory +4%). Also disclosed: til's own solutions were tuned while
+the language was being designed, so this benchmark is in-sample for til. The token
+table was never the pitch — the load-bearing wins are these:
 
 | the actual cost centers for agents | til |
 |---|---|
@@ -90,7 +95,8 @@ Every design decision maps to a measured LLM failure mode — the table is in
 - **`push`/`pop` mutate.** Purity lost to a measurement: `stack = take (len stack - 1) stack`
   cost 9 tokens where Python's `stack.pop()` cost 3, and models *expect* mutation here.
 - **`mean/median/stdev/top` are builtins.** The stats benchmark showed batteries beat
-  syntax: til was +78% vs Python's `statistics` module before, −15% after.
+  syntax: til was +78% vs Python's `statistics` module before; −10% after — one of the
+  tasks til still wins against the adversarially-tightened baseline.
 
 ## The load-bearing experiment: `eval/`
 

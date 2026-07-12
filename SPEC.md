@@ -18,7 +18,7 @@ is the executable conformance suite.
 | 7 | Unactionable runtime errors | Errors are structured JSON: code, line, source, locals, hint, did-you-mean |
 | 8 | Tests drift from code | `eg` assertions live next to the function; `ensure` contracts run always |
 | 9 | Context cost of reading code | `til describe` emits a compact interface card; egs double as docs |
-| 10 | Token cost of writing code | measured −10.5% vs Python, −45% vs JS on identical, output-verified tasks (`bench/`) |
+| 10 | Token cost of writing code | measured ≈parity with Python (−2.3%) and −40% vs JS on identical, output-verified tasks vs adversarially-optimized baselines (`bench/`) |
 
 Non-goals (v0.1): regex, async/concurrency, user modules, classes, exceptions-as-control-flow,
 arbitrary-precision numbers, network IO.

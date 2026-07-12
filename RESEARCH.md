@@ -31,7 +31,7 @@ Each row: a finding from the literature, its strength, and what til does about i
 
 | finding | strength | til's response |
 |---|---|---|
-| Identical tasks differ ~2× in tokens across real languages; terse-but-alien J "wins" tokens while losing accuracy ([rankings](https://ubos.tech/news/token%E2%80%91efficient-programming-languages-rankings-and-insights/)) | weak-moderate | til targets the sweet spot: −10.5% vs Python, −45% vs JS (bench/, output-verified) using only ASCII words and `|` — no APL route |
+| Identical tasks differ ~2× in tokens across real languages; terse-but-alien J "wins" tokens while losing accuracy ([rankings](https://ubos.tech/news/token%E2%80%91efficient-programming-languages-rankings-and-insights/)) | weak-moderate | til targets the sweet spot: token parity with Python (−2.3%) and −40% vs JS against adversarially-optimized baselines (bench/, output-verified) using only ASCII words and `|` — no APL route |
 | BPE–grammar misalignment destabilizes generation; rare sigils fragment ([TokDrift 2510.14972](https://arxiv.org/abs/2510.14972)) | moderate-strong | Keywords are common English words (single tokens in o200k/cl100k); the only operator beyond C-family is `|`, a single token everywhere |
 | Modern tokenizers made indentation cheap; you can't retrain the tokenizer, so optimize for existing ones ([2107.03374](https://arxiv.org/abs/2107.03374), [2402.01035](https://arxiv.org/abs/2402.01035)) | strong | til's token claims are measured against o200k + cl100k as shipped, not a bespoke tokenizer |
 
@@ -88,7 +88,8 @@ The "language for LLMs" space, as of 2026-07 (all claims sourced; GitHub stats v
    because this must be measured, not asserted.
 2. *Token efficiency is the wrong metric* — regeneration erases savings; format restriction can
    degrade reasoning ([2408.02442](https://arxiv.org/abs/2408.02442)). **Response:** agreed on
-   ordering — til's README already ranks round-trips-killed above the −10.5%; and Token Sugar
+   ordering — til's README already ranks round-trips-killed above the token delta
+   (≈parity with Python post-audit); and Token Sugar
    shows economy and quality aren't opposed ([2512.08266](https://arxiv.org/abs/2512.08266)).
 3. *Tooling on Python/TS fixes everything cheaper* — constrained decoding guarantees any grammar
    ([2405.21047](https://arxiv.org/abs/2405.21047)). **Response:** constrainers distort output
@@ -114,6 +115,7 @@ The literature has three holes exactly where til lives; each has a harness here:
 3. **Error-format ablation for repair** (structured vs free-text vs did-you-mean):
    `eval/` implements the one-repair-round loop; formats are a flag away.
 
-Until eval numbers exist, til's honest status is: **token economy proven** (bench/),
+Until eval numbers exist, til's honest status is: **measured token parity with Python,
+−40% vs JS, output-verified against adversarially-optimized baselines** (bench/),
 **failure-mode surface argued from strong external evidence** (§1), **end-to-end
 superiority unproven** (eval/ pending an API key).

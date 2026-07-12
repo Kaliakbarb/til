@@ -1,6 +1,6 @@
 {
   "name": "til-lang",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TIL (тіл) — a scripting language engineered for AI agents: whole spec fits in a prompt, half the tokens of Python, errors designed for self-repair.",
   "type": "module",
   "bin": {

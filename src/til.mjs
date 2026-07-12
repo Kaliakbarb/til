@@ -7,7 +7,7 @@
 //   3. No imports, no arity surprises, no significant whitespace, no silent coercion.
 //   4. Errors are structured data designed to be fed back to a model for one-shot repair.
 
-export const VERSION = '0.1.0'
+export const VERSION = '0.2.0'
 
 // ---------------------------------------------------------------------------
 // Errors
@@ -657,6 +657,7 @@ function collectAssigned(node, out) {
 export function check(ast, opts = {}) {
   const errors = [], warnings = []
   const builtinNames = new Set(Object.keys(BUILTIN_SPECS))
+  for (const n of opts.extraNames || []) builtinNames.add(n)
 
   function fnNames(stmts) {
     const s = new Set()
@@ -1229,6 +1230,19 @@ export function createRuntime(opts = {}) {
     egs: [],
   }
   rt.builtins = makeBuiltins(rt)
+  // hosts may extend the builtin set (e.g. the web game host adds rect/circle/…).
+  // host fns get raw til values; thrown errors surface as catchable E_HOST.
+  if (opts.builtins) {
+    for (const [name, b] of Object.entries(opts.builtins)) {
+      rt.builtins[name] = {
+        kind: 'builtin', name, arity: b.arity,
+        fn: (rt2, args, node) => {
+          try { const v = b.fn(...args); return v === undefined ? null : v }
+          catch (e) { if (e instanceof TilError) throw e; terr('E_HOST', `\`${name}\`: ${e?.message || e}`, node) }
+        },
+      }
+    }
+  }
   rt.globals = new Env(null)
 
   function lookup(name, env, node) {

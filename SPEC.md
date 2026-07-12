@@ -20,8 +20,10 @@ is the executable conformance suite.
 | 9 | Context cost of reading code | `til describe` emits a compact interface card; egs double as docs |
 | 10 | Token cost of writing code | measured ≈parity with Python (−2.3%) and −40% vs JS on identical, output-verified tasks vs adversarially-optimized baselines (`bench/`) |
 
-Non-goals (v0.1): regex, async/concurrency, user modules, classes, exceptions-as-control-flow,
-arbitrary-precision numbers, network IO.
+Non-goals (v0.2): async/concurrency, user modules, classes, exceptions-as-control-flow,
+arbitrary-precision numbers, network IO. (Regex graduated from the non-goals list in
+v0.2.1 — `rall`/`rmatch`/`rsub`, JS syntax, patterns written in raw `'…'` strings —
+after 21 benchmark/eval/game programs showed text-extraction as the one recurring wall.)
 
 ## 2. Lexical structure
 

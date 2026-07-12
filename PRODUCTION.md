@@ -60,11 +60,11 @@ someday-if-measured).
 ## 2. The plan (checked off as executed)
 
 **Tier 1 — language completeness (before anything is published)**
-- [x] regex builtins `rall re s` / `rmatch re s` / `rsub re new s` — JS syntax, `E_REGEX` catchable, `$1` group refs in rsub
-- [x] conformance tests for all three + error path (suite: 226 → 235)
-- [x] shebang `#!/usr/bin/env til` verified end-to-end (executable .til file runs)
-- [x] LLM.md updated (+1 builtins line), re-measured: 1,753 o200k tokens — within the 2k budget
-- [x] SPEC.md builtin conventions updated; version → 0.2.1
+- [x] regex builtins `rall re s` / `rmatch re s` / `rsub re new s` — JS syntax, `E_REGEX` catchable, `$1` group refs in rsub; patterns idiomatically in raw `'…'` strings (double-quoted `\d` would fight til escapes — discovered and pinned in tests)
+- [x] conformance tests for all three + error path (suite: 226 → **234**)
+- [x] shebang `#!/usr/bin/env til` verified end-to-end (executable .til file runs, regex inside interpolation and all)
+- [x] LLM.md updated (+1 builtins line), re-measured: **1,777 o200k tokens** — within the 2k budget
+- [x] SPEC.md non-goals updated (regex graduated, with the evidence note); version → 0.2.1
 
 **Tier 2 — repository hygiene (the GitHub story)**
 - [x] LICENSE file (MIT)
@@ -75,14 +75,15 @@ someday-if-measured).
 - [x] README: install section (git clone / npm / npx), CI badge
 
 **Tier 3 — publication**
-- [x] `gh` repo created and pushed: https://github.com/berdibekov-b/til (public, description, topics)
-- [x] git tag v0.2.1 pushed
-- [x] npm package verified publishable: `npm pack --dry-run` clean (12.6 kB tarball, whitelisted files only); name `til-lang` free on registry. Actual `npm publish` left to the account owner (needs npm login) — exact command in README
+- [x] `gh` repo created and pushed: **https://github.com/Kaliakbarb/til** (public, description, topics: programming-language · llm · ai-agents · interpreter · token-efficiency)
+- [x] git tag `v0.2.1` pushed
+- [x] npm package verified publishable: `npm pack --dry-run` clean — 14 whitelisted files, name `til-lang` free on the registry (E404). Actual `npm publish` needs the account owner's npm login; command: `npm publish` from repo root
 - [x] playground + game redeployed with the 0.2.1 interpreter (regex builtins live in the browser too)
+- [x] CI: first run failed on my own workflow bug (bash -e aborted the intentional-failure step; the language itself was green on all 3 OSes incl. Windows) — step rewritten as a proper assertion of the error-UX contract; green run required below
 
 **Tier 4 — agent-runtime distribution**
-- [x] Claude Code skill at `~/.claude/skills/til/` — injects the card, teaches the check→run→repair loop against the local CLI
-- [x] VS Code extension `tools/vscode-til/` (TextMate grammar, language config, README with install steps) — background-agent built, reviewed, installed locally
+- [x] Claude Code skill at `~/.claude/skills/til/` — registered live in the building session itself; injects the card via `til teach`, teaches the check→run→repair loop
+- [x] VS Code extension `tools/vscode-til/` — grammar validated with the real TextMate engine (vscode-textmate + oniguruma tokenization of tricky cases: interpolation resume, raw strings, nested braces, multiline strings); installed at `~/.vscode/extensions/vscode-til-0.2.1/`
 
 **Deferred, with reasons**
 - [ ] `eval/` numbers — blocked on an API key by design (README says: run it before believing anyone)

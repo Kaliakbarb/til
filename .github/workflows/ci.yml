@@ -16,7 +16,13 @@ jobs:
         with: { node-version: '${{ matrix.node }}' }
       - run: node bin/til test tests/lang.til
       - run: node bin/til test examples
-      - run: node bin/til check examples/broken.til --json; node -e "process.exit(0)"
+      - name: error UX contract — broken.til must fail with machine-readable E_NAME
+        shell: bash
+        run: |
+          if node bin/til check examples/broken.til --json > out.json; then
+            echo "expected check to fail"; exit 1
+          fi
+          node -e "const j = JSON.parse(require('fs').readFileSync('out.json', 'utf8')); if (j.errors[0].code !== 'E_NAME' || !j.errors[0].didYouMean) process.exit(1)"
   bench-and-game:
     strategy:
       matrix:

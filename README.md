@@ -42,6 +42,25 @@ table was never the pitch — the load-bearing wins are these:
 | tests drifting from code | `eg` assertions live next to the fn; `ensure` contracts always run |
 | context cost of re-reading code | `til describe` emits a compact interface card |
 
+## It's not just pipelines: Flappy Bird in til
+
+**Play it: [til-lang.vercel.app/flappy.html](https://til-lang.vercel.app/flappy.html)** — the
+real interpreter runs the game at 60fps in your tab, and the til source sits next to the
+canvas, live-editable (change gravity, hit apply). The same game, same constants, same
+mechanics ([games/flappy/SPEC.md](games/flappy/SPEC.md)) in three languages:
+
+| | til (web host) | Python (pygame) | JS (canvas) |
+|---|---:|---:|---:|
+| o200k tokens | **645** | 810 (til −20.4%) | 777 (til −17.0%) |
+| cl100k tokens | **645** | 808 (til −20.2%) | 758 (til −14.9%) |
+
+The gap is *wider* than on the script benchmark: interactive programs are where init/event-loop
+ceremony piles up. Fairness notes and per-implementation verification (til: a deterministic
+2,000-frame autopilot run in [games/flappy/verify.mjs](games/flappy/verify.mjs); pygame: headless
+scripted drive; js: stubbed-DOM frame pump) are in [games/flappy/tokens.md](games/flappy/tokens.md).
+The host adds 7 builtins (`rect circle text pressed key width height`) via the public
+`createRuntime({builtins})` extension point — the language core and its 1,728-token card are unchanged.
+
 ## Install / run
 
 ```bash
@@ -114,7 +133,7 @@ EVAL_API_KEY=… EVAL_MODELS=anthropic/claude-sonnet-5 node eval/run.mjs   # →
 All 8 tasks have verified reference solutions in til (`eval/reference/`). No key on
 this machine yet, so no numbers are claimed here — run it before believing anyone.
 
-## What til is not (v0.1)
+## What til is not (v0.2)
 
 No regex, no async, no user modules, no classes, no package manager, no network.
 It is a *task language*: the thing an agent writes in one shot, checks, runs, and throws away —
@@ -126,13 +145,17 @@ harness here does.
 ```
 src/til.mjs        the entire implementation: lexer → parser → checker → interpreter → CLI
                    (zero dependencies, runs in Node and the browser)
-bin/til            CLI: run · check · test · describe · teach · grammar · tokens
+bin/til            CLI: repl · run · check · test · describe · teach · grammar · tokens
 LLM.md             the prompt card (the language itself)
 SPEC.md            normative semantics + design rationale
+RESEARCH.md        the cited evidence base + prior-art landscape behind every design bet
 tests/lang.til     226-assertion conformance suite, written in til
 examples/          hello · wordfreq · contracts · report · broken (error-UX demo)
 bench/             10 tasks × 3 languages, output-verified token benchmark
-web/               browser playground
+                   (baselines adversarially optimized by an independent audit pass)
+eval/              write-from-card vs native-python model eval (bring your own API key)
+games/flappy/      the same Flappy Bird in til / pygame / canvas + verifiers + token table
+web/               browser playground + the playable game
 ```
 
 *тіл — "language" in Kazakh. Built 2026-07-12.*

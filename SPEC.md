@@ -1,4 +1,4 @@
-# til language specification — v0.1
+# til language specification — v0.2
 
 til (тіл, Kazakh for "language/tongue") is a scripting language engineered for AI agents.
 This document is the normative semantics. `LLM.md` is the same language compressed to a

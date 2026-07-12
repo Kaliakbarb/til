@@ -25,9 +25,9 @@ function flap() {
 }
 
 function update() {
+  frames++;
   if (frames % 90 === 0)
     pipes.push({ x: W, top: 60 + Math.random() * (GROUND - 60 - GAP - 60), passed: false });
-  frames++;
   vel += GRAVITY;
   birdY += vel;
   for (const p of pipes) {

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flappy — a game written in til</title>
+<meta name="description" content="Flappy Bird implemented in til, the language engineered for AI agents — running on the real interpreter in your tab, with the source right there.">
+<style>
+  :root {
+    --bg: #0b0c0e; --panel: #101216; --line: #1e2128;
+    --text: #e8eaed; --dim: #8b919c; --faint: #565c66;
+    --accent: #2dd4bf; --red: #f87171;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; display: flex; flex-direction: column; }
+  header { display: flex; align-items: baseline; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  header h1 { font-size: 18px; font-weight: 700; }
+  header h1 .kz { color: var(--accent); font-weight: 500; }
+  header .tag { color: var(--dim); font-size: 13px; }
+  header .spacer { flex: 1; }
+  header a { color: var(--dim); font-size: 13px; text-decoration: none; border-bottom: 1px dotted var(--faint); }
+  header a:hover { color: var(--accent); }
+  main { flex: 1; display: flex; gap: 0; min-height: 0; flex-wrap: wrap; }
+  .stage { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; gap: 12px; flex: 0 0 auto; margin: 0 auto; }
+  canvas { border: 1px solid var(--line); border-radius: 10px; background: #0e1420; touch-action: manipulation; }
+  .hint { color: var(--faint); font-size: 12.5px; font-family: var(--mono); }
+  .side { flex: 1 1 460px; min-width: 320px; border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .bar .title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; }
+  .bar .spacer { flex: 1; }
+  .badge { font-family: var(--mono); font-size: 11.5px; color: var(--dim); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; }
+  .badge b { color: var(--accent); font-weight: 600; }
+  button { font-family: var(--sans); font-size: 12.5px; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; }
+  button:hover { border-color: var(--faint); }
+  button.apply { background: var(--accent); color: #04231f; font-weight: 700; border-color: transparent; }
+  #src { flex: 1; min-height: 300px; width: 100%; background: transparent; color: var(--text); border: 0; outline: none; resize: none; padding: 14px 16px; font-family: var(--mono); font-size: 12.5px; line-height: 1.5; tab-size: 2; white-space: pre; overflow: auto; }
+  #err { display: none; color: var(--red); font-family: var(--mono); font-size: 12px; white-space: pre-wrap; padding: 10px 16px; border-top: 1px solid var(--line); max-height: 180px; overflow: auto; }
+  footer { padding: 10px 20px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12px; display: flex; gap: 16px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<header>
+  <h1>flappy <span class="kz">· til</span></h1>
+  <span class="tag">a game written in the language for AI agents — this page runs the real interpreter</span>
+  <span class="spacer"></span>
+  <a href="./">← playground</a>
+</header>
+<main>
+  <div class="stage">
+    <canvas id="game" width="400" height="600"></canvas>
+    <div class="hint">space / click / tap to flap · the whole game is the til file on the right</div>
+  </div>
+  <section class="side">
+    <div class="bar">
+      <span class="title">flappy.til — live source</span>
+      <span class="spacer"></span>
+      <span class="badge" id="tok">…</span>
+      <button id="restart">restart</button>
+      <button class="apply" id="apply">apply changes ⌘⏎</button>
+    </div>
+    <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+    <div id="err"></div>
+  </section>
+</main>
+<footer>
+  <span>edit the source and hit apply — physics, pipes, scoring are all til</span>
+  <span>host adds 7 builtins: rect · circle · text · pressed · key · width · height</span>
+</footer>
+
+<script type="module">
+import { parse, check, run, formatError, TilError, display } from './til.mjs'
+
+const canvas = document.getElementById('game')
+const ctx = canvas.getContext('2d')
+const srcEl = document.getElementById('src')
+const errEl = document.getElementById('err')
+
+const downKeys = new Set()
+let pressedKeys = new Set()
+const press = k => pressedKeys.add(k)
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) { press('space'); downKeys.add('space') } }
+})
+addEventListener('keyup', e => { if (e.code === 'Space') downKeys.delete('space') })
+canvas.addEventListener('mousedown', () => press('space'))
+canvas.addEventListener('touchstart', e => { e.preventDefault(); press('space') }, { passive: false })
+
+const GAME_BUILTINS = {
+  rect: { arity: 5, fn: (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x, y, w, h) } },
+  circle: { arity: 4, fn: (x, y, r, c) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill() } },
+  text: { arity: 4, fn: (x, y, size, s) => { ctx.fillStyle = '#e8eaed'; ctx.font = `bold ${size}px ui-monospace, monospace`; ctx.fillText(display(s), x, y) } },
+  pressed: { arity: 1, fn: k => pressedKeys.has(k) },
+  key: { arity: 1, fn: k => downKeys.has(k) },
+  width: { arity: 0, fn: () => canvas.width },
+  height: { arity: 0, fn: () => canvas.height },
+}
+const EXTRA = Object.keys(GAME_BUILTINS)
+
+let rt = null, tickExpr = null, rafId = null
+
+function showError(e, src) {
+  errEl.style.display = 'block'
+  errEl.textContent = formatError(e, src, { file: 'flappy.til' })
+}
+function clearError() { errEl.style.display = 'none'; errEl.textContent = '' }
+
+function boot(src) {
+  cancelAnimationFrame(rafId)
+  clearError()
+  let ast
+  try { ast = parse(src, { file: 'flappy.til' }) } catch (e) { showError(e, src); return }
+  const { errors } = check(ast, { extraNames: EXTRA })
+  if (errors.length) { showError({ ...errors[0], message: errors[0].msg }, src); return }
+  try {
+    const res = run(src, { ast, builtins: GAME_BUILTINS })
+    rt = res.rt
+  } catch (e) { if (e instanceof TilError) { showError(e, src); return } throw e }
+  if (rt.globals.get('tick')?.kind !== 'fn') {
+    showError(new TilError('E_HOST', 'the game must define `fn tick { … }` — the host calls it every frame'), src)
+    return
+  }
+  tickExpr = parse('tick()').stmts[0].expr
+  const frame = () => {
+    try { rt.evalNode(tickExpr, rt.globals) }
+    catch (e) { if (e instanceof TilError) { showError(e, srcEl.value); return } throw e }
+    pressedKeys = new Set()
+    rafId = requestAnimationFrame(frame)
+  }
+  rafId = requestAnimationFrame(frame)
+}
+
+const res = await fetch('flappy.til')
+const original = await res.text()
+srcEl.value = original
+boot(original)
+
+// token badge: rough live count is chars/3.1 (calibrated to o200k on this file);
+// the measured number is baked in below after `npm run bench`-style measurement
+const MEASURED = { o200k: null } // filled at deploy time by tokens.mjs
+fetch('flappy.tokens.json').then(r => r.ok ? r.json() : null).then(j => {
+  const el = document.getElementById('tok')
+  if (j) el.innerHTML = `til <b>${j.til.o200k}</b> · pygame ${j.py.o200k} · js ${j.js.o200k} tokens`
+  else el.textContent = `${srcEl.value.length} chars`
+}).catch(() => {})
+
+document.getElementById('apply').onclick = () => boot(srcEl.value)
+document.getElementById('restart').onclick = () => boot(srcEl.value)
+addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); boot(srcEl.value) }
+})
+srcEl.addEventListener('keydown', e => {
+  if (e.key === 'Tab') { e.preventDefault(); const { selectionStart: s, selectionEnd: en } = srcEl; srcEl.setRangeText('  ', s, en, 'end') }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); boot(srcEl.value) }
+  e.stopPropagation() // typing space in the editor must not flap the bird
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+# flappy bird — til on the web canvas host
+# host builtins: rect x y w h color · circle x y r color · text x y size s
+#                pressed key · width() · height()
+W, H = width(), height()
+GROUND = H - 60
+bird = {y: H / 2, vel: 0}
+pipes = []
+score = 0
+best = 0
+state = "ready"
+frames = 0
+
+fn reset {
+  bird = {y: H / 2, vel: 0}
+  pipes = []
+  score = 0
+  frames = 0
+  state = "ready"
+}
+
+fn flap {
+  bird.vel = -7.2
+}
+
+fn spawn {
+  push {x: W, top: 60 + rand() * (GROUND - 210), passed: false} pipes
+}
+
+fn hitPipe p {
+  90 + 14 > p.x and 90 - 14 < p.x + 70 and (bird.y - 14 < p.top or bird.y + 14 > p.top + 150)
+}
+
+fn dead {
+  bird.y + 14 > GROUND or bird.y < 14 or any hitPipe pipes
+}
+
+fn drawWorld {
+  rect 0 0 W H "#0e1420"
+  for p in pipes {
+    rect p.x 0 70 p.top "#2dd4bf"
+    rect p.x (p.top + 150) 70 (GROUND - p.top - 150) "#2dd4bf"
+  }
+  rect 0 GROUND W 60 "#1a2233"
+  circle 90 bird.y 14 "#fbbf24"
+  text 20 40 28 score
+}
+
+fn step {
+  frames = frames + 1
+  bird.vel = bird.vel + 0.45
+  bird.y = bird.y + bird.vel
+  if pressed "space" { flap() }
+  if frames % 90 == 0 { spawn() }
+  kept = []
+  for p in pipes {
+    p.x = p.x - 2.6
+    if not p.passed and p.x + 70 < 90 {
+      p.passed = true
+      score = score + 1
+    }
+    if p.x > -80 { push p kept }
+  }
+  pipes = kept
+  if dead() {
+    state = "over"
+    best = max [best, score]
+  }
+}
+
+fn tick {
+  if state == "play" { step() }
+  drawWorld()
+  if state == "ready" {
+    text 128 260 26 "press space"
+    if pressed "space" {
+      state = "play"
+      flap()
+    }
+  }
+  if state == "over" {
+    text 120 240 30 "game over"
+    text 115 282 20 "score {score}  best {best}"
+    text 105 318 20 "space to restart"
+    if pressed "space" { reset() }
+  }
+}

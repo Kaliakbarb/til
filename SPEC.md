@@ -84,7 +84,12 @@ opens the following block — wrap lambda arguments in parens there (Go has the 
 ## 4. Semantics
 
 **Types.** `num str bool null list map fn`. `type x` returns the name. Maps are insertion-ordered
-with string keys; non-string keys coerce via display form (`m[1]` ≡ `m["1"]`).
+with string keys; non-string keys coerce via display form (`m[1]` ≡ `m["1"]`). This map-key
+stringification is til's *one* deliberate coercion (JSON alignment); it flows into `group`,
+`counts`, and `top` — so `counts [1, "1"]` merges buckets while `uniq [1, "1"]` (which
+type-tags) keeps both. Strings are sequences of Unicode **code points**: `len`, indexing,
+`take/skip/get/pos/chars/rev` all agree ("😀🙂" has len 2 and never splits into surrogates).
+Numbers ≥ 1e21 display in JS exponential form (documented papercut).
 
 **Truthiness** (Python-aligned): `false`, `null`, `0`, `NaN`, `""`, `[]`, `{}` are falsy; all else truthy.
 
@@ -108,20 +113,30 @@ reference values; `push` visibly mutates aliases.
 
 **Control flow.** `if`/`match` are expressions; a block's value is its last expression
 (`null` if the last statement isn't an expression, or the block is empty). `match` with no
-matching case raises `E_MATCH` (add `_ ->`). `for` iterates lists, string chars, and maps
-(as `{k, v}` items, a *copy* of the entry list). `while` has a 10-million-iteration runaway guard.
-`return` exits the enclosing fn; recursion depth is capped at 2000 (`E_STACK`).
+matching case raises `E_MATCH` (add `_ ->`). A `match` binding pattern binds into the
+*enclosing scope*, Python-3.10-style — the name persists after the match. A `{ … }`
+case body is a block, except when it reads as a map literal or a `{params -> …}` lambda;
+an implicit-`it` lambda there needs parens (`({it * 2})`) and the `it` error says so.
+`for` iterates lists (live), string code points, and maps (as `{k, v}` items, a *copy* of
+the entry list). `for` and `while` both carry a 10-million-iteration runaway guard (`E_LOOP`).
+`return` exits the enclosing fn. Recursion is bounded by the host stack (several hundred
+til frames, backstopped at 2000): exceeding it always raises a clean, catchable `E_STACK` —
+never a raw host exception.
 
 **Contracts & tests.** `ensure cond` raises `E_ENSURE` with a snapshot of current locals when
-falsy — it runs in normal execution, not just tests. `eg expr` registers an assertion; `til test`
-runs them *after* the whole file executes (so they observe final state); `eg a == b` failures
-report both sides. `til run` skips egs.
+falsy — it runs in normal execution, not just tests. `eg expr` registers an assertion, run
+*after* the whole file executes (so it observes final state); `eg a == b` failures report both
+sides. **`til run` executes egs too** (CodeT-style: shipped tests run every time; failures go
+to stderr and fail the exit code; `--no-eg` opts out). `til test` runs only the assertions.
 
 **Errors.** All runtime errors are values of one shape and are interceptable by `expr catch fallback`
 (the fallback is lazy). Uncaught errors carry: `code` (E_NAME, E_TYPE, E_APPLY, E_ARITY, E_INDEX,
 E_DIV, E_MATCH, E_ENSURE, E_EMPTY, E_IO, E_JSON, E_NUM, E_MATH, E_STACK, E_LOOP, E_USER, E_SYNTAX),
-message, file:line:col, the source line, `didYouMean` for unknown names, a `hint`, up to 8 locals
-of the innermost frame, and the call stack. `--json` emits the same as machine-readable JSON.
+message, file:line:col, the source line, `didYouMean` for unknown names, a `hint`, a `rule`
+back-reference quoting the LLM.md rule that was violated, up to 8 locals of the innermost frame,
+and the call stack. `--json` emits the same as machine-readable JSON — **on every path**: host
+stack exhaustion is converted to `E_STACK`, cyclic-structure serialization to `E_JSON`, and
+display/equality handle cycles (`<cycle>`), so no input can produce a raw host stack trace.
 
 **Static checks** (`til check`, and automatically before `til run`): syntax; unknown names with
 did-you-mean over builtins + everything in scope (assignment anywhere in a function counts for the
@@ -141,10 +156,12 @@ require homogeneous num or str keys and are stable.
 
 ```
 til teach                 # ← paste this (~1.5k tokens) into the system prompt once
+til grammar               # GBNF for constrained decoding (permissive superset)
 write code
 til check f.til --json    # hallucinated names die here, with didYouMean
-til run f.til             # structured runtime errors w/ locals → self-repair
-til test f.til            # eg assertions
+       --strict           # additionally: every fn must ship an eg
+       --no-io            # additionally: reject read/write/env/stdin (sandboxed runs)
+til run f.til             # runs the program AND its egs; structured errors → self-repair
 til describe f.til        # compact interface card for the next agent's context
 ```
 

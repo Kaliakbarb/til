@@ -548,11 +548,14 @@ class Parser {
       this.skipNl()
       let body
       if (this.at('punct', '{')) {
-        // block body, unless it lexes as a map literal
+        // block body, unless it lexes as a map literal or a lambda (`{x -> …}`, `{ -> …}`)
         const p1 = this.peek(1), p2 = this.peek(2)
         const isMap = (p1.t === 'punct' && p1.v === '}') ||
           ((p1.t === 'id' || p1.t === 'str' || p1.t === 'raw') && p2.t === 'punct' && p2.v === ':')
-        body = isMap ? this.expr() : this.block()
+        let j = 1
+        while (this.peek(j).t === 'id') j++
+        const isLambda = this.peek(j).t === 'punct' && this.peek(j).v === '->'
+        body = (isMap || isLambda) ? this.expr() : this.block()
       } else body = this.expr()
       cases.push({ pat, guard, body })
       this.sep('match case')
@@ -599,7 +602,12 @@ function tokDesc(p) {
 
 export function parse(src, ctx = {}) {
   const toks = lex(src)
-  return new Parser(toks, { ...ctx, src }).program()
+  try {
+    return new Parser(toks, { ...ctx, src }).program()
+  } catch (e) {
+    if (e instanceof RangeError) throw new TilError('E_SYNTAX', 'source too deeply nested to parse', { hint: 'flatten the expression — til style is one pipeline step per line' })
+    throw e
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -637,6 +645,7 @@ function collectAssigned(node, out) {
   if (node.k === 'Assign' && node.target.k === 'Name') out.add(node.target.name)
   if (node.k === 'MultiAssign') for (const t of node.targets) if (t.k === 'Name') out.add(t.name)
   if (node.k === 'For') out.add(node.name)
+  if (node.k === 'Match') for (const c of node.cases) if (c.pat.k === 'bind') out.add(c.pat.name)
   for (const key of Object.keys(node)) {
     if (key === 'k') continue
     const v = node[key]
@@ -723,7 +732,9 @@ export function check(ast, opts = {}) {
           errors.push({
             code: 'E_NAME', msg: `unknown name \`${e.name}\``, line: e.line, col: e.col,
             didYouMean: dym.length ? dym : undefined,
-            hint: 'all builtins are always in scope — til has no imports'
+            hint: e.name === 'it'
+              ? '`it` exists only inside a lambda; after `->` or in control flow, `{ … }` is a block — pass a lambda in parens: ({it * 2})'
+              : 'all builtins are always in scope — til has no imports'
           })
         }
         return
@@ -767,7 +778,41 @@ export function check(ast, opts = {}) {
   }
   function scopeShadows(scope, n) { for (let s = scope; s; s = s.parent) if (s.names.has(n)) return true; return false }
 
-  walkBody(ast.stmts, null, false, false)
+  try {
+    walkBody(ast.stmts, null, false, false)
+  } catch (e) {
+    if (e instanceof RangeError) errors.push({ code: 'E_SYNTAX', msg: 'source too deeply nested to analyze', line: 1, col: 1 })
+    else throw e
+  }
+
+  if (opts.strict) {
+    // --strict: every top-level fn must be followed by at least one eg
+    let current = null
+    const egFor = new Set()
+    for (const st of ast.stmts) {
+      if (st.k === 'Fn') current = st
+      else if (st.k === 'Eg' && current) egFor.add(current.name)
+      else if (st.k !== 'Eg') current = null
+    }
+    for (const st of ast.stmts) if (st.k === 'Fn' && !egFor.has(st.name))
+      errors.push({ code: 'E_NO_EG', msg: `fn \`${st.name}\` has no eg — --strict requires at least one example test per function`, line: st.line, col: st.col, hint: `add: eg ${st.name} <args> == <expected>` })
+  }
+  if (opts.noIo) {
+    const IO = new Set(['read', 'write', 'append', 'env', 'stdin'])
+    const found = []
+    ;(function scan(node) {
+      if (!node || typeof node !== 'object') return
+      if (node.k === 'Name' && IO.has(node.name)) found.push(node)
+      for (const key of Object.keys(node)) {
+        if (key === 'k') continue
+        const v = node[key]
+        if (Array.isArray(v)) v.forEach(scan)
+        else if (v && typeof v === 'object') scan(v)
+      }
+    })(ast)
+    for (const n of found) errors.push({ code: 'E_IO_FORBIDDEN', msg: `\`${n.name}\` is not allowed under --no-io`, line: n.line, col: n.col, hint: 'this check rejects file/env/stdin access for sandboxed agent runs' })
+  }
+
   return { errors, warnings }
 }
 
@@ -810,31 +855,44 @@ export function truthy(v) {
   return true
 }
 
-export function deepEq(a, b) {
+export function deepEq(a, b, seen = new Map()) {
   if (a === b) return true
   const ta = typeOf(a), tb = typeOf(b)
   if (ta !== tb) return false
   if (ta === 'num') return a === b
-  if (ta === 'list') return a.length === b.length && a.every((x, i) => deepEq(x, b[i]))
+  if (ta === 'list' || ta === 'map') {
+    if (seen.get(a) === b) return true // cycle: this pair is already being compared
+    seen.set(a, b)
+  }
+  if (ta === 'list') return a.length === b.length && a.every((x, i) => deepEq(x, b[i], seen))
   if (ta === 'map') {
     if (a.size !== b.size) return false
-    for (const [k, v] of a) { if (!b.has(k) || !deepEq(v, b.get(k))) return false }
+    for (const [k, v] of a) { if (!b.has(k) || !deepEq(v, b.get(k), seen)) return false }
     return true
   }
   return false
 }
 
 const IDENT_RE = /^[A-Za-z_][A-Za-z0-9_]*$/
-export function display(v, nested = false) {
+export function display(v, nested = false, seen = new Set()) {
   const t = typeOf(v)
   if (t === 'null') return 'null'
   if (t === 'num') return Object.is(v, -0) ? '0' : String(v)
   if (t === 'bool') return String(v)
   if (t === 'str') return nested ? JSON.stringify(v) : v
-  if (t === 'list') return '[' + v.map(x => display(x, true)).join(', ') + ']'
+  if (t === 'list') {
+    if (seen.has(v)) return '<cycle>'
+    seen.add(v)
+    const s = '[' + v.map(x => display(x, true, seen)).join(', ') + ']'
+    seen.delete(v)
+    return s
+  }
   if (t === 'map') {
+    if (seen.has(v)) return '<cycle>'
+    seen.add(v)
     const parts = []
-    for (const [k, val] of v) parts.push(`${IDENT_RE.test(k) ? k : JSON.stringify(k)}: ${display(val, true)}`)
+    for (const [k, val] of v) parts.push(`${IDENT_RE.test(k) ? k : JSON.stringify(k)}: ${display(val, true, seen)}`)
+    seen.delete(v)
     return '{' + parts.join(', ') + '}'
   }
   if (t === 'fn') {
@@ -844,6 +902,9 @@ export function display(v, nested = false) {
   }
   return String(v)
 }
+
+// code-point helpers: all til string ops count code points, never UTF-16 units
+const CP = s => [...s]
 
 function arityOf(f) { return f.kind === 'builtin' ? f.arity : f.params.length }
 
@@ -986,7 +1047,7 @@ function makeBuiltins(rt) {
   def('str', (rt2, [x]) => display(x))
 
   // lists
-  def('len', (rt2, [x], node) => { const t = T(x); if (t === 'str') return x.length; if (t === 'list') return x.length; if (t === 'map') return x.size; terr('E_TYPE', `\`len\` needs str/list/map, got ${t}`, node) })
+  def('len', (rt2, [x], node) => { const t = T(x); if (t === 'str') return CP(x).length; if (t === 'list') return x.length; if (t === 'map') return x.size; terr('E_TYPE', `\`len\` needs str/list/map, got ${t}`, node) })
   def('range', (rt2, [a, b], node) => { want(a, ['num'], 'range', 'a', node); want(b, ['num'], 'range', 'b', node); const out = []; for (let i = Math.ceil(a); i < b; i++) out.push(i); return out })
   def('map', (rt2, [f, xs], node) => { wantFn(f, 'map', node); want(xs, ['list'], 'map', 'xs', node); return xs.map(x => call1(f, x, node)) })
   def('keep', (rt2, [f, xs], node) => { wantFn(f, 'keep', node); want(xs, ['list'], 'keep', 'xs', node); return xs.filter(x => truthy(call1(f, x, node))) })
@@ -1052,8 +1113,8 @@ function makeBuiltins(rt) {
   def('flat', (rt2, [xs], node) => { want(xs, ['list'], 'flat', 'xs', node); return xs.flatMap(x => Array.isArray(x) ? x : [x]) })
   def('first', (rt2, [xs], node) => { want(xs, ['list', 'str'], 'first', 'xs', node); return xs.length ? xs[0] : null })
   def('last', (rt2, [xs], node) => { want(xs, ['list', 'str'], 'last', 'xs', node); return xs.length ? xs[xs.length - 1] : null })
-  def('take', (rt2, [n, x], node) => { want(n, ['num'], 'take', 'n', node); want(x, ['list', 'str'], 'take', 'x', node); return x.slice(0, Math.max(0, n)) })
-  def('skip', (rt2, [n, x], node) => { want(n, ['num'], 'skip', 'n', node); want(x, ['list', 'str'], 'skip', 'x', node); return x.slice(Math.max(0, n)) })
+  def('take', (rt2, [n, x], node) => { want(n, ['num'], 'take', 'n', node); want(x, ['list', 'str'], 'take', 'x', node); return T(x) === 'str' ? CP(x).slice(0, Math.max(0, n)).join('') : x.slice(0, Math.max(0, n)) })
+  def('skip', (rt2, [n, x], node) => { want(n, ['num'], 'skip', 'n', node); want(x, ['list', 'str'], 'skip', 'x', node); return T(x) === 'str' ? CP(x).slice(Math.max(0, n)).join('') : x.slice(Math.max(0, n)) })
   def('push', (rt2, [x, xs], node) => { want(xs, ['list'], 'push', 'xs', node); xs.push(x); return xs })
   def('pop', (rt2, [xs], node) => { want(xs, ['list'], 'pop', 'xs', node); return xs.length ? xs.pop() : null })
   def('has', (rt2, [x, coll], node) => hasImpl(x, coll, node))
@@ -1069,7 +1130,7 @@ function makeBuiltins(rt) {
   def('pos', (rt2, [x, xs], node) => {
     const t = T(xs)
     if (t === 'list') { for (let i = 0; i < xs.length; i++) if (deepEq(xs[i], x)) return i; return null }
-    if (t === 'str') { want(x, ['str'], 'pos', 'needle', node); const i = xs.indexOf(x); return i < 0 ? null : i }
+    if (t === 'str') { want(x, ['str'], 'pos', 'needle', node); const i = xs.indexOf(x); return i < 0 ? null : CP(xs.slice(0, i)).length }
     terr('E_TYPE', `\`pos\` needs list or str, got ${t}`, node)
   })
   def('any', (rt2, [f, xs], node) => { wantFn(f, 'any', node); want(xs, ['list'], 'any', 'xs', node); return xs.some(x => truthy(call1(f, x, node))) })
@@ -1083,9 +1144,10 @@ function makeBuiltins(rt) {
     if (t === 'map') { const v = x.get(keyStr(k)); return v === undefined ? null : v }
     if (t === 'list' || t === 'str') {
       want(k, ['num'], 'get', 'index', node)
-      const i = k < 0 ? x.length + k : k
-      if (i < 0 || i >= x.length || !Number.isInteger(k)) return null
-      return x[i]
+      const arr = t === 'str' ? CP(x) : x
+      const i = k < 0 ? arr.length + k : k
+      if (i < 0 || i >= arr.length || !Number.isInteger(k)) return null
+      return arr[i]
     }
     terr('E_TYPE', `\`get\` needs map, list, or str, got ${t}`, node)
   })
@@ -1112,10 +1174,18 @@ function makeBuiltins(rt) {
   def('tojson', (rt2, [x], node) => toJsonStr(x, 0, node))
   def('pretty', (rt2, [x], node) => toJsonStr(x, 2, node))
   function toJsonStr(x, indent, node) {
+    const seen = new Set()
     const conv = v => {
       const t = T(v)
-      if (t === 'map') { const o = {}; for (const [k, val] of v) o[k] = conv(val); return o }
-      if (t === 'list') return v.map(conv)
+      if (t === 'map' || t === 'list') {
+        if (seen.has(v)) terr('E_JSON', 'cannot serialize a cyclic structure to JSON', node, { hint: 'the value contains itself' })
+        seen.add(v)
+        const out = t === 'map'
+          ? (() => { const o = {}; for (const [k, val] of v) o[k] = conv(val); return o })()
+          : v.map(conv)
+        seen.delete(v)
+        return out
+      }
       if (t === 'fn') terr('E_JSON', 'cannot serialize a function to JSON', node)
       if (t === 'num' && !Number.isFinite(v)) terr('E_JSON', `cannot serialize ${v} to JSON`, node)
       return v
@@ -1170,7 +1240,9 @@ export function createRuntime(opts = {}) {
     const dym = suggest(name, cands)
     terr('E_NAME', `unknown name \`${name}\``, node, {
       didYouMean: dym.length ? dym : undefined,
-      hint: 'all builtins are always in scope — til has no imports',
+      hint: name === 'it'
+        ? '`it` exists only inside a lambda; after `->` or in control flow, `{ … }` is a block — pass a lambda in parens: ({it * 2})'
+        : 'all builtins are always in scope — til has no imports',
     })
   }
 
@@ -1200,6 +1272,12 @@ export function createRuntime(opts = {}) {
       return execBlock(t.body, env)
     } catch (e) {
       if (e instanceof ReturnSig) return e.v
+      // the JS stack blows before rt.stack reaches MAX_DEPTH — convert to a
+      // clean, catchable til error instead of leaking a raw RangeError
+      if (e instanceof RangeError) e = new TilError('E_STACK', 'recursion too deep', {
+        line: node?.line, col: node?.col,
+        hint: 'til recursion is bounded (several hundred frames); use a loop or pipeline for deep data',
+      })
       if (e instanceof TilError && !e.locals) e.locals = snapshotLocals(env)
       throw e
     } finally { rt.stack.pop() }
@@ -1257,7 +1335,9 @@ export function createRuntime(opts = {}) {
       case 'For': {
         const it = evalNode(st.iter, env)
         const seq = iterable(it, st)
+        let guard = 0
         for (const x of seq) {
+          if (++guard > 10_000_000) terr('E_LOOP', 'for loop exceeded 10,000,000 iterations', st, { hint: 'probable runaway — pushing into the list being iterated?' })
           env.set(st.name, x)
           try { execBlock(st.body, env) }
           catch (e) { if (e instanceof BreakSig) break; if (e instanceof ContinueSig) continue; throw e }
@@ -1351,12 +1431,12 @@ export function createRuntime(opts = {}) {
       case 'Match': {
         const v = evalNode(n.subject, env)
         for (const c of n.cases) {
-          let cenv = env, ok = false
+          let ok = false
           if (c.pat.k === 'any') ok = true
           else if (c.pat.k === 'lit') ok = deepEq(v, c.pat.v)
-          else if (c.pat.k === 'bind') { cenv = new Env(env); cenv.define(c.pat.name, v); ok = true }
-          if (ok && c.guard) ok = truthy(evalNode(c.guard, cenv))
-          if (ok) return c.body.k === 'Block' ? execBlock(c.body, cenv) : evalNode(c.body, cenv)
+          else if (c.pat.k === 'bind') { env.set(c.pat.name, v); ok = true } // Python-style: binds into the enclosing scope
+          if (ok && c.guard) ok = truthy(evalNode(c.guard, env))
+          if (ok) return c.body.k === 'Block' ? execBlock(c.body, env) : evalNode(c.body, env)
         }
         terr('E_MATCH', `no match case for ${display(v, true)}`, n, { hint: 'add a `_ ->` catch-all case' })
       }
@@ -1374,7 +1454,10 @@ export function createRuntime(opts = {}) {
       case 'Bin': return binOp(n, env)
       case 'Catch': {
         try { return evalNode(n.l, env) }
-        catch (e) { if (e instanceof TilError) return evalNode(n.r, env); throw e }
+        catch (e) {
+          if (e instanceof TilError || e instanceof RangeError) return evalNode(n.r, env)
+          throw e
+        }
       }
       case 'Index': {
         const obj = evalNode(n.obj, env)
@@ -1382,9 +1465,10 @@ export function createRuntime(opts = {}) {
         const t = typeOf(obj)
         if (t === 'list' || t === 'str') {
           if (typeOf(idx) !== 'num' || !Number.isInteger(idx)) terr('E_TYPE', `${t} index must be an integer, got ${display(idx, true)}`, n)
-          const i = idx < 0 ? obj.length + idx : idx
-          if (i < 0 || i >= obj.length) terr('E_INDEX', `index ${idx} out of range (len ${obj.length})`, n, { hint: 'use `get i xs` for a null-safe lookup' })
-          return obj[i]
+          const arr = t === 'str' ? CP(obj) : obj
+          const i = idx < 0 ? arr.length + idx : idx
+          if (i < 0 || i >= arr.length) terr('E_INDEX', `index ${idx} out of range (len ${arr.length})`, n, { hint: 'use `get i xs` for a null-safe lookup' })
+          return arr[i]
         }
         if (t === 'map') { const v = obj.get(typeOf(idx) === 'str' ? idx : display(idx, true)); return v === undefined ? null : v }
         terr('E_TYPE', `cannot index ${t}`, n)
@@ -1459,11 +1543,16 @@ export function run(src, opts = {}) {
   const rt = createRuntime(opts)
   rt.src = src
   let value = null
-  // hoist top-level fns for mutual recursion
-  for (const st of ast.stmts) if (st.k === 'Fn') rt.execStmt(st, rt.globals)
-  for (const st of ast.stmts) {
-    if (st.k === 'Fn') continue
-    value = rt.execStmt(st, rt.globals)
+  try {
+    // hoist top-level fns for mutual recursion
+    for (const st of ast.stmts) if (st.k === 'Fn') rt.execStmt(st, rt.globals)
+    for (const st of ast.stmts) {
+      if (st.k === 'Fn') continue
+      value = rt.execStmt(st, rt.globals)
+    }
+  } catch (e) {
+    if (e instanceof RangeError) throw new TilError('E_STACK', 'recursion or expression nesting too deep', { hint: 'use a loop or pipeline instead of deep recursion/nesting' })
+    throw e
   }
   return { rt, value, ast }
 }
@@ -1483,9 +1572,12 @@ export function runEgs(rt) {
         r.pass = truthy(rt.evalNode(node.expr, env))
       }
     } catch (e) {
-      if (!(e instanceof TilError)) throw e
+      const te = e instanceof RangeError
+        ? new TilError('E_STACK', 'recursion or structure too deep while evaluating eg', { line: node.line })
+        : e
+      if (!(te instanceof TilError)) throw te
       r.pass = false
-      r.error = formatError(e, rt.src, { plain: true })
+      r.error = formatError(te, rt.src, { plain: true })
     }
     results.push(r)
   }
@@ -1530,6 +1622,26 @@ export function describeText(d) {
 // Error formatting
 // ---------------------------------------------------------------------------
 
+// spec back-references: each error code cites the LLM.md rule it violates,
+// so a repairing agent can be pointed at the exact piece of the card (after Vera)
+const CARD_RULES = {
+  E_NAME: 'Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table',
+  E_TYPE: 'Values: == is deep equality with no coercion; + never coerces — use "text {x}" interpolation or num/str to convert',
+  E_APPLY: 'Core rules: calls are juxtaposition `f x y`; two values side by side are a call',
+  E_ARITY: 'Core rules: every function is curried with fixed arity; zero-arg calls need parens: now()',
+  E_INDEX: 'Values: xs[i] errors out of range — use `get i xs` for a null-safe lookup',
+  E_MATCH: 'Control flow: match raises if no case matches — add a `_ ->` catch-all',
+  E_ENSURE: 'Functions: ensure is a runtime contract; the locals snapshot shows the failing state',
+  E_DIV: 'Values: / and % by zero are errors — guard or use catch',
+  E_JSON: 'Errors: json/tojson failures are catchable: `json s catch {}`',
+  E_NUM: 'Errors: num s errors on non-numeric input — `num s catch 0`',
+  E_STACK: 'Functions: recursion is bounded — prefer loops and pipelines for deep data',
+  E_LOOP: 'Control flow: for/while have a 10M-iteration runaway guard',
+  E_EMPTY: 'Builtins: min/max/mean/median/stdev error on [] — guard with `if xs { … }` or catch',
+  E_IO: 'io: read errors on a missing file and is catchable: `read p catch ""`',
+  E_SYNTAX: 'Core rules: newline-separated statements; calls `f x y`; blocks and lambdas use { }',
+}
+
 export function errorJson(e, src, file) {
   return {
     ok: false,
@@ -1541,6 +1653,7 @@ export function errorJson(e, src, file) {
     src: e.line && src ? (src.split('\n')[e.line - 1] ?? null) : null,
     didYouMean: e.didYouMean,
     hint: e.hint,
+    rule: CARD_RULES[e.code],
     locals: e.locals,
     stack: e.tilStack,
   }
@@ -1611,14 +1724,62 @@ export async function nodeHost() {
 const USAGE = `til ${VERSION} — тіл — a language engineered for AI agents
 
 usage:
-  til run file.til [args…]     run a program (also: til file.til)
+  til run file.til [args…]     run a program + its eg assertions (also: til file.til)
   til check file.til           parse + static checks, no execution
   til test file-or-dir         run all eg assertions
   til describe file.til        compressed interface card (for agent context)
   til teach                    print LLM.md — the whole language, prompt-sized
+  til grammar                  print a GBNF grammar for constrained decoding
   til tokens file [--enc E]    count LLM tokens in a file (o200k_base default)
 
-flags: --json (machine-readable output on check/test/describe/errors)`
+flags: --json (machine-readable errors/results) · --no-eg (run: skip eg assertions)
+       --strict (check: every fn needs an eg) · --no-io (check: forbid read/write/env/stdin)`
+
+// GBNF grammar (llama.cpp / XGrammar dialect) for constrained decoding.
+// Deliberately a PERMISSIVE SUPERSET of til: it accepts every valid program plus
+// some invalid ones (it ignores the two whitespace-sensitivity rules and arity).
+// Rationale: an over-tight constrainer measurably harms output quality; a superset
+// only prunes vocabulary/structure, and `til check` remains the real gate.
+const GRAMMAR_GBNF = String.raw`# til v${VERSION} — GBNF (permissive superset; pair with "til check")
+root     ::= line*
+line     ::= sp* stmt? sp* comment? "\n"
+comment  ::= "#" [^\n]*
+stmt     ::= fndef | forst | whilest | "return" (sp expr)? | "ensure" sp expr
+           | "eg" sp expr | "break" | "continue" | assign | expr
+fndef    ::= "fn" sp ident (sp ident)* sp* ("=" sp* expr | block)
+forst    ::= "for" sp ident sp "in" sp expr sp* block
+whilest  ::= "while" sp expr sp* block
+assign   ::= target (sp* "," sp* target)* sp* "=" sp* expr (sp* "," sp* expr)*
+target   ::= ident (("." ident) | ("[" sp* expr sp* "]"))*
+block    ::= "{" wsn stmtline* sp* "}"
+stmtline ::= sp* stmt? sp* comment? "\n" wsn
+expr     ::= disj (sp* ("|" | "catch") sp* disj)*
+disj     ::= conj (sp "or" sp conj)*
+conj     ::= cmp (sp "and" sp cmp)*
+cmp      ::= sum (sp* ("==" | "!=" | "<=" | ">=" | "<" | ">") sp* sum | sp "in" sp sum)?
+sum      ::= term (sp* ("+" | "-") sp* term)*
+term     ::= unary (sp* ("*" | "/" | "%") sp* unary)*
+unary    ::= ("-" | "not" sp)* callch
+callch   ::= postfix (sp postfix)*
+postfix  ::= atom (("." ident) | ("[" sp* expr sp* "]") | ("(" sp* (expr (sp* "," sp* expr)*)? sp* ")"))*
+atom     ::= num | str | raw | "true" | "false" | "null" | ifex | matchex
+           | ident | "(" sp* expr sp* ")" | list | brace
+ifex     ::= "if" sp expr sp* block (wsn "elif" sp expr sp* block)* (wsn "else" sp* block)?
+matchex  ::= "match" sp expr sp* "{" wsn (sp* pattern (sp "if" sp expr)? sp* "->" sp* (expr | block) sp* "\n" wsn)* sp* "}"
+pattern  ::= num | "-" num | str | raw | "true" | "false" | "null" | ident
+list     ::= "[" wsn (expr (sp* "," wsn sp* expr)* sp* ","?)? wsn sp* "]"
+brace    ::= "{" wsn ( mapent (sp* ("," | "\n") wsn sp* mapent)* wsn sp* "}"
+           | (ident (sp ident)*)? sp* "->" lambody | lambody )
+mapent   ::= (ident | str | raw) sp* ":" sp* expr
+lambody  ::= wsn stmtline* sp* stmt? sp* "}"
+ident    ::= [a-zA-Z_] [a-zA-Z0-9_]*
+num      ::= [0-9] [0-9_]* ("." [0-9]+)? ([eE] [+-]? [0-9]+)?
+str      ::= "\"" (strch | interp)* "\""
+strch    ::= [^"\\{}\n] | "\\" ["'\\ntr{}] | "\n"
+interp   ::= "{" [^{}"]* "}"
+raw      ::= "'" [^']* "'"
+sp       ::= " "+
+wsn      ::= ([ \t] | "\n")*`
 
 export async function main(argv) {
   const host = await nodeHost()
@@ -1626,13 +1787,21 @@ export async function main(argv) {
   const path = await import('node:path')
   const url = await import('node:url')
   const json = argv.includes('--json')
-  const args = argv.filter(a => a !== '--json')
+  const strict = argv.includes('--strict')
+  const noIo = argv.includes('--no-io')
+  const noEg = argv.includes('--no-eg')
+  const args = argv.filter(a => !['--json', '--strict', '--no-io', '--no-eg'].includes(a))
   let cmd = args[0]
   if (cmd && cmd.endsWith('.til')) { args.unshift('run'); cmd = 'run' }
 
   const readSrc = f => {
+    if (!f) { process.stderr.write(USAGE + '\n'); process.exit(2) }
     try { return fs.readFileSync(f, 'utf8') }
-    catch { process.stderr.write(`til: cannot read ${f}\n`); process.exit(2) }
+    catch {
+      if (json) host.print(JSON.stringify({ ok: false, code: 'E_IO', msg: `cannot read ${f}`, file: f }))
+      else process.stderr.write(`til: cannot read ${f}\n`)
+      process.exit(2)
+    }
   }
   const color = process.stderr.isTTY
 
@@ -1660,7 +1829,22 @@ export async function main(argv) {
         for (const e of errors) process.stderr.write(formatError({ ...e, message: e.msg }, src, { color, file }) + '\n')
         return 1
       }
-      try { run(src, { ast, host, file, args: args.slice(2) }) } catch (e) { return reportError(e, src, file) }
+      let rt2
+      try { rt2 = run(src, { ast, host, file, args: args.slice(2) }).rt } catch (e) { return reportError(e, src, file) }
+      // eg assertions run by default (CodeT-style: shipped tests execute every run)
+      if (!noEg && rt2.egs.length) {
+        const results = runEgs(rt2)
+        const fails = results.filter(r => !r.pass)
+        for (const r of fails) {
+          process.stderr.write(`✗ eg (line ${r.line}): ${r.src}\n`)
+          if (r.left !== undefined) process.stderr.write(`    left:  ${r.left}\n    right: ${r.right}\n`)
+          if (r.error) process.stderr.write('    ' + r.error.split('\n').join('\n    ') + '\n')
+        }
+        if (fails.length) {
+          if (json) host.print(JSON.stringify({ ok: false, code: 'E_EG', msg: `${fails.length} of ${results.length} eg assertions failed`, fails: fails.map(f => ({ line: f.line, src: f.src, left: f.left, right: f.right })) }))
+          return 1
+        }
+      }
       return 0
     }
 
@@ -1669,7 +1853,7 @@ export async function main(argv) {
       const src = readSrc(file)
       let ast
       try { ast = parse(src, { file }) } catch (e) { return reportError(e, src, file) }
-      const { errors, warnings } = check(ast)
+      const { errors, warnings } = check(ast, { strict, noIo })
       if (json) { host.print(JSON.stringify({ ok: errors.length === 0, errors: errors.map(e => errorJson({ ...e, message: e.msg }, src, file)), warnings: warnings.map(w => errorJson({ ...w, message: w.msg }, src, file)) })); return errors.length ? 1 : 0 }
       for (const w of warnings) process.stderr.write(formatError({ ...w, message: 'warning: ' + w.msg }, src, { color, file }) + '\n')
       for (const e of errors) process.stderr.write(formatError({ ...e, message: e.msg }, src, { color, file }) + '\n')
@@ -1740,6 +1924,11 @@ export async function main(argv) {
       const here = path.dirname(url.fileURLToPath(import.meta.url))
       const p = path.join(here, '..', 'LLM.md')
       host.print(fs.readFileSync(p, 'utf8'))
+      return 0
+    }
+
+    case 'grammar': {
+      host.print(GRAMMAR_GBNF)
       return 0
     }
 

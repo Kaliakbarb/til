@@ -348,3 +348,43 @@ eg pow 2 10 == 1024
 # -- print returns its value (tap-through) -------------------------------
 # (print output goes to host; value passes through pipes)
 eg ([1, 2] | sum) == 3
+
+# -- cyclic structures: safe display/equality, catchable serialization -----
+cyc = {}
+cyc.self = cyc
+eg str cyc == "\{self: <cycle>}"
+eg (tojson cyc catch "cyclic") == "cyclic"
+cyc2 = {}
+cyc2.self = cyc2
+eg cyc == cyc2
+cylist = [1]
+push cylist cylist
+eg str cylist == "[1, <cycle>]"
+
+# -- deep recursion raises catchable E_STACK, never a raw crash ------------
+fn boom n = boom (n + 1)
+eg (boom 0 catch "deep") == "deep"
+
+# -- match binds into the enclosing scope (Python-style) -------------------
+match 5 { bound -> { doubled = bound * 2 } }
+eg bound == 5
+eg doubled == 10
+
+# -- lambda as a match-case body ------------------------------------------
+fmatch = match 1 {
+  1 -> {x -> x * 2}
+  _ -> null
+}
+eg fmatch 21 == 42
+
+# -- strings are code points, not UTF-16 units ------------------------------
+emo = "😀🙂"
+eg len emo == 2
+eg emo[0] == "😀"
+eg emo[-1] == "🙂"
+eg take 1 emo == "😀"
+eg skip 1 emo == "🙂"
+eg rev emo == "🙂😀"
+eg get 1 emo == "🙂"
+eg chars emo == ["😀", "🙂"]
+eg pos "🙂" emo == 1

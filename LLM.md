@@ -63,17 +63,32 @@ misc    type x · empty x · err msg
 ## Idioms (memorize these shapes)
 
 ```
+# clean a file: trim, drop empties+comments, dedupe, sort, print
 read "log.txt" | lines | map trim | keep {it and not starts "#" it} | uniq | sort | each print
 
+# top 5 words by frequency
 read "words.txt" | lower | words | counts | top 5 | each {p -> print "{p.k} {p.v}"}
 
+# filter + reshape json, write out
 users = json (read "users.json")
 active = users | keep {it.active} | map {u -> {name: u.name, email: u.email}}
 write "out.json" (tojson active)
 
-for p in (group {it.region} rows) {        # p.k = key, p.v = list
+# group rows, aggregate each group (p.k = key, p.v = list)
+for p in (group {it.region} rows) {
   print "{p.k}: {p.v | map {it.amount} | sum}"
 }
+
+# csv: skip header, split, sum a column
+read "sales.csv" | lines | skip 1 | map (split ",") | map {num it[1]} | sum | print
+
+# accumulate with mutation
+seen = []
+for x in [3, 1, 3, 2] { if not x in seen { push x seen } }
+
+# stats one-liners
+xs = read "n.txt" | lines | map num
+print "mean {roundTo 2 (mean xs)} median {median xs} sd {roundTo 2 (stdev xs)}"
 
 fn fib n {
   ensure n >= 0
@@ -84,4 +99,4 @@ eg fib 10 == 55
 
 ## Workflow
 
-`til run f.til` (static-checks names first — hallucinated names never reach runtime) · `til check f.til --json` · `til test f.til` (runs egs) · `til describe f.til` (compact interface card).
+`til check f.til --json` (static: hallucinated names die here) · `til run f.til` (runs the program **and its egs**; failures → structured errors) · `til describe f.til` (compact interface card) · `til grammar` (GBNF for constrained decoding).

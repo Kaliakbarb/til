@@ -1,0 +1,3 @@
+errs = read "log.txt" | lines | keep {has "ERROR" it}
+print (len errs)
+print (last errs)

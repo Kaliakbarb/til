@@ -1,0 +1,1 @@
+read "words.txt" | words | uniq | sort | each print

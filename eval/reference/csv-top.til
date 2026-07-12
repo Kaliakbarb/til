@@ -1,0 +1,3 @@
+rows = read "sales.csv" | lines | skip 1 | map (split ",")
+best = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1
+print "{best[0].k} {best[0].v}"

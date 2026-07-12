@@ -1,0 +1,64 @@
+[
+ {
+  "id": "sum-even",
+  "files": {
+   "numbers.txt": "12\n7\n40\n3\n8\n21\n16\n5\n9\n30\n"
+  },
+  "spec": "Read numbers.txt (one integer per line). Print the sum of the even numbers.",
+  "expected": "106\n"
+ },
+ {
+  "id": "csv-top",
+  "files": {
+   "sales.csv": "region,amount\neu,120\nus,80\neu,200\nkz,400\nus,150\nkz,60\n"
+  },
+  "spec": "Read sales.csv (header: region,amount). Print the region with the highest total amount and that total, separated by one space, e.g. `eu 320`.",
+  "expected": "kz 460\n"
+ },
+ {
+  "id": "rename-keys",
+  "files": {
+   "users.json": "[{\"first\":\"Aliya\",\"last\":\"Nur\"},{\"first\":\"Bek\",\"last\":\"Sar\"},{\"first\":\"Dana\",\"last\":\"Kim\"}]"
+  },
+  "spec": "Read users.json \u2014 a JSON list of objects with keys `first` and `last`. Print (to stdout) a compact JSON list (no spaces) of objects with a single key `name` whose value is `first` and `last` joined by one space. Keep order.",
+  "expected": "[{\"name\":\"Aliya Nur\"},{\"name\":\"Bek Sar\"},{\"name\":\"Dana Kim\"}]\n"
+ },
+ {
+  "id": "dedup-sort",
+  "files": {
+   "words.txt": "delta echo alpha delta bravo echo charlie alpha\nfoxtrot bravo\n"
+  },
+  "spec": "Read words.txt (whitespace-separated words, possibly multiple lines). Print the unique words sorted ascending, one per line.",
+  "expected": "alpha\nbravo\ncharlie\ndelta\necho\nfoxtrot\n"
+ },
+ {
+  "id": "fizz-sum",
+  "files": {},
+  "spec": "Print the sum of all integers from 1 to 1000 inclusive that are divisible by 3 or by 5.",
+  "expected": "234168\n"
+ },
+ {
+  "id": "grade-histogram",
+  "files": {
+   "scores.txt": "95\n82\n71\n64\n90\n88\n77\n55\n93\n80\n70\n69\n"
+  },
+  "spec": "Read scores.txt (one integer 0-100 per line). Count grades: A is 90+, B is 80-89, C is 70-79, F is below 70. Print one line per grade in the order A, B, C, F as `<letter> <count>`, skipping grades with zero count.",
+  "expected": "A 3\nB 3\nC 3\nF 3\n"
+ },
+ {
+  "id": "flatten-inventory",
+  "files": {
+   "inv.json": "{\"north\":{\"bolts\":40,\"nuts\":120},\"south\":{\"screws\":200},\"east\":{\"anchors\":12,\"rivets\":50}}"
+  },
+  "spec": "Read inv.json \u2014 a JSON object mapping warehouse name to an object mapping item name to quantity. Print one line per item as `<warehouse>.<item> <qty>`, preserving the JSON's order.",
+  "expected": "north.bolts 40\nnorth.nuts 120\nsouth.screws 200\neast.anchors 12\neast.rivets 50\n"
+ },
+ {
+  "id": "log-grep",
+  "files": {
+   "log.txt": "INFO boot\nERROR disk full\nINFO retry\nWARN slow\nERROR net down\nINFO ok\nERROR disk full again\nINFO done\n"
+  },
+  "spec": "Read log.txt. Print the number of lines containing the substring `ERROR`, then on a second line print the last such line in full.",
+  "expected": "3\nERROR disk full again\n"
+ }
+]

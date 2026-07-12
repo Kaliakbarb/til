@@ -1,0 +1,1 @@
+read "numbers.txt" | lines | map num | keep {it % 2 == 0} | sum | print

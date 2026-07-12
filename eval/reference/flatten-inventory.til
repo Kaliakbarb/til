@@ -1,0 +1,4 @@
+inv = json (read "inv.json")
+for w in inv {
+  for item in w.v { print "{w.k}.{item.k} {item.v}" }
+}

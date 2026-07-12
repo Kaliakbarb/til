@@ -1,0 +1,5 @@
+fn grade x = if x >= 90 { "A" } elif x >= 80 { "B" } elif x >= 70 { "C" } else { "F" }
+gs = read "scores.txt" | lines | map num | map grade | counts
+for g in ["A", "B", "C", "F"] {
+  if has g gs { print "{g} {gs[g]}" }
+}

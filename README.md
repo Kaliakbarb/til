@@ -92,6 +92,22 @@ Every design decision maps to a measured LLM failure mode — the table is in
 - **`mean/median/stdev/top` are builtins.** The stats benchmark showed batteries beat
   syntax: til was +78% vs Python's `statistics` module before, −15% after.
 
+## The load-bearing experiment: `eval/`
+
+Token counts are the cheap claim. The expensive claim is: **a model that has never
+seen til writes it correctly from the 1,550-token card alone.** `eval/run.mjs` measures
+exactly that against any OpenAI-compatible endpoint: 8 unseen tasks, model gets only
+LLM.md + the task, temperature 0, stdout must match byte-exactly, one structured-error
+repair round (which tests the self-repair design too) — side by side with the same
+model writing native Python.
+
+```bash
+EVAL_API_KEY=… EVAL_MODELS=anthropic/claude-sonnet-5 node eval/run.mjs   # → eval/results.md
+```
+
+All 8 tasks have verified reference solutions in til (`eval/reference/`). No key on
+this machine yet, so no numbers are claimed here — run it before believing anyone.
+
 ## What til is not (v0.1)
 
 No regex, no async, no user modules, no classes, no package manager, no network.

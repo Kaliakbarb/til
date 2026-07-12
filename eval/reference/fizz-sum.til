@@ -1,0 +1,1 @@
+range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print

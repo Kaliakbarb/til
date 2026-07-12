@@ -1,0 +1,2 @@
+users = json (read "users.json")
+print (tojson (users | map {u -> {name: "{u.first} {u.last}"}}))

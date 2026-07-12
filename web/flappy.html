@@ -24,7 +24,7 @@
   header a:hover { color: var(--accent); }
   main { flex: 1; display: flex; gap: 0; min-height: 0; flex-wrap: wrap; }
   .stage { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; gap: 12px; flex: 0 0 auto; margin: 0 auto; }
-  canvas { border: 1px solid var(--line); border-radius: 10px; background: #0e1420; touch-action: manipulation; }
+  canvas { border: 1px solid var(--line); border-radius: 10px; background: #0e1420; touch-action: manipulation; max-height: calc(100vh - 140px); max-width: 94vw; aspect-ratio: 400 / 600; }
   .hint { color: var(--faint); font-size: 12.5px; font-family: var(--mono); }
   .side { flex: 1 1 460px; min-width: 320px; border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
   .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); }

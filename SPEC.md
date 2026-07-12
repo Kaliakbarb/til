@@ -2,7 +2,7 @@
 
 til (тіл, Kazakh for "language/tongue") is a scripting language engineered for AI agents.
 This document is the normative semantics. `LLM.md` is the same language compressed to a
-prompt-sized card (~1.5k tokens); `src/til.mjs` is the reference implementation; `tests/lang.til`
+prompt-sized card (~1.7k tokens); `src/til.mjs` is the reference implementation; `tests/lang.til`
 is the executable conformance suite.
 
 ## 1. Design goals, each tied to a measured LLM failure mode
@@ -155,7 +155,7 @@ require homogeneous num or str keys and are stable.
 ## 6. The agent workflow (why this language exists)
 
 ```
-til teach                 # ← paste this (~1.5k tokens) into the system prompt once
+til teach                 # ← paste this (~1.7k tokens) into the system prompt once
 til grammar               # GBNF for constrained decoding (permissive superset)
 write code
 til check f.til --json    # hallucinated names die here, with didYouMean

@@ -1,7 +1,7 @@
 # til — тіл
 
 **A scripting language engineered for AI agents.** The whole language fits in a
-1,550-token prompt card, programs cost measurably fewer tokens than Python or JS,
+1,728-token prompt card, programs cost measurably fewer tokens than Python or JS,
 hallucinated names are caught *before* execution, and every error is structured data
 designed to be fed back to a model for one-shot self-repair.
 
@@ -29,7 +29,7 @@ rest. The bigger wins are elsewhere:
 
 | the actual cost centers for agents | til |
 |---|---|
-| teaching the model the language | **1,550 tokens once** (`til teach` → system prompt) |
+| teaching the model the language | **1,728 tokens once** (`til teach` → system prompt) |
 | hallucinated import/identifier → wasted round-trip | killed statically by `til check`, with `didYouMean` |
 | indentation/bracket corruption in patches | whitespace never significant; flat pipeline style |
 | silent coercion bugs (`"1" + 1`) | impossible — typed errors with hints instead |
@@ -42,7 +42,7 @@ rest. The bigger wins are elsewhere:
 ```bash
 git clone … && cd til     # zero runtime dependencies, Node ≥ 18
 node bin/til run examples/report.til
-node bin/til test tests/lang.til        # 209 eg assertions — the conformance suite
+node bin/til test tests/lang.til        # 226 eg assertions — the conformance suite
 npm run bench                           # re-verify outputs + token counts yourself
 ```
 
@@ -67,7 +67,7 @@ a, b = 0, 1                        # simultaneous assignment
 data = json (read "cfg.json") catch {}    # any error → inline fallback
 ```
 
-Learn the rest in one sitting: [LLM.md](LLM.md) — it *is* the language, in 1,550 tokens.
+Learn the rest in one sitting: [LLM.md](LLM.md) — it *is* the language, in 1,728 tokens.
 Full semantics + design rationale: [SPEC.md](SPEC.md).
 
 ## The agent loop this language is built for
@@ -95,7 +95,7 @@ Every design decision maps to a measured LLM failure mode — the table is in
 ## The load-bearing experiment: `eval/`
 
 Token counts are the cheap claim. The expensive claim is: **a model that has never
-seen til writes it correctly from the 1,550-token card alone.** `eval/run.mjs` measures
+seen til writes it correctly from the 1,728-token card alone.** `eval/run.mjs` measures
 exactly that against any OpenAI-compatible endpoint: 8 unseen tasks, model gets only
 LLM.md + the task, temperature 0, stdout must match byte-exactly, one structured-error
 repair round (which tests the self-repair design too) — side by side with the same
@@ -120,10 +120,10 @@ harness here does.
 ```
 src/til.mjs        the entire implementation: lexer → parser → checker → interpreter → CLI
                    (zero dependencies, runs in Node and the browser)
-bin/til            CLI: run · check · test · describe · teach · tokens
+bin/til            CLI: run · check · test · describe · teach · grammar · tokens
 LLM.md             the prompt card (the language itself)
 SPEC.md            normative semantics + design rationale
-tests/lang.til     209-assertion conformance suite, written in til
+tests/lang.til     226-assertion conformance suite, written in til
 examples/          hello · wordfreq · contracts · report · broken (error-UX demo)
 bench/             10 tasks × 3 languages, output-verified token benchmark
 web/               browser playground

@@ -22,7 +22,7 @@ Each row: a finding from the literature, its strength, and what til does about i
 
 | finding | strength | til's response |
 |---|---|---|
-| A grammar book in context yields useful translation of a truly unseen language (MTOB/Kalamang, [2309.16575](https://arxiv.org/abs/2309.16575)) | strong | The premise of LLM.md: the whole language rides along in ~1.5k tokens |
+| A grammar book in context yields useful translation of a truly unseen language (MTOB/Kalamang, [2309.16575](https://arxiv.org/abs/2309.16575)) | strong | The premise of LLM.md: the whole language rides along in ~1.7k tokens |
 | Nearly all of that gain comes from the *examples*, not the grammar prose ([2409.19151](https://arxiv.org/abs/2409.19151)) | strong | LLM.md is being rebalanced example-dominant (idioms section ≥ ⅓ of the card); rules stay only where an example can't carry the constraint |
 | Compact grammars in-context help DSL generation, more with constrained decoding ([2305.19234](https://arxiv.org/abs/2305.19234)) | moderate | til's grammar fits in SPEC.md §3 (~40 lines EBNF) — usable directly for grammar-constrained decoding |
 | No dose-response curve exists for spec-size vs proficiency in programming languages | gap | `eval/` exists to measure exactly this (see §3) |
@@ -96,7 +96,7 @@ The "language for LLMs" space, as of 2026-07 (all claims sourced; GitHub stats v
    a small regular grammar is precisely what makes constrained decoding sound — co-design, not either/or.
 
 **Positioning verdict** (from the adversarial landscape sweep): no project ships til's triple —
-**(1) the entire spec is the prompt (1,550 tokens), (2) an output-verified token benchmark as a
+**(1) the entire spec is the prompt (1,728 tokens), (2) an output-verified token benchmark as a
 headline artifact, (3) errors engineered as repair prompts.** Vera is the closest thesis-mate and
 holds one real edge (machine-verified contracts); its VeraBench parity-with-Python result is also
 the best external datapoint *for* this whole category. Ideas adopted from neighbors at zero spec

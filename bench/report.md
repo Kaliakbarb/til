@@ -7,37 +7,37 @@ Token counts are for full source files, measured with real tokenizers (`gpt-toke
 
 | task | til | python | js | til vs py | til vs js |
 |---|---:|---:|---:|---:|---:|
-| anagrams | 43 | 50 | 94 | −14.0% | −54.3% |
-| brackets | 97 | 100 | 136 | −3.0% | −28.7% |
-| clean | 29 | 45 | 65 | −35.6% | −55.4% |
+| anagrams | 43 | 50 | 76 | −14.0% | −43.4% |
+| brackets | 97 | 91 | 123 | +6.6% | −21.1% |
+| clean | 29 | 31 | 58 | −6.5% | −50.0% |
 | csv | 53 | 60 | 90 | −11.7% | −41.1% |
 | fib | 35 | 32 | 47 | +9.4% | −25.5% |
-| fizzbuzz | 57 | 63 | 74 | −9.5% | −23.0% |
-| inventory | 98 | 100 | 133 | −2.0% | −26.3% |
-| json | 40 | 49 | 55 | −18.4% | −27.3% |
-| stats | 61 | 72 | 190 | −15.3% | −67.9% |
-| wordfreq | 30 | 36 | 106 | −16.7% | −71.7% |
-| **total** | **543** | **607** | **990** | **−10.5%** | **−45.2%** |
+| fizzbuzz | 57 | 51 | 57 | +11.8% | −0.0% |
+| inventory | 98 | 94 | 119 | +4.3% | −17.6% |
+| json | 40 | 46 | 51 | −13.0% | −21.6% |
+| stats | 61 | 68 | 190 | −10.3% | −67.9% |
+| wordfreq | 30 | 33 | 98 | −9.1% | −69.4% |
+| **total** | **543** | **556** | **909** | **−2.3%** | **−40.3%** |
 
 ## cl100k_base (GPT-4 / 3.5)
 
 | task | til | python | js | til vs py | til vs js |
 |---|---:|---:|---:|---:|---:|
-| anagrams | 43 | 50 | 92 | −14.0% | −53.3% |
-| brackets | 97 | 99 | 133 | −2.0% | −27.1% |
-| clean | 29 | 43 | 60 | −32.6% | −51.7% |
+| anagrams | 43 | 50 | 74 | −14.0% | −41.9% |
+| brackets | 97 | 90 | 120 | +7.8% | −19.2% |
+| clean | 29 | 31 | 55 | −6.5% | −47.3% |
 | csv | 53 | 57 | 87 | −7.0% | −39.1% |
 | fib | 35 | 32 | 47 | +9.4% | −25.5% |
-| fizzbuzz | 57 | 63 | 74 | −9.5% | −23.0% |
-| inventory | 98 | 100 | 129 | −2.0% | −24.0% |
-| json | 40 | 47 | 53 | −14.9% | −24.5% |
-| stats | 58 | 71 | 188 | −18.3% | −69.1% |
-| wordfreq | 30 | 36 | 101 | −16.7% | −70.3% |
-| **total** | **540** | **598** | **964** | **−9.7%** | **−44.0%** |
+| fizzbuzz | 57 | 51 | 57 | +11.8% | −0.0% |
+| inventory | 98 | 94 | 115 | +4.3% | −14.8% |
+| json | 40 | 45 | 49 | −11.1% | −18.4% |
+| stats | 58 | 68 | 188 | −14.7% | −69.1% |
+| wordfreq | 30 | 33 | 93 | −9.1% | −67.7% |
+| **total** | **540** | **551** | **885** | **−2.0%** | **−39.0%** |
 
 ## characters
 
-til 1527 · python 2047 (−25.4%) · js 3024 (−49.5%)
+til 1527 · python 1862 (−18.0%) · js 2726 (−44.0%)
 
 ## method & fairness
 
@@ -45,3 +45,4 @@ til 1527 · python 2047 (−25.4%) · js 3024 (−49.5%)
 - All solutions are comment-free; whitespace is each language's standard style.
 - The Anthropic tokenizer is not public; o200k/cl100k are the standard proxies. Rankings are stable across both.
 - Caveat: token count is a proxy for generation cost, not correctness. See README for the correctness argument (checker, contracts, structured errors).
+- Baselines were adversarially re-optimized by an independent auditor; every shorter byte-identical idiomatic version found was adopted. Known input-shaped equivalences are documented: Python round() is banker's vs til/JS half-up (dataset avoids .xx5 boundaries); compact-JSON output spec costs Python a separators tax.

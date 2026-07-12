@@ -4,11 +4,9 @@ function balanced(s) {
   const stack = [];
   for (const c of s) {
     if ("([{".includes(c)) stack.push(c);
-    else if (c in close) {
-      if (stack.pop() !== close[c]) return false;
-    }
+    else if (c in close && stack.pop() !== close[c]) return false;
   }
-  return stack.length === 0;
+  return !stack.length;
 }
-for (const line of fs.readFileSync("cases.txt", "utf8").split("\n").slice(0, -1))
+for (const line of fs.readFileSync("cases.txt", "utf8").trim().split("\n"))
   console.log(balanced(line) ? "ok" : "bad");

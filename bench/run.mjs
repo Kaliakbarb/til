@@ -15,9 +15,9 @@ const tasksDir = path.join(here, 'tasks')
 const TIL = path.join(root, 'bin', 'til')
 
 const LANGS = [
-  { name: 'til', file: 'task.til', run: d => execFileSync('node', [TIL, 'run', 'task.til'], { cwd: d, encoding: 'utf8' }) },
-  { name: 'py', file: 'task.py', run: d => execFileSync('python3', ['task.py'], { cwd: d, encoding: 'utf8' }) },
-  { name: 'js', file: 'task.js', run: d => execFileSync('node', ['task.js'], { cwd: d, encoding: 'utf8' }) },
+  { name: 'til', file: 'task.til', run: d => execFileSync('node', [TIL, 'run', 'task.til'], { cwd: d, encoding: 'buffer' }) },
+  { name: 'py', file: 'task.py', run: d => execFileSync('python3', ['task.py'], { cwd: d, encoding: 'buffer' }) },
+  { name: 'js', file: 'task.js', run: d => execFileSync('node', ['task.js'], { cwd: d, encoding: 'buffer' }) },
 ]
 
 const tasks = fs.readdirSync(tasksDir).filter(t => fs.existsSync(path.join(tasksDir, t, 'task.til'))).sort()
@@ -37,11 +37,12 @@ for (const task of tasks) {
       cl100k: cl100k(src).length,
       chars: src.length,
       lines: src.split('\n').filter(l => l.trim()).length,
-      out, error,
+      out: out === null ? null : out.toString('utf8'),
+      error,
     }
     if (out !== null) {
       if (ref === null) { ref = out; refLang = lang.name }
-      else if (out !== ref) { row.langs[lang.name].mismatch = true }
+      else if (!out.equals(ref)) { row.langs[lang.name].mismatch = true }
     }
   }
   row.ok = LANGS.every(l => row.langs[l.name].out !== null && !row.langs[l.name].mismatch)
@@ -51,10 +52,10 @@ for (const task of tasks) {
     for (const lang of LANGS) {
       const r = row.langs[lang.name]
       if (r.error) console.log(`  ${lang.name} ERROR: ${r.error.split('\n')[0]}`)
-      else if (r.mismatch) console.log(`  ${lang.name} differs from ${refLang}:\n    ${lang.name}: ${JSON.stringify(r.out?.slice(0, 120))}\n    ${refLang}: ${JSON.stringify(ref?.slice(0, 120))}`)
+      else if (r.mismatch) console.log(`  ${lang.name} differs from ${refLang}:\n    ${lang.name}: ${JSON.stringify(r.out?.slice(0, 120))}\n    ${refLang}: ${JSON.stringify(ref?.toString('utf8').slice(0, 120))}`)
     }
   } else {
-    console.log(`✓ ${task}: outputs identical (${JSON.stringify(ref.split('\n')[0]).slice(0, 40)}…)`)
+    console.log(`✓ ${task}: outputs identical (${JSON.stringify(ref.toString('utf8').split('\n')[0]).slice(0, 40)}…)`)
   }
   results.push(row)
 }
@@ -101,13 +102,15 @@ L.push('- Python/JS solutions are written the way a competent LLM writes them: i
 L.push('- All solutions are comment-free; whitespace is each language\'s standard style.')
 L.push('- The Anthropic tokenizer is not public; o200k/cl100k are the standard proxies. Rankings are stable across both.')
 L.push('- Caveat: token count is a proxy for generation cost, not correctness. See README for the correctness argument (checker, contracts, structured errors).')
+L.push('- Baselines were adversarially re-optimized by an independent auditor; every shorter byte-identical idiomatic version found was adopted. Known input-shaped equivalences are documented: Python round() is banker\'s vs til/JS half-up (dataset avoids .xx5 boundaries); compact-JSON output spec costs Python a separators tax.')
+
+console.log('')
+if (mismatches) { console.log(`✗ ${mismatches} task(s) not verified — no report written`); process.exit(1) }
 
 const report = L.join('\n') + '\n'
 fs.writeFileSync(path.join(here, 'report.md'), report)
 fs.writeFileSync(path.join(here, 'results.json'), JSON.stringify(results, null, 2))
 
-console.log('')
-if (mismatches) { console.log(`✗ ${mismatches} task(s) not verified — report written but INVALID`); process.exit(1) }
 console.log(`✓ all ${ok.length} tasks verified · o200k totals: til ${totals.o200k.til} vs py ${totals.o200k.py} (${pct(totals.o200k.til, totals.o200k.py)}) vs js ${totals.o200k.js} (${pct(totals.o200k.til, totals.o200k.js)})`)
 console.log(`report: bench/report.md`)
 

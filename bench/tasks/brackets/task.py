@@ -9,5 +9,5 @@ def balanced(s):
                 return False
     return not stack
 
-for line in open("cases.txt").read().split("\n")[:-1]:
+for line in open("cases.txt"):
     print("ok" if balanced(line) else "bad")

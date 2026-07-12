@@ -2,12 +2,12 @@ import json
 
 old = json.load(open("old.json"))
 new = json.load(open("new.json"))
-for k, v in new.items():
+for k in new:
     if k not in old:
-        print(f"+ {k} {v}")
+        print("+", k, new[k])
 for k in old:
     if k not in new:
-        print(f"- {k}")
-for k, v in old.items():
-    if k in new and new[k] != v:
-        print(f"~ {k} {v}->{new[k]}")
+        print("-", k)
+for k in old:
+    if k in new and new[k] != old[k]:
+        print(f"~ {k} {old[k]}->{new[k]}")

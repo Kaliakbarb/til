@@ -19,10 +19,10 @@
         "error": null
       },
       "js": {
-        "o200k": 94,
-        "cl100k": 92,
-        "chars": 326,
-        "lines": 8,
+        "o200k": 76,
+        "cl100k": 74,
+        "chars": 251,
+        "lines": 4,
         "out": "listen silent enlist inlets\ngoogle elgoog\nstone tones notes onset seton\ndear read dare\nnight thing\n",
         "error": null
       }
@@ -41,18 +41,18 @@
         "error": null
       },
       "py": {
-        "o200k": 100,
-        "cl100k": 99,
-        "chars": 371,
+        "o200k": 91,
+        "cl100k": 90,
+        "chars": 347,
         "lines": 12,
         "out": "ok\nbad\nok\nok\nbad\nbad\nbad\nok\nbad\n",
         "error": null
       },
       "js": {
-        "o200k": 136,
-        "cl100k": 133,
-        "chars": 430,
-        "lines": 14,
+        "o200k": 123,
+        "cl100k": 120,
+        "chars": 403,
+        "lines": 12,
         "out": "ok\nbad\nok\nok\nbad\nbad\nbad\nok\nbad\n",
         "error": null
       }
@@ -71,18 +71,18 @@
         "error": null
       },
       "py": {
-        "o200k": 45,
-        "cl100k": 43,
-        "chars": 151,
-        "lines": 4,
+        "o200k": 31,
+        "cl100k": 31,
+        "chars": 104,
+        "lines": 1,
         "out": "alpha\nbeta\ndelta\ngamma\n",
         "error": null
       },
       "js": {
-        "o200k": 65,
-        "cl100k": 60,
-        "chars": 222,
-        "lines": 4,
+        "o200k": 58,
+        "cl100k": 55,
+        "chars": 198,
+        "lines": 3,
         "out": "alpha\nbeta\ndelta\ngamma\n",
         "error": null
       }
@@ -161,18 +161,18 @@
         "error": null
       },
       "py": {
-        "o200k": 63,
-        "cl100k": 63,
-        "chars": 183,
-        "lines": 9,
+        "o200k": 51,
+        "cl100k": 51,
+        "chars": 120,
+        "lines": 2,
         "out": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n16\n17\nFizz\n19\nBuzz\nFizz\n22\n23\nFizz\nBuzz\n26\nFizz\n28\n29\nFizzBuzz\n31\n32\nFizz\n34\nBuzz\nFizz\n37\n38\nFizz\nBuzz\n41\nFizz\n43\n44\nFizzBuzz\n46\n47\nFizz\n49\nBuzz\nFizz\n52\n53\nFizz\nBuzz\n56\nFizz\n58\n59\nFizzBuzz\n61\n62\nFizz\n64\nBuzz\nFizz\n67\n68\nFizz\nBuzz\n71\nFizz\n73\n74\nFizzBuzz\n76\n77\nFizz\n79\nBuzz\nFizz\n82\n83\nFizz\nBuzz\n86\nFizz\n88\n89\nFizzBuzz\n91\n92\nFizz\n94\nBuzz\nFizz\n97\n98\nFizz\nBuzz\n",
         "error": null
       },
       "js": {
-        "o200k": 74,
-        "cl100k": 74,
-        "chars": 193,
-        "lines": 6,
+        "o200k": 57,
+        "cl100k": 57,
+        "chars": 123,
+        "lines": 2,
         "out": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n16\n17\nFizz\n19\nBuzz\nFizz\n22\n23\nFizz\nBuzz\n26\nFizz\n28\n29\nFizzBuzz\n31\n32\nFizz\n34\nBuzz\nFizz\n37\n38\nFizz\nBuzz\n41\nFizz\n43\n44\nFizzBuzz\n46\n47\nFizz\n49\nBuzz\nFizz\n52\n53\nFizz\nBuzz\n56\nFizz\n58\n59\nFizzBuzz\n61\n62\nFizz\n64\nBuzz\nFizz\n67\n68\nFizz\nBuzz\n71\nFizz\n73\n74\nFizzBuzz\n76\n77\nFizz\n79\nBuzz\nFizz\n82\n83\nFizz\nBuzz\n86\nFizz\n88\n89\nFizzBuzz\n91\n92\nFizz\n94\nBuzz\nFizz\n97\n98\nFizz\nBuzz\n",
         "error": null
       }
@@ -191,17 +191,17 @@
         "error": null
       },
       "py": {
-        "o200k": 100,
-        "cl100k": 100,
-        "chars": 310,
+        "o200k": 94,
+        "cl100k": 94,
+        "chars": 298,
         "lines": 12,
         "out": "+ rivets 50\n- washers\n~ nuts 120->95\n~ anchors 12->30\n",
         "error": null
       },
       "js": {
-        "o200k": 133,
-        "cl100k": 129,
-        "chars": 420,
+        "o200k": 119,
+        "cl100k": 115,
+        "chars": 374,
         "lines": 6,
         "out": "+ rivets 50\n- washers\n~ nuts 120->95\n~ anchors 12->30\n",
         "error": null
@@ -221,18 +221,18 @@
         "error": null
       },
       "py": {
-        "o200k": 49,
-        "cl100k": 47,
-        "chars": 182,
-        "lines": 4,
+        "o200k": 46,
+        "cl100k": 45,
+        "chars": 166,
+        "lines": 3,
         "out": "[{\"name\":\"Aliya\",\"email\":\"aliya@ex.com\"},{\"name\":\"Dana\",\"email\":\"dana@ex.com\"},{\"name\":\"Erlan\",\"email\":\"erlan@ex.com\"}]\n",
         "error": null
       },
       "js": {
-        "o200k": 55,
-        "cl100k": 53,
-        "chars": 217,
-        "lines": 4,
+        "o200k": 51,
+        "cl100k": 49,
+        "chars": 194,
+        "lines": 3,
         "out": "[{\"name\":\"Aliya\",\"email\":\"aliya@ex.com\"},{\"name\":\"Dana\",\"email\":\"dana@ex.com\"},{\"name\":\"Erlan\",\"email\":\"erlan@ex.com\"}]\n",
         "error": null
       }
@@ -251,10 +251,10 @@
         "error": null
       },
       "py": {
-        "o200k": 72,
-        "cl100k": 71,
-        "chars": 234,
-        "lines": 7,
+        "o200k": 68,
+        "cl100k": 68,
+        "chars": 223,
+        "lines": 6,
         "out": "count 12\nmean 5.12\nmedian 5.1\nstdev 2.66\n",
         "error": null
       },
@@ -277,23 +277,23 @@
         "cl100k": 30,
         "chars": 84,
         "lines": 1,
-        "out": "the 11\ndata 6\nmarket 4\npipeline 3\nand 3\n",
+        "out": "the 11\ndata 6\nmarket 5\npipeline 4\nand 3\n",
         "error": null
       },
       "py": {
-        "o200k": 36,
-        "cl100k": 36,
-        "chars": 145,
-        "lines": 4,
-        "out": "the 11\ndata 6\nmarket 4\npipeline 3\nand 3\n",
+        "o200k": 33,
+        "cl100k": 33,
+        "chars": 133,
+        "lines": 3,
+        "out": "the 11\ndata 6\nmarket 5\npipeline 4\nand 3\n",
         "error": null
       },
       "js": {
-        "o200k": 106,
-        "cl100k": 101,
-        "chars": 303,
-        "lines": 5,
-        "out": "the 11\ndata 6\nmarket 4\npipeline 3\nand 3\n",
+        "o200k": 98,
+        "cl100k": 93,
+        "chars": 270,
+        "lines": 4,
+        "out": "the 11\ndata 6\nmarket 5\npipeline 4\nand 3\n",
         "error": null
       }
     },

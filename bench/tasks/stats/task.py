@@ -1,8 +1,7 @@
-import statistics
+from statistics import mean, median, pstdev
 
-xs = sorted(float(l) for l in open("numbers.txt"))
-n = len(xs)
-print("count", n)
-print("mean", round(sum(xs) / n, 2))
-print("median", round(statistics.median(xs), 2))
-print("stdev", round(statistics.pstdev(xs), 2))
+xs = [float(l) for l in open("numbers.txt")]
+print("count", len(xs))
+print("mean", round(mean(xs), 2))
+print("median", round(median(xs), 2))
+print("stdev", round(pstdev(xs), 2))

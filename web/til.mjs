@@ -7,7 +7,7 @@
 //   3. No imports, no arity surprises, no significant whitespace, no silent coercion.
 //   4. Errors are structured data designed to be fed back to a model for one-shot repair.
 
-export const VERSION = '0.2.0'
+export const VERSION = '0.2.1'
 
 // ---------------------------------------------------------------------------
 // Errors
@@ -935,6 +935,9 @@ export const BUILTIN_SPECS = {
   split: { arity: 2, sig: 'split sep s', doc: '' },
   join: { arity: 2, sig: 'join sep xs', doc: '' },
   replace: { arity: 3, sig: 'replace old new s', doc: 'replace ALL occurrences' },
+  rall: { arity: 2, sig: 'rall re s', doc: 'all regex matches as a list (JS syntax)' },
+  rmatch: { arity: 2, sig: 'rmatch re s', doc: 'first regex match, or null' },
+  rsub: { arity: 3, sig: 'rsub re new s', doc: 'regex replace-all; $1 $2 reference groups' },
   starts: { arity: 2, sig: 'starts prefix s', doc: '' },
   ends: { arity: 2, sig: 'ends suffix s', doc: '' },
   rep: { arity: 2, sig: 'rep n x', doc: 'repeat str n times, or list of n copies' },
@@ -1034,6 +1037,14 @@ function makeBuiltins(rt) {
   def('split', (rt2, [sep, s], node) => { want(sep, ['str'], 'split', 'sep', node); want(s, ['str'], 'split', 's', node); return sep === '' ? [...s] : s.split(sep) })
   def('join', (rt2, [sep, xs], node) => { want(sep, ['str'], 'join', 'sep', node); want(xs, ['list'], 'join', 'xs', node); return xs.map(x => display(x)).join(sep) })
   def('replace', (rt2, [a, b, s], node) => { want(a, ['str'], 'replace', 'old', node); want(b, ['str'], 'replace', 'new', node); want(s, ['str'], 'replace', 's', node); return s.split(a).join(b) })
+  const rex = (re, node, flags) => {
+    want(re, ['str'], 'regex', 'pattern', node)
+    try { return new RegExp(re, flags) }
+    catch (e) { terr('E_REGEX', `invalid regex ${JSON.stringify(re)}: ${e.message.split(':').pop().trim()}`, node, { hint: 'til uses JS regex syntax; wrap with `catch` for a fallback' }) }
+  }
+  def('rall', (rt2, [re, s], node) => { want(s, ['str'], 'rall', 's', node); return [...s.matchAll(rex(re, node, 'g'))].map(m => m[0]) })
+  def('rmatch', (rt2, [re, s], node) => { want(s, ['str'], 'rmatch', 's', node); const m = s.match(rex(re, node)); return m ? m[0] : null })
+  def('rsub', (rt2, [re, rep, s], node) => { want(rep, ['str'], 'rsub', 'replacement', node); want(s, ['str'], 'rsub', 's', node); return s.replace(rex(re, node, 'g'), rep) })
   def('starts', (rt2, [p, s], node) => { want(p, ['str'], 'starts', 'prefix', node); want(s, ['str'], 'starts', 's', node); return s.startsWith(p) })
   def('ends', (rt2, [p, s], node) => { want(p, ['str'], 'ends', 'suffix', node); want(s, ['str'], 'ends', 's', node); return s.endsWith(p) })
   def('rep', (rt2, [n, x], node) => { want(n, ['num'], 'rep', 'n', node); const k = Math.max(0, Math.floor(n)); return T(x) === 'str' ? x.repeat(k) : Array(k).fill(x) })
@@ -1653,6 +1664,7 @@ const CARD_RULES = {
   E_LOOP: 'Control flow: for/while have a 10M-iteration runaway guard',
   E_EMPTY: 'Builtins: min/max/mean/median/stdev error on [] — guard with `if xs { … }` or catch',
   E_IO: 'io: read errors on a missing file and is catchable: `read p catch ""`',
+  E_REGEX: 'str: rall/rmatch/rsub use JS regex syntax; invalid patterns are catchable',
   E_SYNTAX: 'Core rules: newline-separated statements; calls `f x y`; blocks and lambdas use { }',
 }
 

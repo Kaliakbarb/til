@@ -1,0 +1,35 @@
+{
+  "name": "vscode-til",
+  "displayName": "til — тіл",
+  "description": "Syntax highlighting for the til scripting language (.til files).",
+  "version": "0.2.1",
+  "publisher": "til-lang",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "til",
+        "aliases": [
+          "til"
+        ],
+        "extensions": [
+          ".til"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "til",
+        "scopeName": "source.til",
+        "path": "./syntaxes/til.tmLanguage.json"
+      }
+    ]
+  }
+}

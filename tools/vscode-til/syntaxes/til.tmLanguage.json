@@ -1,0 +1,134 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "til",
+  "scopeName": "source.til",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#string-double" },
+    { "include": "#string-raw" },
+    { "include": "#fn-definition" },
+    { "include": "#property-access" },
+    { "include": "#keyword-control" },
+    { "include": "#constant-language" },
+    { "include": "#number" },
+    { "include": "#builtin" },
+    { "include": "#operator" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.line.number-sign.til",
+      "begin": "#",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.comment.til" }
+      },
+      "end": "$"
+    },
+    "string-double": {
+      "name": "string.quoted.double.til",
+      "begin": "\"",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.til" }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.til" }
+      },
+      "patterns": [
+        { "include": "#string-escape" },
+        { "include": "#interpolation" }
+      ]
+    },
+    "string-escape": {
+      "name": "constant.character.escape.til",
+      "match": "\\\\[ntr\"'{}\\\\]"
+    },
+    "string-raw": {
+      "name": "string.quoted.single.til",
+      "begin": "'",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.til" }
+      },
+      "end": "'",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.til" }
+      }
+    },
+    "interpolation": {
+      "name": "meta.embedded.line.til",
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.embedded.begin.til" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.embedded.end.til" }
+      },
+      "patterns": [
+        { "include": "#nested-braces" },
+        { "include": "$self" }
+      ]
+    },
+    "nested-braces": {
+      "begin": "\\{",
+      "end": "\\}",
+      "patterns": [
+        { "include": "#nested-braces" },
+        { "include": "$self" }
+      ]
+    },
+    "fn-definition": {
+      "begin": "\\b(fn)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.til" },
+        "2": { "name": "entity.name.function.til" }
+      },
+      "end": "(?=[={#])|$",
+      "patterns": [
+        {
+          "name": "variable.parameter.til",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+        }
+      ]
+    },
+    "property-access": {
+      "match": "(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "punctuation.accessor.til" },
+        "2": { "name": "variable.other.member.til" }
+      }
+    },
+    "keyword-control": {
+      "name": "keyword.control.til",
+      "match": "\\b(fn|if|elif|else|match|for|in|while|return|ensure|eg|and|or|not|catch|break|continue)\\b"
+    },
+    "constant-language": {
+      "name": "constant.language.til",
+      "match": "\\b(true|false|null)\\b"
+    },
+    "number": {
+      "name": "constant.numeric.til",
+      "match": "\\b[0-9][0-9_]*(\\.[0-9][0-9_]*)?([eE][+-]?[0-9]+)?\\b"
+    },
+    "builtin": {
+      "name": "support.function.til",
+      "match": "\\b(print|read|write|append|env|args|stdin|now|rand|lines|words|chars|trim|upper|lower|split|join|replace|starts|ends|rep|num|str|len|range|map|keep|each|fold|sum|min|max|mean|median|stdev|sortBy|sort|rev|uniq|group|counts|top|zip|flat|first|last|take|skip|push|pop|has|find|pos|any|all|keys|vals|get|put|del|merge|items|toMap|json|tojson|pretty|abs|roundTo|round|floor|ceil|sqrt|pow|type|empty|err|rall|rmatch|rsub)\\b"
+    },
+    "operator": {
+      "name": "keyword.operator.til",
+      "match": "->|==|!=|<=|>=|[|<>+*/%=-]"
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.separator.comma.til",
+          "match": ","
+        },
+        {
+          "name": "punctuation.separator.key-value.til",
+          "match": ":"
+        }
+      ]
+    }
+  }
+}

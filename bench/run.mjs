@@ -16,7 +16,7 @@ const TIL = path.join(root, 'bin', 'til')
 
 const LANGS = [
   { name: 'til', file: 'task.til', run: d => execFileSync('node', [TIL, 'run', 'task.til'], { cwd: d, encoding: 'buffer' }) },
-  { name: 'py', file: 'task.py', run: d => execFileSync('python3', ['task.py'], { cwd: d, encoding: 'buffer' }) },
+  { name: 'py', file: 'task.py', run: d => execFileSync(process.platform === 'win32' ? 'python' : 'python3', ['task.py'], { cwd: d, encoding: 'buffer' }) },
   { name: 'js', file: 'task.js', run: d => execFileSync('node', ['task.js'], { cwd: d, encoding: 'buffer' }) },
 ]
 

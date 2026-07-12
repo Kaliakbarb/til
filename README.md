@@ -1,5 +1,9 @@
 # til — тіл
 
+[![ci](https://github.com/Kaliakbarb/til/actions/workflows/ci.yml/badge.svg)](https://github.com/Kaliakbarb/til/actions)
+[![playground](https://img.shields.io/badge/playground-til--lang.vercel.app-2dd4bf)](https://til-lang.vercel.app)
+[![game](https://img.shields.io/badge/flappy_bird-written_in_til-fbbf24)](https://til-lang.vercel.app/flappy.html)
+
 **A scripting language engineered for AI agents.** The whole language fits in a
 1,728-token prompt card, programs match Python on tokens (and cost ~40% fewer than JS),
 hallucinated names are caught *before* execution, and every error is structured data
@@ -64,11 +68,18 @@ The host adds 7 builtins (`rect circle text pressed key width height`) via the p
 ## Install / run
 
 ```bash
-git clone … && cd til     # zero runtime dependencies, Node ≥ 18
+# from source (zero runtime dependencies, Node ≥ 18)
+git clone https://github.com/Kaliakbarb/til && cd til
+node bin/til repl
 node bin/til run examples/report.til
-node bin/til test tests/lang.til        # 226 eg assertions — the conformance suite
-npm run bench                           # re-verify outputs + token counts yourself
+node bin/til test tests/lang.til        # 234 eg assertions — the conformance suite
+npm i && npm run bench                  # re-verify outputs + token counts yourself
+
+# as a package (once published: npm publish from a logged-in account)
+npm i -g til-lang && til repl
 ```
+
+Scripts are shebang-able: start a file with `#!/usr/bin/env til`, `chmod +x`, run it.
 
 ## Thirty seconds of til
 

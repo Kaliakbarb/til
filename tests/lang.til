@@ -377,6 +377,18 @@ fmatch = match 1 {
 }
 eg fmatch 21 == 42
 
+# -- regex: rall / rmatch / rsub (JS syntax, catchable) ---------------------
+# patterns go in raw '…' strings so regex \w etc never fight til escapes
+log = "ERROR disk at 10:31, WARN net at 10:45, ERROR cpu at 11:02"
+eg rall 'ERROR \w+' log == ["ERROR disk", "ERROR cpu"]
+eg rmatch '\d+:\d+' log == "10:31"
+eg rmatch 'FATAL' log == null
+eg rsub '\d+:\d+' "<t>" log == "ERROR disk at <t>, WARN net at <t>, ERROR cpu at <t>"
+eg rsub '(\w+)@(\w+)' "$2.$1" "user@host" == "host.user"
+eg rall 'x' "" == []
+eg (rall '(' "oops" catch "bad-re") == "bad-re"
+eg (rall '[a-z]+' "AB cd EF gh" | join ",") == "cd,gh"
+
 # -- strings are code points, not UTF-16 units ------------------------------
 emo = "😀🙂"
 eg len emo == 2

@@ -1,7 +1,7 @@
 {
   "name": "til-lang",
-  "version": "0.2.0",
-  "description": "TIL (тіл) — a scripting language engineered for AI agents: whole spec fits in a prompt, half the tokens of Python, errors designed for self-repair.",
+  "version": "0.2.1",
+  "description": "til (тіл) — a scripting language engineered for AI agents: the whole spec is a 1.8k-token prompt card, token parity with Python, errors built for self-repair.",
   "type": "module",
   "bin": {
     "til": "bin/til"
@@ -16,5 +16,33 @@
   "license": "MIT",
   "devDependencies": {
     "gpt-tokenizer": "^3.4.0"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "LLM.md",
+    "SPEC.md",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "examples/",
+    "tests/"
+  ],
+  "keywords": [
+    "language",
+    "interpreter",
+    "ai",
+    "llm",
+    "agents",
+    "scripting",
+    "til"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kaliakbarb/til.git"
+  },
+  "homepage": "https://til-lang.vercel.app",
+  "bugs": {
+    "url": "https://github.com/Kaliakbarb/til/issues"
   }
 }

@@ -1738,6 +1738,7 @@ export async function nodeHost() {
 const USAGE = `til ${VERSION} — тіл — a language engineered for AI agents
 
 usage:
+  til repl                     interactive session
   til run file.til [args…]     run a program + its eg assertions (also: til file.til)
   til check file.til           parse + static checks, no execution
   til test file-or-dir         run all eg assertions
@@ -1943,6 +1944,45 @@ export async function main(argv) {
 
     case 'grammar': {
       host.print(GRAMMAR_GBNF)
+      return 0
+    }
+
+    case 'repl': {
+      const readline = await import('node:readline')
+      const rt = createRuntime({ host, file: '<repl>', args: [] })
+      host.print(`til ${VERSION} — тіл · interactive. expressions echo; .exit or ctrl-d quits`)
+      const rl = readline.createInterface({ input: process.stdin, output: process.stdout, prompt: 'til> ' })
+      let buf = ''
+      rl.prompt()
+      for await (const line of rl) {
+        if (line.trim() === '.exit') break
+        buf = buf ? buf + '\n' + line : line
+        if (!buf.trim()) { rl.prompt(); continue }
+        let ast = null
+        try { ast = parse(buf, { file: '<repl>' }) }
+        catch (e) {
+          if (!(e instanceof TilError)) throw e
+          if (/unclosed|end of file/.test(e.message)) { rl.setPrompt(' ..> '); rl.prompt(); continue }
+          process.stderr.write(formatError(e, buf, { color, file: '<repl>' }) + '\n')
+          buf = ''; rl.setPrompt('til> '); rl.prompt(); continue
+        }
+        const before = rt.egs.length
+        try {
+          let last = null, hadExpr = false
+          for (const st of ast.stmts) {
+            const v = rt.execStmt(st, rt.globals)
+            if (st.k === 'ExprStmt') { last = v; hadExpr = true }
+          }
+          if (hadExpr && last !== null) host.print('= ' + display(last, true))
+          for (const r of runEgs(rt).slice(before)) host.print(r.pass ? '✓ eg pass' : `✗ eg fail${r.left !== undefined ? `  left: ${r.left}  right: ${r.right}` : ''}`)
+          rt.egs.length = 0
+        } catch (e) {
+          if (e instanceof RangeError) process.stderr.write(formatError(new TilError('E_STACK', 'recursion too deep'), buf, { color, file: '<repl>' }) + '\n')
+          else if (e instanceof TilError) process.stderr.write(formatError(e, buf, { color, file: '<repl>' }) + '\n')
+          else throw e
+        }
+        buf = ''; rl.setPrompt('til> '); rl.prompt()
+      }
       return 0
     }
 

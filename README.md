@@ -5,7 +5,7 @@
 [![game](https://img.shields.io/badge/flappy_bird-written_in_til-fbbf24)](https://til-lang.vercel.app/flappy.html)
 
 **A scripting language engineered for AI agents.** The whole language fits in a
-1,728-token prompt card, programs match Python on tokens (and cost ~40% fewer than JS),
+1,777-token prompt card, programs match Python on tokens (and cost ~40% fewer than JS),
 hallucinated names are caught *before* execution, and every error is structured data
 designed to be fed back to a model for one-shot self-repair.
 
@@ -38,7 +38,7 @@ table was never the pitch — the load-bearing wins are these:
 
 | the actual cost centers for agents | til |
 |---|---|
-| teaching the model the language | **1,728 tokens once** (`til teach` → system prompt) |
+| teaching the model the language | **1,777 tokens once** (`til teach` → system prompt) |
 | hallucinated import/identifier → wasted round-trip | killed statically by `til check`, with `didYouMean` |
 | indentation/bracket corruption in patches | whitespace never significant; flat pipeline style |
 | silent coercion bugs (`"1" + 1`) | impossible — typed errors with hints instead |
@@ -63,7 +63,7 @@ ceremony piles up. Fairness notes and per-implementation verification (til: a de
 2,000-frame autopilot run in [games/flappy/verify.mjs](games/flappy/verify.mjs); pygame: headless
 scripted drive; js: stubbed-DOM frame pump) are in [games/flappy/tokens.md](games/flappy/tokens.md).
 The host adds 7 builtins (`rect circle text pressed key width height`) via the public
-`createRuntime({builtins})` extension point — the language core and its 1,728-token card are unchanged.
+`createRuntime({builtins})` extension point — the language core and its 1,777-token card are unchanged.
 
 ## Install / run
 
@@ -102,7 +102,7 @@ a, b = 0, 1                        # simultaneous assignment
 data = json (read "cfg.json") catch {}    # any error → inline fallback
 ```
 
-Learn the rest in one sitting: [LLM.md](LLM.md) — it *is* the language, in 1,728 tokens.
+Learn the rest in one sitting: [LLM.md](LLM.md) — it *is* the language, in 1,777 tokens.
 Full semantics + design rationale: [SPEC.md](SPEC.md).
 
 ## The agent loop this language is built for
@@ -128,21 +128,29 @@ Every design decision maps to a measured LLM failure mode — the table is in
   syntax: til was +78% vs Python's `statistics` module before; −10% after — one of the
   tasks til still wins against the adversarially-tightened baseline.
 
-## The load-bearing experiment: `eval/`
+## The load-bearing experiment: `eval/` — measured
 
-Token counts are the cheap claim. The expensive claim is: **a model that has never
-seen til writes it correctly from the 1,728-token card alone.** `eval/run.mjs` measures
-exactly that against any OpenAI-compatible endpoint: 8 unseen tasks, model gets only
-LLM.md + the task, temperature 0, stdout must match byte-exactly, one structured-error
-repair round (which tests the self-repair design too) — side by side with the same
-model writing native Python.
+The expensive claim was: **a model that has never seen til writes it correctly from the
+card alone.** Measured (2026-07-12, three Claude tiers, fresh isolated contexts holding
+only the card + task, byte-exact stdout required — full methodology and caveats in
+[eval/results.md](eval/results.md)):
+
+| model | til from card, pass@1 | native Python, pass@1 | its own til vs its own Python (tokens) |
+|---|---:|---:|---:|
+| Fable 5 | **8/8** | 8/8 | **−15.2%** |
+| Sonnet 5 | **8/8** | 8/8 | **−32.4%** |
+| Haiku 4.5 | **8/8** | 8/8 | **−23.3%** |
+
+Writing til from a 1.8k-token card was as reliable as writing native Python **down to
+Haiku-class models** — the regime where unseen languages are supposed to collapse — and
+every tier's naturally-written til was 15–32% smaller than its naturally-written Python
+(hand-optimized ceilings are at parity; models don't write hand-optimized Python).
+A rules-only half-card also scored 8/8. Honest limits: one model family so far, and the
+benchmark saturated — the failure edge needs harder tasks. Cross-vendor replication:
 
 ```bash
-EVAL_API_KEY=… EVAL_MODELS=anthropic/claude-sonnet-5 node eval/run.mjs   # → eval/results.md
+EVAL_API_KEY=… EVAL_MODELS=openai/gpt-5-mini node eval/run.mjs   # any OpenAI-compatible endpoint
 ```
-
-All 8 tasks have verified reference solutions in til (`eval/reference/`). No key on
-this machine yet, so no numbers are claimed here — run it before believing anyone.
 
 ## What til is not (v0.2)
 

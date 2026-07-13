@@ -1,0 +1,394 @@
+[
+ {
+  "id": "sum-even",
+  "model": "fable",
+  "lang": "til",
+  "variant": "full",
+  "program": "read \"numbers.txt\" | lines | map trim | keep {it} | map num | keep {it % 2 == 0} | sum | print"
+ },
+ {
+  "id": "sum-even",
+  "model": "fable",
+  "lang": "py",
+  "variant": "full",
+  "program": "with open(\"numbers.txt\") as f:\n    print(sum(n for n in (int(line) for line in f if line.strip()) if n % 2 == 0))\n"
+ },
+ {
+  "id": "csv-top",
+  "model": "fable",
+  "lang": "til",
+  "variant": "full",
+  "program": "best = read \"sales.csv\"\n| lines\n| skip 1\n| map trim\n| keep {it}\n| map (split \",\")\n| group {it[0]}\n| items\n| map {p -> {k: p.k, v: (p.v | map {num it[1]} | sum)}}\n| sortBy {it.v}\n| last\nprint \"{best.k} {best.v}\""
+ },
+ {
+  "id": "csv-top",
+  "model": "fable",
+  "lang": "py",
+  "variant": "full",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    for row in csv.DictReader(f):\n        region = row[\"region\"]\n        totals[region] = totals.get(region, 0) + int(row[\"amount\"])\n\nbest = max(totals, key=totals.get)\nprint(best, totals[best])\n"
+ },
+ {
+  "id": "rename-keys",
+  "model": "fable",
+  "lang": "til",
+  "variant": "full",
+  "program": "users = json (read \"users.json\")\nout = users | map {u -> {name: \"{u.first} {u.last}\"}}\nprint (tojson out)"
+ },
+ {
+  "id": "rename-keys",
+  "model": "fable",
+  "lang": "py",
+  "variant": "full",
+  "program": "import json\n\nwith open(\"users.json\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\nprint(json.dumps(result, separators=(\",\", \":\")))\n"
+ },
+ {
+  "id": "dedup-sort",
+  "model": "fable",
+  "lang": "til",
+  "variant": "full",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "id": "dedup-sort",
+  "model": "fable",
+  "lang": "py",
+  "variant": "full",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(word)\n"
+ },
+ {
+  "id": "fizz-sum",
+  "model": "fable",
+  "lang": "til",
+  "variant": "full",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print"
+ },
+ {
+  "id": "fizz-sum",
+  "model": "fable",
+  "lang": "py",
+  "variant": "full",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0))"
+ },
+ {
+  "id": "grade-histogram",
+  "model": "fable",
+  "lang": "til",
+  "variant": "full",
+  "program": "fn grade n {\n  if n >= 90 { \"A\" } elif n >= 80 { \"B\" } elif n >= 70 { \"C\" } else { \"F\" }\n}\neg grade 95 == \"A\"\neg grade 82 == \"B\"\neg grade 70 == \"C\"\neg grade 69 == \"F\"\n\nc = read \"scores.txt\" | lines | map trim | keep {it} | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if c[g] { print \"{g} {c[g]}\" }\n}"
+ },
+ {
+  "id": "grade-histogram",
+  "model": "fable",
+  "lang": "py",
+  "variant": "full",
+  "program": "counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n\nwith open(\"scores.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        score = int(line)\n        if score >= 90:\n            counts[\"A\"] += 1\n        elif score >= 80:\n            counts[\"B\"] += 1\n        elif score >= 70:\n            counts[\"C\"] += 1\n        else:\n            counts[\"F\"] += 1\n\nfor letter in (\"A\", \"B\", \"C\", \"F\"):\n    if counts[letter] > 0:\n        print(f\"{letter} {counts[letter]}\")\n"
+ },
+ {
+  "id": "flatten-inventory",
+  "model": "fable",
+  "lang": "til",
+  "variant": "full",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for i in w.v {\n    print \"{w.k}.{i.k} {i.v}\"\n  }\n}"
+ },
+ {
+  "id": "flatten-inventory",
+  "model": "fable",
+  "lang": "py",
+  "variant": "full",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehouse, items in data.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n"
+ },
+ {
+  "id": "log-grep",
+  "model": "fable",
+  "lang": "til",
+  "variant": "full",
+  "program": "errs = read \"log.txt\" | lines | keep {rmatch 'ERROR' it}\nprint (len errs)\nprint (last errs)"
+ },
+ {
+  "id": "log-grep",
+  "model": "fable",
+  "lang": "py",
+  "variant": "full",
+  "program": "with open(\"log.txt\") as f:\n    lines = [line.rstrip(\"\\n\") for line in f if \"ERROR\" in line]\nprint(len(lines))\nif lines:\n    print(lines[-1])\n"
+ },
+ {
+  "id": "sum-even",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "full",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print\n"
+ },
+ {
+  "id": "sum-even",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "full",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 2 == 0:\n            total += n\nprint(total)\n"
+ },
+ {
+  "id": "csv-top",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "full",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\n\ntotals = {}\nfor r in rows {\n  region = r[0]\n  amt = num r[1]\n  totals[region] = (get region totals or 0) + amt\n}\n\nbest = top 1 totals | first\nprint \"{best.k} {best.v}\"\n"
+ },
+ {
+  "id": "csv-top",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "full",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n"
+ },
+ {
+  "id": "rename-keys",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "full",
+  "program": "users = json (read \"users.json\")\nresult = users | map {u -> {name: \"{u.first} {u.last}\"}}\nprint (tojson result)\n"
+ },
+ {
+  "id": "rename-keys",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "full",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \":\")))\n"
+ },
+ {
+  "id": "dedup-sort",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "full",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "id": "dedup-sort",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "full",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(word)\n"
+ },
+ {
+  "id": "fizz-sum",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "full",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print"
+ },
+ {
+  "id": "fizz-sum",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "full",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0))\n"
+ },
+ {
+  "id": "grade-histogram",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "full",
+  "program": "scores = read \"scores.txt\" | lines | map num\n\ncounts = {}\nfor g in scores {\n  letter = if g >= 90 { \"A\" } elif g >= 80 { \"B\" } elif g >= 70 { \"C\" } else { \"F\" }\n  counts[letter] = (counts[letter] or 0) + 1\n}\n\nfor letter in [\"A\", \"B\", \"C\", \"F\"] {\n  c = counts[letter] or 0\n  if c > 0 {\n    print \"{letter} {c}\"\n  }\n}\n"
+ },
+ {
+  "id": "grade-histogram",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "full",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "flatten-inventory",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "full",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for i in w.v {\n    print \"{w.k}.{i.k} {i.v}\"\n  }\n}\n"
+ },
+ {
+  "id": "flatten-inventory",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "full",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehouse, items in data.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n"
+ },
+ {
+  "id": "log-grep",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "full",
+  "program": "rows = read \"log.txt\" | lines\nerrors = rows | keep {rmatch 'ERROR' it}\nprint (len errors)\nprint (last errors)\n"
+ },
+ {
+  "id": "log-grep",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "full",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"ERROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n"
+ },
+ {
+  "id": "sum-even",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "full",
+  "program": "read \"numbers.txt\"\n| lines\n| keep {it}\n| map num\n| keep {it % 2 == 0}\n| sum\n| print"
+ },
+ {
+  "id": "sum-even",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "full",
+  "program": "with open('numbers.txt', 'r') as f:\n    total = 0\n    for line in f:\n        num = int(line.strip())\n        if num % 2 == 0:\n            total += num\n    print(total)"
+ },
+ {
+  "id": "csv-top",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "full",
+  "program": "data = read \"sales.csv\" | lines | skip 1 | map (split \",\")\ntotals = {}\nfor row in data {\n  region = row[0]\n  amount = num row[1]\n  current = get region totals\n  totals[region] = if current { current + amount } else { amount }\n}\nresult = top 1 totals | first\nprint \"{result.k} {result.v}\""
+ },
+ {
+  "id": "csv-top",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "full",
+  "program": "import csv\nfrom collections import defaultdict\n\ntotals = defaultdict(int)\n\nwith open('sales.csv', 'r') as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row['region']\n        amount = int(row['amount'])\n        totals[region] += amount\n\nmax_region = max(totals, key=totals.get)\nmax_total = totals[max_region]\n\nprint(f\"{max_region} {max_total}\")"
+ },
+ {
+  "id": "rename-keys",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "full",
+  "program": "users = json (read \"users.json\")\nusers | map {u -> {name: \"{u.first} {u.last}\"}} | tojson | print"
+ },
+ {
+  "id": "rename-keys",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "full",
+  "program": "import json\n\nwith open('users.json', 'r') as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{user['first']} {user['last']}\"} for user in users]\n\nprint(json.dumps(result, separators=(',', ':')))"
+ },
+ {
+  "id": "dedup-sort",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "full",
+  "program": "read \"words.txt\" | words | sort | uniq | each print"
+ },
+ {
+  "id": "dedup-sort",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "full",
+  "program": "with open('words.txt', 'r') as f:\n    words = f.read().split()\n\nunique_words = sorted(set(words))\n\nfor word in unique_words:\n    print(word)"
+ },
+ {
+  "id": "fizz-sum",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "full",
+  "program": "result = range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum\nprint result"
+ },
+ {
+  "id": "fizz-sum",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "full",
+  "program": "total = sum(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0)\nprint(total)"
+ },
+ {
+  "id": "grade-histogram",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "full",
+  "program": "scores = read \"scores.txt\" | lines | map num\n\na_count = scores | keep {it >= 90} | len\nb_count = scores | keep {it >= 80 and it < 90} | len\nc_count = scores | keep {it >= 70 and it < 80} | len\nf_count = scores | keep {it < 70} | len\n\nif a_count > 0 { print \"A {a_count}\" }\nif b_count > 0 { print \"B {b_count}\" }\nif c_count > 0 { print \"C {c_count}\" }\nif f_count > 0 { print \"F {f_count}\" }"
+ },
+ {
+  "id": "grade-histogram",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "full",
+  "program": "# Count grades from scores\ngrade_counts = {'A': 0, 'B': 0, 'C': 0, 'F': 0}\n\nwith open('scores.txt', 'r') as f:\n    for line in f:\n        score = int(line.strip())\n        if score >= 90:\n            grade_counts['A'] += 1\n        elif score >= 80:\n            grade_counts['B'] += 1\n        elif score >= 70:\n            grade_counts['C'] += 1\n        else:\n            grade_counts['F'] += 1\n\n# Print grades in order, skipping zero counts\nfor grade in ['A', 'B', 'C', 'F']:\n    if grade_counts[grade] > 0:\n        print(f\"{grade} {grade_counts[grade]}\")"
+ },
+ {
+  "id": "flatten-inventory",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "full",
+  "program": "data = json (read \"inv.json\")\nfor warehouse in data {\n  for item in warehouse.v {\n    print \"{warehouse.k}.{item.k} {item.v}\"\n  }\n}"
+ },
+ {
+  "id": "flatten-inventory",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "full",
+  "program": "import json\n\nwith open('inv.json') as f:\n    inv = json.load(f)\n\nfor warehouse, items in inv.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")"
+ },
+ {
+  "id": "log-grep",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "full",
+  "program": "lines_with_error = read \"log.txt\" | lines | keep {rmatch \"ERROR\" it}\nprint (len lines_with_error)\nprint (last lines_with_error)"
+ },
+ {
+  "id": "log-grep",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "full",
+  "program": "with open('log.txt', 'r') as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip('\\n') for line in lines if 'ERROR' in line]\n\nprint(len(error_lines))\nprint(error_lines[-1])"
+ },
+ {
+  "id": "sum-even",
+  "model": "fable",
+  "lang": "til",
+  "variant": "half-card",
+  "program": "read \"numbers.txt\" | lines | keep {trim it} | map num | keep {it % 2 == 0} | sum | print"
+ },
+ {
+  "id": "csv-top",
+  "model": "fable",
+  "lang": "til",
+  "variant": "half-card",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map {trim it} | keep {it} | map {split \",\" it}\ngrouped = group {it[0]} rows\ntotals = items grouped | map {e -> {region: e.k, total: (e.v | map {num it[1]} | sum)}}\nbest = totals | sortBy {it.total} | last\nprint \"{best.region} {best.total}\""
+ },
+ {
+  "id": "rename-keys",
+  "model": "fable",
+  "lang": "til",
+  "variant": "half-card",
+  "program": "users = json (read \"users.json\")\nout = map {u -> {name: \"{u.first} {u.last}\"}} users\nprint (tojson out)\n"
+ },
+ {
+  "id": "dedup-sort",
+  "model": "fable",
+  "lang": "til",
+  "variant": "half-card",
+  "program": "read \"words.txt\" | words | uniq | sort | join \"\\n\" | print"
+ },
+ {
+  "id": "fizz-sum",
+  "model": "fable",
+  "lang": "til",
+  "variant": "half-card",
+  "program": "print (range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum)"
+ },
+ {
+  "id": "grade-histogram",
+  "model": "fable",
+  "lang": "til",
+  "variant": "half-card",
+  "program": "fn grade n {\n  if n >= 90 { \"A\" } elif n >= 80 { \"B\" } elif n >= 70 { \"C\" } else { \"F\" }\n}\neg grade 95 == \"A\"\neg grade 80 == \"B\"\neg grade 79 == \"C\"\neg grade 69 == \"F\"\n\nc = read \"scores.txt\" | lines | map trim | keep {it != \"\"} | map num | map grade | counts\n\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  n = get g c\n  if n { print \"{g} {n}\" }\n}"
+ },
+ {
+  "id": "flatten-inventory",
+  "model": "fable",
+  "lang": "til",
+  "variant": "half-card",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for i in w.v {\n    print \"{w.k}.{i.k} {i.v}\"\n  }\n}"
+ },
+ {
+  "id": "log-grep",
+  "model": "fable",
+  "lang": "til",
+  "variant": "half-card",
+  "program": "errs = read \"log.txt\" | lines | keep {\"ERROR\" in it}\nprint (len errs)\nprint (last errs)\n"
+ }
+]

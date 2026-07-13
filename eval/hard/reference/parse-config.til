@@ -1,0 +1,15 @@
+out = {}
+order = []
+for line in (read "app.cfg" | lines) {
+  t = trim line
+  if t and not starts "#" t and has "=" t {
+    i = pos "=" t
+    k = trim (take i t)
+    v = trim (skip (i + 1) t)
+    if k and not has k out {
+      out[k] = v
+      push k order
+    }
+  }
+}
+for k in order { print "{k}={out[k]}" }

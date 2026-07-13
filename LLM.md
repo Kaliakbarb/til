@@ -55,7 +55,7 @@ Any runtime error can be caught inline with a fallback: `json s catch {}` · `nu
 io      print x (returns x) · read path · write path s · append path s · env name · args() · stdin() · now() · rand()
 str     lines s · words s · chars s · trim · upper · lower · split sep s · join sep xs · replace old new s · starts pre s · ends suf s · rep n x · num s · str x · len x
 regex   rall re s (all matches) · rmatch re s (first or null) · rsub re new s ($1 = group) — JS syntax; write patterns in raw '…' strings: rall '\d+' s
-list    range a b · map f xs · keep f xs (filter) · each f xs · fold f init xs · sum · min · max · mean · median · stdev · sort · sortBy f xs · rev · uniq · flat · zip xs ys · first · last · take n x · skip n x · push x xs (mutates) · pop xs (mutates) · has x coll · find f xs · pos x xs · any f xs · all f xs
+list    range a b · map f xs · keep f xs (filter) · each f xs · fold f init xs · sum · min · max · mean · median · stdev · sort · sortBy f xs · rev · uniq · flat · zip xs ys · enum xs (→ [[i, x], …]) · first · last · take n x · skip n x · push x xs (mutates) · pop xs (mutates) · has x coll · find f xs · pos x xs · any f xs · all f xs
 map     keys m · vals m · get k m · put k v m (copy) · del k m · merge a b · items m (→ [{k, v}]) · toMap pairs · group f xs · counts xs · top n m (highest v)
 json    json s (parse) · tojson x · pretty x
 math    abs · round · roundTo digits n · floor · ceil · sqrt · pow a b

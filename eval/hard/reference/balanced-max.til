@@ -1,0 +1,12 @@
+s = read "brackets.txt" | trim
+best = 0
+stack = [-1]
+for p in enum s {
+  if p[1] == "(" { push p[0] stack }
+  else {
+    pop stack
+    if empty stack { push p[0] stack }
+    elif p[0] - last stack > best { best = p[0] - last stack }
+  }
+}
+print best

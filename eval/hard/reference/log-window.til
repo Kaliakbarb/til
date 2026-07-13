@@ -1,0 +1,10 @@
+errs = read "big.log" | lines | keep {has " ERROR " it} | map {words it | first | num}
+best, bs = 0, 0
+for p in enum errs {
+  cnt = errs | skip p[0] | keep {it <= p[1] + 59} | len
+  if cnt > best {
+    best = cnt
+    bs = p[1]
+  }
+}
+print "{bs} {best}"

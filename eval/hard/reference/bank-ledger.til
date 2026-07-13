@@ -1,0 +1,16 @@
+bal = {}
+order = []
+rejected = 0
+for t in (read "txns.txt" | lines) {
+  p = words t
+  k, a, m = p[0], p[1], num p[2]
+  if not has a bal {
+    bal[a] = 0
+    push a order
+  }
+  if k == "deposit" { bal[a] = bal[a] + m }
+  elif bal[a] >= m { bal[a] = bal[a] - m }
+  else { rejected = rejected + 1 }
+}
+for a in order { print "{a} {bal[a]}" }
+print "rejected {rejected}"

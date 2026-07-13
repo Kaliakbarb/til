@@ -317,6 +317,16 @@ eg top 1 (counts ["x", "y", "x"]) == [{k: "x", v: 2}]
 eg top 9 {a: 1} == [{k: "a", v: 1}]
 eg (["b", "a", "b", "a", "c"] | counts | top 2) == [{k: "b", v: 2}, {k: "a", v: 2}]  # ties keep first-seen order
 
+# -- enum -------------------------------------------------------------------
+eg enum ["a", "b"] == [[0, "a"], [1, "b"]]
+eg enum [] == []
+eg enum "hi" == [[0, "h"], [1, "i"]]
+eg (enum ["x", "y"] | keep {p -> p[0] > 0} | map {p -> p[1]}) == ["y"]
+
+# -- rounding is half-up (documented divergence from python's banker's) -----
+eg roundTo 2 0.125 == 0.13
+eg roundTo 0 2.5 == 3
+
 # -- negative-argument heuristic (Ruby-style) -----------------------------
 eg abs -3 == 3            # space before -, none after → negative argument
 eg get -1 [7, 8] == 8

@@ -7,7 +7,7 @@
 //   3. No imports, no arity surprises, no significant whitespace, no silent coercion.
 //   4. Errors are structured data designed to be fed back to a model for one-shot repair.
 
-export const VERSION = '0.2.1'
+export const VERSION = '0.3.0'
 
 // ---------------------------------------------------------------------------
 // Errors
@@ -638,6 +638,55 @@ function suggest(name, candidates) {
   return [...new Set(scored.map(x => x[1]))].slice(0, 2)
 }
 
+// constant-fold literal-only expressions (no names, no calls) — used to discharge
+// provably-false `ensure` contracts at check time (E_ENSURE_STATIC, after Vera)
+const FOLD_FAIL = Symbol('nofold')
+function constEval(e) {
+  if (!e) return FOLD_FAIL
+  switch (e.k) {
+    case 'Num': case 'Bool': return e.v
+    case 'Null': return null
+    case 'Str': return e.parts.every(p => p.e === undefined) ? e.parts.map(p => p.s).join('') : FOLD_FAIL
+    case 'List': {
+      const out = []
+      for (const el of e.els) { const v = constEval(el); if (v === FOLD_FAIL) return FOLD_FAIL; out.push(v) }
+      return out
+    }
+    case 'Un': {
+      const v = constEval(e.expr)
+      if (v === FOLD_FAIL) return FOLD_FAIL
+      if (e.op === 'not') return !truthy(v)
+      return typeof v === 'number' ? -v : FOLD_FAIL
+    }
+    case 'Logic': {
+      const l = constEval(e.l)
+      if (l === FOLD_FAIL) return FOLD_FAIL
+      if (e.op === 'or') return truthy(l) ? l : constEval(e.r)
+      return truthy(l) ? constEval(e.r) : l
+    }
+    case 'Bin': {
+      const l = constEval(e.l), r = constEval(e.r)
+      if (l === FOLD_FAIL || r === FOLD_FAIL) return FOLD_FAIL
+      const nn = typeof l === 'number' && typeof r === 'number'
+      switch (e.op) {
+        case '==': return deepEq(l, r)
+        case '!=': return !deepEq(l, r)
+        case '+': return nn || (typeof l === 'string' && typeof r === 'string') ? l + r : FOLD_FAIL
+        case '-': return nn ? l - r : FOLD_FAIL
+        case '*': return nn ? l * r : FOLD_FAIL
+        case '/': return nn && r !== 0 ? l / r : FOLD_FAIL
+        case '%': return nn && r !== 0 ? ((l % r) + r) % r : FOLD_FAIL
+        case '<': case '<=': case '>': case '>=': {
+          if (!nn && !(typeof l === 'string' && typeof r === 'string')) return FOLD_FAIL
+          return e.op === '<' ? l < r : e.op === '<=' ? l <= r : e.op === '>' ? l > r : l >= r
+        }
+        default: return FOLD_FAIL
+      }
+    }
+    default: return FOLD_FAIL
+  }
+}
+
 // collect names assigned anywhere in a function body (not descending into nested fns/lambdas)
 function collectAssigned(node, out) {
   if (!node || typeof node !== 'object') return
@@ -710,6 +759,11 @@ export function check(ast, opts = {}) {
         return
       case 'ExprStmt': case 'Ensure': case 'Eg':
         if (st.k === 'Eg' && inFn) warnings.push({ code: 'W_EG', msg: 'eg inside a function never runs as a test; move it to top level', line: st.line, col: st.col })
+        if (st.k === 'Ensure') {
+          const v = constEval(st.expr)
+          if (v !== FOLD_FAIL && !truthy(v))
+            errors.push({ code: 'E_ENSURE_STATIC', msg: `this ensure can never pass: ${st.src || 'condition'} is provably falsy`, line: st.line, col: st.col, hint: 'the contract fails for every input — the condition or the code above it is wrong' })
+        }
         walkExpr(st.expr, scope, inFn, inLoop); return
       case 'Return':
         if (!inFn) errors.push({ code: 'E_RETURN', msg: 'return outside a function', line: st.line, col: st.col })
@@ -964,6 +1018,7 @@ export const BUILTIN_SPECS = {
   counts: { arity: 1, sig: 'counts xs', doc: 'map of value → occurrences' },
   top: { arity: 2, sig: 'top n m', doc: 'n highest {k, v} items of a map, by v descending' },
   zip: { arity: 2, sig: 'zip xs ys', doc: 'list of [x, y] pairs (shorter length)' },
+  enum: { arity: 1, sig: 'enum xs', doc: 'list of [index, x] pairs; works on str too' },
   flat: { arity: 1, sig: 'flat xs', doc: 'flatten one level' },
   first: { arity: 1, sig: 'first xs', doc: 'first element or null' },
   last: { arity: 1, sig: 'last xs', doc: '' },
@@ -1122,6 +1177,7 @@ function makeBuiltins(rt) {
     return pairs.sort((a, b) => a.get('v') < b.get('v') ? 1 : a.get('v') > b.get('v') ? -1 : 0).slice(0, Math.max(0, n))
   })
   def('zip', (rt2, [a, b], node) => { want(a, ['list'], 'zip', 'xs', node); want(b, ['list'], 'zip', 'ys', node); const n = Math.min(a.length, b.length), out = []; for (let i = 0; i < n; i++) out.push([a[i], b[i]]); return out })
+  def('enum', (rt2, [x], node) => { want(x, ['list', 'str'], 'enum', 'xs', node); const arr = T(x) === 'str' ? CP(x) : x; return arr.map((v, i) => [i, v]) })
   def('flat', (rt2, [xs], node) => { want(xs, ['list'], 'flat', 'xs', node); return xs.flatMap(x => Array.isArray(x) ? x : [x]) })
   def('first', (rt2, [xs], node) => { want(xs, ['list', 'str'], 'first', 'xs', node); return xs.length ? xs[0] : null })
   def('last', (rt2, [xs], node) => { want(xs, ['list', 'str'], 'last', 'xs', node); return xs.length ? xs[xs.length - 1] : null })

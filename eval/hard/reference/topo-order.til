@@ -1,0 +1,17 @@
+edges = read "deps.txt" | lines | map (split "->")
+nodes = edges | flat | uniq | sort
+deps = {}
+for n in nodes { deps[n] = [] }
+for e in edges { push e[1] deps[e[0]] }
+placed = {}
+out = []
+while len out < len nodes {
+  for n in nodes {
+    if not has n placed and (all {has it placed} deps[n]) {
+      placed[n] = true
+      push n out
+      break
+    }
+  }
+}
+out | each print

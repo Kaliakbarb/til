@@ -1,0 +1,11 @@
+tot = {}
+order = []
+for l in (read "traffic.txt" | lines) {
+  p = words l
+  if not has p[0] tot {
+    tot[p[0]] = 0
+    push p[0] order
+  }
+  tot[p[0]] = tot[p[0]] + num p[1]
+}
+for ip in (order | sortBy {-tot[it]} | take 3) { print "{ip} {tot[ip]}" }

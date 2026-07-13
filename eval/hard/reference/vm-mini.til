@@ -1,0 +1,15 @@
+st = []
+for line in (read "ops.txt" | lines) {
+  p = words line
+  op = p[0]
+  if op == "PUSH" { push (num p[1]) st }
+  elif op == "DUP" { push (last st) st }
+  elif op == "SWAP" { st[-1], st[-2] = st[-2], st[-1] }
+  else {
+    b, a = pop st, pop st
+    if op == "ADD" { push (a + b) st }
+    elif op == "MUL" { push (a * b) st }
+    elif op == "SUB" { push (a - b) st }
+  }
+}
+print (last st)

@@ -1,0 +1,20 @@
+g = read "grid.txt" | lines | map chars | map (map {it == "#"})
+H, W = len g, len g[0]
+for gen in range 0 5 {
+  ng = []
+  for y in range 0 H {
+    row = []
+    for x in range 0 W {
+      nb = 0
+      for dy in [-1, 0, 1] {
+        for dx in [-1, 0, 1] {
+          if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }
+        }
+      }
+      push (nb == 3 or (g[y][x] and nb == 2)) row
+    }
+    push row ng
+  }
+  g = ng
+}
+for row in g { print (row | map {if it { "#" } else { "." }} | join "") }

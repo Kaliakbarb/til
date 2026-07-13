@@ -1,0 +1,8 @@
+latest = {}
+for l in (read "events.txt" | lines) {
+  p = words l
+  ts = num p[1]
+  if not has p[0] latest or ts >= latest[p[0]] { latest[p[0]] = ts }
+}
+print (len latest)
+print (latest | vals | sum)

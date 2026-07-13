@@ -1,0 +1,28 @@
+fn parseLine line {
+  fields = []
+  cur = ""
+  inq = false
+  cs = chars line
+  i = 0
+  while i < len cs {
+    c = cs[i]
+    if inq {
+      if c == '"' {
+        if i + 1 < len cs and cs[i + 1] == '"' {
+          cur = cur + '"'
+          i = i + 1
+        } else { inq = false }
+      } else { cur = cur + c }
+    } elif c == '"' { inq = true }
+    elif c == "," {
+      push cur fields
+      cur = ""
+    } else { cur = cur + c }
+    i = i + 1
+  }
+  push cur fields
+  fields
+}
+rows = read "parts.csv" | lines | skip 1 | map parseLine
+for r in rows { print "{r[0]}|{r[1]}" }
+print "total {rows | map {num it[2]} | sum}"

@@ -168,6 +168,7 @@ bin/til            CLI: repl · run · check · test · describe · teach · gra
 LLM.md             the prompt card (the language itself)
 SPEC.md            normative semantics + design rationale
 RESEARCH.md        the cited evidence base + prior-art landscape behind every design bet
+ROADMAP.md         the measured path to v1.0: north-star metrics, kill criteria, eval v2
 tests/lang.til     226-assertion conformance suite, written in til
 examples/          hello · wordfreq · contracts · report · broken (error-UX demo)
 bench/             10 tasks × 3 languages, output-verified token benchmark

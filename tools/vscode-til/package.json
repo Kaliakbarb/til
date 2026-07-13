@@ -1,6 +1,6 @@
 {
   "name": "vscode-til",
-  "displayName": "til — тіл",
+  "displayName": "til \u2014 \u0442\u0456\u043b",
   "description": "Syntax highlighting for the til scripting language (.til files).",
   "version": "0.2.1",
   "publisher": "til-lang",
@@ -30,6 +30,26 @@
         "scopeName": "source.til",
         "path": "./syntaxes/til.tmLanguage.json"
       }
-    ]
-  }
+    ],
+    "commands": [
+      {
+        "command": "til.run",
+        "title": "til: run current file"
+      }
+    ],
+    "configuration": {
+      "title": "til",
+      "properties": {
+        "til.path": {
+          "type": "string",
+          "default": "",
+          "description": "path to the til CLI (bin/til); empty = auto-detect"
+        }
+      }
+    }
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:til"
+  ]
 }

@@ -1,0 +1,722 @@
+[
+ {
+  "id": "sum-even:til:0",
+  "task": "sum-even",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "read \"numbers.txt\" | lines | mpa num | keep {it % 2 == 0} | sum | print\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `mpa`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-EumEkd/prog.til\",\"line\":1,\"col\":30,\"src\":\"read \\\"numbers.txt\\\" | lines | mpa num | keep {it % 2 == 0} | sum | print\",\"didYouMean\":[\"map\",\"min\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "sum-even:til:1",
+  "task": "sum-even",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "ruad \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `ruad`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-lgR10v/prog.til\",\"line\":1,\"col\":1,\"src\":\"ruad \\\"numbers.txt\\\" | lines | map num | keep {it % 2 == 0} | sum | print\",\"didYouMean\":[\"read\",\"rand\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "sum-even:til:2",
+  "task": "sum-even",
+  "lang": "til",
+  "op": "operator-swap",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 != 0} | sum | print\n",
+  "feedback": "program ran but stdout was:\n45\n\nexpected:\n106\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "sum-even:til:3",
+  "task": "sum-even",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "read \"numbers.tot\" | lines | map num | keep {it % 2 == 0} | sum | print\n",
+  "feedback": "error[E_IO] cannot read \"numbers.tot\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-UYcVfm/prog.til:1:1\n    1 | read \"numbers.tot\" | lines | map num | keep {it % 2 == 0} | sum | print\n       ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "sum-even:til:4",
+  "task": "sum-even",
+  "lang": "til",
+  "op": "string-lit",
+  "program": "read \"numbers.tx\" | lines | map num | keep {it % 2 == 0} | sum | print\n",
+  "feedback": "error[E_IO] cannot read \"numbers.tx\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-MQ4FOj/prog.til:1:1\n    1 | read \"numbers.tx\" | lines | map num | keep {it % 2 == 0} | sum | print\n       ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "sum-even:py:0",
+  "task": "sum-even",
+  "lang": "py",
+  "op": "operator-swap",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 2 != 0:\n            total += n\nprint(total)\n",
+  "feedback": "program ran but stdout was:\n45\n\nexpected:\n106\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "sum-even:py:1",
+  "task": "sum-even",
+  "lang": "py",
+  "op": "string-lit",
+  "program": "total = 0\nwith open(\"numbers.tx\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 2 == 0:\n            total += n\nprint(total)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-Wc6UHF/prog.py\", line 2, in <module>\n    with open(\"numbers.tx\") as f:\n         ^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'numbers.tx'\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "sum-even:py:2",
+  "task": "sum-even",
+  "lang": "py",
+  "op": "off-by-one",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 2 == 1:\n            total += n\nprint(total)\n",
+  "feedback": "program ran but stdout was:\n45\n\nexpected:\n106\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "sum-even:py:3",
+  "task": "sum-even",
+  "lang": "py",
+  "op": "off-by-one",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 1 == 0:\n            total += n\nprint(total)\n",
+  "feedback": "program ran but stdout was:\n151\n\nexpected:\n106\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "sum-even:py:4",
+  "task": "sum-even",
+  "lang": "py",
+  "op": "off-by-one",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 3 == 0:\n            total += n\nprint(total)\n",
+  "feedback": "program ran but stdout was:\n75\n\nexpected:\n106\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "csv-top:til:0",
+  "task": "csv-top",
+  "lang": "til",
+  "op": "string-lit",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",,\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n",
+  "feedback": "error[E_INDEX] index 1 out of range (len 1)  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-Y60F3Y/prog.til:2:76\n    2 | best = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\n                                                                                  ^\n  locals: it=[\"eu,120\"]\n  in: lambda\n  hint: use `get i xs` for a null-safe lookup\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "csv-top:til:1",
+  "task": "csv-top",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "rows = read \"sales.csv\" | lones | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `lones`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-eH6gqE/prog.til\",\"line\":1,\"col\":27,\"src\":\"rows = read \\\"sales.csv\\\" | lones | skip 1 | map (split \\\",\\\")\",\"didYouMean\":[\"lines\",\"lower\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "csv-top:til:2",
+  "task": "csv-top",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | tope 1\nprint \"{best[0].k} {best[0].v}\"\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `tope`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-jLWkoQ/prog.til\",\"line\":2,\"col\":91,\"src\":\"best = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | tope 1\",\"didYouMean\":[\"top\",\"type\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "csv-top:til:3",
+  "task": "csv-top",
+  "lang": "til",
+  "op": "string-lit",
+  "program": "rows = read \"sales.cs\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n",
+  "feedback": "error[E_IO] cannot read \"sales.cs\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-Rprr7S/prog.til:1:8\n    1 | rows = read \"sales.cs\" | lines | skip 1 | map (split \",\")\n              ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "csv-top:til:4",
+  "task": "csv-top",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | smu}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `smu`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-aHLIEe/prog.til\",\"line\":2,\"col\":83,\"src\":\"best = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | smu}} | top 1\",\"didYouMean\":[\"sum\",\"num\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "csv-top:py:0",
+  "task": "csv-top",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import csv\n\ntotls = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-KhOOQP/prog.py\", line 9, in <module>\n    totals[region] = totals.get(region, 0) + amount\n                     ^^^^^^\nNameError: name 'totals' is not defined. Did you mean: 'totls'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "csv-top:py:1",
+  "task": "csv-top",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, kye=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-wJ6PN0/prog.py\", line 11, in <module>\n    top_region = max(totals, kye=totals.get)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: 'kye' is an invalid keyword argument for max()\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "csv-top:py:2",
+  "task": "csv-top",
+  "lang": "py",
+  "op": "string-lit",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.cs\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-8ybgAb/prog.py\", line 4, in <module>\n    with open(\"sales.cs\", newline=\"\") as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'sales.cs'\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "csv-top:py:3",
+  "task": "csv-top",
+  "lang": "py",
+  "op": "string-lit",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"regio\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-rHOanw/prog.py\", line 7, in <module>\n    region = row[\"regio\"]\n             ~~~^^^^^^^^^\nKeyError: 'regio'\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "csv-top:py:4",
+  "task": "csv-top",
+  "lang": "py",
+  "op": "operator-swap",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) - amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n",
+  "feedback": "program ran but stdout was:\nus -230\n\nexpected:\nkz 460\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "rename-keys:til:0",
+  "task": "rename-keys",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "users = json (read \"users.jon\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n",
+  "feedback": "error[E_IO] cannot read \"users.jon\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-RKpYcz/prog.til:1:15\n    1 | users = json (read \"users.jon\")\n                     ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "rename-keys:til:1",
+  "task": "rename-keys",
+  "lang": "til",
+  "op": "string-lit",
+  "program": "users = json (read \"users.jso\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n",
+  "feedback": "error[E_IO] cannot read \"users.jso\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-81Dyve/prog.til:1:15\n    1 | users = json (read \"users.jso\")\n                     ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "rename-keys:til:2",
+  "task": "rename-keys",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "users = json (read \"users.json\")\nprint (tojson (useis | map {u -> {name: \"{u.first} {u.last}\"}}))\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `useis`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-bUXKM4/prog.til\",\"line\":2,\"col\":16,\"src\":\"print (tojson (useis | map {u -> {name: \\\"{u.first} {u.last}\\\"}}))\",\"didYouMean\":[\"users\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "rename-keys:til:3",
+  "task": "rename-keys",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {nime: \"{u.first} {u.last}\"}}))\n",
+  "feedback": "program ran but stdout was:\n[{\"nime\":\"Aliya Nur\"},{\"nime\":\"Bek Sar\"},{\"nime\":\"Dana Kim\"}]\n\nexpected:\n[{\"name\":\"Aliya Nur\"},{\"name\":\"Bek Sar\"},{\"name\":\"Dana Kim\"}]\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "rename-keys:til:4",
+  "task": "rename-keys",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "users = json (read \"users.jaon\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n",
+  "feedback": "error[E_IO] cannot read \"users.jaon\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-GJyso2/prog.til:1:15\n    1 | users = json (read \"users.jaon\")\n                     ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "rename-keys:py:0",
+  "task": "rename-keys",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['lat']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \":\")))\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-bFME9L/prog.py\", line 6, in <module>\n    result = [{\"name\": f\"{u['first']} {u['lat']}\"} for u in users]\n                                       ~^^^^^^^\nKeyError: 'lat'\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "rename-keys:py:1",
+  "task": "rename-keys",
+  "lang": "py",
+  "op": "string-lit",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",,\", \":\")))\n",
+  "feedback": "program ran but stdout was:\n[{\"name\":\"Aliya Nur\"},,{\"name\":\"Bek Sar\"},,{\"name\":\"Dana Kim\"}]\n\nexpected:\n[{\"name\":\"Aliya Nur\"},{\"name\":\"Bek Sar\"},{\"name\":\"Dana Kim\"}]\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "rename-keys:py:2",
+  "task": "rename-keys",
+  "lang": "py",
+  "op": "string-lit",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \"::\")))\n",
+  "feedback": "program ran but stdout was:\n[{\"name\"::\"Aliya Nur\"},{\"name\"::\"Bek Sar\"},{\"name\"::\"Dana Kim\"}]\n\nexpected:\n[{\"name\":\"Aliya Nur\"},{\"name\":\"Bek Sar\"},{\"name\":\"Dana Kim\"}]\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "rename-keys:py:3",
+  "task": "rename-keys",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = josn.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \":\")))\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-QmnB7Y/prog.py\", line 4, in <module>\n    users = josn.load(f)\n            ^^^^\nNameError: name 'josn' is not defined\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "rename-keys:py:4",
+  "task": "rename-keys",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nrasult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \":\")))\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-89Omd3/prog.py\", line 8, in <module>\n    print(json.dumps(result, separators=(\",\", \":\")))\n                     ^^^^^^\nNameError: name 'result' is not defined. Did you mean: 'rasult'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:til:0",
+  "task": "dedup-sort",
+  "lang": "til",
+  "op": "string-lit",
+  "program": "read \"words.tx\" | words | uniq | sort | each print\n",
+  "feedback": "error[E_IO] cannot read \"words.tx\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-446uXN/prog.til:1:1\n    1 | read \"words.tx\" | words | uniq | sort | each print\n       ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:til:1",
+  "task": "dedup-sort",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "read \"words.txt\" | words | uniq | sort | eah print\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `eah`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-3Ljh2U/prog.til\",\"line\":1,\"col\":42,\"src\":\"read \\\"words.txt\\\" | words | uniq | sort | eah print\",\"didYouMean\":[\"each\",\"read\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:til:2",
+  "task": "dedup-sort",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "rad \"words.txt\" | words | uniq | sort | each print\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `rad`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-GYMHJ2/prog.til\",\"line\":1,\"col\":1,\"src\":\"rad \\\"words.txt\\\" | words | uniq | sort | each print\",\"didYouMean\":[\"read\",\"rand\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:til:3",
+  "task": "dedup-sort",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "read \"words.txt\" | words | uniq | sotr | each print\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `sotr`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-9Lth0u/prog.til\",\"line\":1,\"col\":35,\"src\":\"read \\\"words.txt\\\" | words | uniq | sotr | each print\",\"didYouMean\":[\"str\",\"sort\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:til:4",
+  "task": "dedup-sort",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "read \"words.ttx\" | words | uniq | sort | each print\n",
+  "feedback": "error[E_IO] cannot read \"words.ttx\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-gIkWPE/prog.til:1:1\n    1 | read \"words.ttx\" | words | uniq | sort | each print\n       ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:py:0",
+  "task": "dedup-sort",
+  "lang": "py",
+  "op": "string-lit",
+  "program": "with open(\"words.tx\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(word)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-8U4Hj0/prog.py\", line 1, in <module>\n    with open(\"words.tx\") as f:\n         ^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'words.tx'\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:py:1",
+  "task": "dedup-sort",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(wrd)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-Cgo7nW/prog.py\", line 5, in <module>\n    print(wrd)\n          ^^^\nNameError: name 'wrd' is not defined. Did you mean: 'word'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:py:2",
+  "task": "dedup-sort",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(ste(words)):\n    print(word)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-wZBQhV/prog.py\", line 4, in <module>\n    for word in sorted(ste(words)):\n                       ^^^\nNameError: name 'ste' is not defined. Did you mean: 'str'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:py:3",
+  "task": "dedup-sort",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(st(words)):\n    print(word)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-BMfWCC/prog.py\", line 4, in <module>\n    for word in sorted(st(words)):\n                       ^^\nNameError: name 'st' is not defined. Did you mean: 'set'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "dedup-sort:py:4",
+  "task": "dedup-sort",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "with open(\"words.tit\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(word)\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-ou3w8Z/prog.py\", line 1, in <module>\n    with open(\"words.tit\") as f:\n         ^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'words.tit'\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "fizz-sum:til:0",
+  "task": "fizz-sum",
+  "lang": "til",
+  "op": "off-by-one",
+  "program": "range 1 1001 | keep {it % 3 == 1 or it % 5 == 0} | sum | print\n",
+  "feedback": "program ran but stdout was:\n233832\n\nexpected:\n234168\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "fizz-sum:til:1",
+  "task": "fizz-sum",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "range 1 1001 | kep {it % 3 == 0 or it % 5 == 0} | sum | print\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `kep`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-8Uf0cI/prog.til\",\"line\":1,\"col\":16,\"src\":\"range 1 1001 | kep {it % 3 == 0 or it % 5 == 0} | sum | print\",\"didYouMean\":[\"rep\",\"keep\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "fizz-sum:til:2",
+  "task": "fizz-sum",
+  "lang": "til",
+  "op": "operator-swap",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 != 0} | sum | print\n",
+  "feedback": "program ran but stdout was:\n433165\n\nexpected:\n234168\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "fizz-sum:til:3",
+  "task": "fizz-sum",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "range 1 1001 | koep {it % 3 == 0 or it % 5 == 0} | sum | print\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `koep`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-sp7f7h/prog.til\",\"line\":1,\"col\":16,\"src\":\"range 1 1001 | koep {it % 3 == 0 or it % 5 == 0} | sum | print\",\"didYouMean\":[\"keep\",\"rep\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "fizz-sum:til:4",
+  "task": "fizz-sum",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "range 1 1001 | keepe {it % 3 == 0 or it % 5 == 0} | sum | print\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `keepe`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-XZh3GW/prog.til\",\"line\":1,\"col\":16,\"src\":\"range 1 1001 | keepe {it % 3 == 0 or it % 5 == 0} | sum | print\",\"didYouMean\":[\"keep\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "fizz-sum:py:0",
+  "task": "fizz-sum",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "print(sum(n for n in rnage(1, 1001) if n % 3 == 0 or n % 5 == 0))\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-VuKtoM/prog.py\", line 1, in <module>\n    print(sum(n for n in rnage(1, 1001) if n % 3 == 0 or n % 5 == 0))\n                         ^^^^^\nNameError: name 'rnage' is not defined. Did you mean: 'range'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "fizz-sum:py:1",
+  "task": "fizz-sum",
+  "lang": "py",
+  "op": "operator-swap",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 == 0 or n % 5 != 0))\n",
+  "feedback": "program ran but stdout was:\n433165\n\nexpected:\n234168\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "fizz-sum:py:2",
+  "task": "fizz-sum",
+  "lang": "py",
+  "op": "operator-swap",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 != 0 or n % 5 == 0))\n",
+  "feedback": "program ran but stdout was:\n366832\n\nexpected:\n234168\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "fizz-sum:py:3",
+  "task": "fizz-sum",
+  "lang": "py",
+  "op": "off-by-one",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 == 0 or n % 4 == 0))\n",
+  "feedback": "program ran but stdout was:\n250501\n\nexpected:\n234168\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "fizz-sum:py:4",
+  "task": "fizz-sum",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "print(sam(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0))\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-dBraKC/prog.py\", line 1, in <module>\n    print(sam(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0))\n          ^^^\nNameError: name 'sam' is not defined. Did you mean: 'sum'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "grade-histogram:til:0",
+  "task": "grade-histogram",
+  "lang": "til",
+  "op": "string-lit",
+  "program": "fn grade x = if x >= 90 { \"AA\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n",
+  "feedback": "program ran but stdout was:\nB 3\nC 3\nF 3\n\nexpected:\nA 3\nB 3\nC 3\nF 3\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "grade-histogram:til:1",
+  "task": "grade-histogram",
+  "lang": "til",
+  "op": "off-by-one",
+  "program": "fn grade x = if x >= 91 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n",
+  "feedback": "program ran but stdout was:\nA 2\nB 4\nC 3\nF 3\n\nexpected:\nA 3\nB 3\nC 3\nF 3\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "grade-histogram:til:2",
+  "task": "grade-histogram",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | linese | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `linese`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-jerDCC/prog.til\",\"line\":2,\"col\":26,\"src\":\"gs = read \\\"scores.txt\\\" | linese | map num | map grade | counts\",\"didYouMean\":[\"lines\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "grade-histogram:til:3",
+  "task": "grade-histogram",
+  "lang": "til",
+  "op": "string-lit",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"CC\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n",
+  "feedback": "program ran but stdout was:\nA 3\nB 3\nF 3\n\nexpected:\nA 3\nB 3\nC 3\nF 3\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "grade-histogram:til:4",
+  "task": "grade-histogram",
+  "lang": "til",
+  "op": "operator-swap",
+  "program": "fn grade x = if x > 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n",
+  "feedback": "program ran but stdout was:\nA 2\nB 4\nC 3\nF 3\n\nexpected:\nA 3\nB 3\nC 3\nF 3\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "grade-histogram:py:0",
+  "task": "grade-histogram",
+  "lang": "py",
+  "op": "off-by-one",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 0\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+  "feedback": "program ran but stdout was:\nB 3\nC 3\nF 3\n\nexpected:\nA 3\nB 3\nC 3\nF 3\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "grade-histogram:py:1",
+  "task": "grade-histogram",
+  "lang": "py",
+  "op": "operator-swap",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score > 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+  "feedback": "program ran but stdout was:\nA 3\nB 2\nC 4\nF 3\n\nexpected:\nA 3\nB 3\nC 3\nF 3\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "grade-histogram:py:2",
+  "task": "grade-histogram",
+  "lang": "py",
+  "op": "string-lit",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main_\":\n    main()\n",
+  "feedback": "program ran but stdout was:\n\nexpected:\nA 3\nB 3\nC 3\nF 3\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "grade-histogram:py:3",
+  "task": "grade-histogram",
+  "lang": "py",
+  "op": "string-lit",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"CC\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+  "feedback": "A 3\nB 3\nTraceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-v36Nxo/prog.py\", line 24, in <module>\n    main()\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-v36Nxo/prog.py\", line 19, in main\n    if counts[letter] > 0:\n       ~~~~~~^^^^^^^^\nKeyError: 'CC'\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "grade-histogram:py:4",
+  "task": "grade-histogram",
+  "lang": "py",
+  "op": "string-lit",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"FF\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-IljJd1/prog.py\", line 24, in <module>\n    main()\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-IljJd1/prog.py\", line 16, in main\n    counts[\"F\"] += 1\n    ~~~~~~^^^^^\nKeyError: 'F'\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:til:0",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "inv = jon (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `jon`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-VYPNJT/prog.til\",\"line\":1,\"col\":7,\"src\":\"inv = jon (read \\\"inv.json\\\")\",\"didYouMean\":[\"join\",\"json\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:til:1",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "op": "string-lit",
+  "program": "inv = json (read \"inv.jso\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n",
+  "feedback": "error[E_IO] cannot read \"inv.jso\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-7CsupH/prog.til:1:13\n    1 | inv = json (read \"inv.jso\")\n                   ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:til:2",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "inv = json (read \"ivn.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n",
+  "feedback": "error[E_IO] cannot read \"ivn.json\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-qRPy3E/prog.til:1:13\n    1 | inv = json (read \"ivn.json\")\n                   ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:til:3",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "inv = josn (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `josn`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-XEnxg3/prog.til\",\"line\":1,\"col\":7,\"src\":\"inv = josn (read \\\"inv.json\\\")\",\"didYouMean\":[\"join\",\"json\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:til:4",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "inv = json (red \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `red`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-9M06mL/prog.til\",\"line\":1,\"col\":13,\"src\":\"inv = json (red \\\"inv.json\\\")\",\"didYouMean\":[\"read\",\"rep\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:py:0",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    dota = json.load(f)\n\nfor warehouse, items in data.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-roY5nC/prog.py\", line 6, in <module>\n    for warehouse, items in data.items():\n                            ^^^^\nNameError: name 'data' is not defined. Did you mean: 'dota'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:py:1",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehosue, items in data.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-db8hhw/prog.py\", line 8, in <module>\n    print(f\"{warehouse}.{item} {qty}\")\n             ^^^^^^^^^\nNameError: name 'warehouse' is not defined. Did you mean: 'warehosue'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:py:2",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehouse, items in data.items():\n    for item, qy in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-3p44ez/prog.py\", line 8, in <module>\n    print(f\"{warehouse}.{item} {qty}\")\n                                ^^^\nNameError: name 'qty' is not defined. Did you mean: 'qy'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:py:3",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehouse, items in data.itmes():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-f7503H/prog.py\", line 6, in <module>\n    for warehouse, items in data.itmes():\n                            ^^^^^^^^^^\nAttributeError: 'dict' object has no attribute 'itmes'. Did you mean: 'items'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "flatten-inventory:py:4",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = jsin.load(f)\n\nfor warehouse, items in data.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-AAbKw6/prog.py\", line 4, in <module>\n    data = jsin.load(f)\n           ^^^^\nNameError: name 'jsin' is not defined. Did you mean: 'json'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "log-grep:til:0",
+  "task": "log-grep",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "errs = read \"log.tet\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n",
+  "feedback": "error[E_IO] cannot read \"log.tet\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-YhsuyU/prog.til:1:8\n    1 | errs = read \"log.tet\" | lines | keep {has \"ERROR\" it}\n              ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "log-grep:til:1",
+  "task": "log-grep",
+  "lang": "til",
+  "op": "string-lit",
+  "program": "errs = read \"log.tx\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n",
+  "feedback": "error[E_IO] cannot read \"log.tx\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-1A0YFp/prog.til:1:8\n    1 | errs = read \"log.tx\" | lines | keep {has \"ERROR\" it}\n              ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "log-grep:til:2",
+  "task": "log-grep",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "errs = read \"lgo.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n",
+  "feedback": "error[E_IO] cannot read \"lgo.txt\": ENOENT  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-YD4qYd/prog.til:1:8\n    1 | errs = read \"lgo.txt\" | lines | keep {has \"ERROR\" it}\n              ^\n  hint: wrap with `catch` to provide a fallback\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "log-grep:til:3",
+  "task": "log-grep",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "errs = read \"log.txt\" | lines | kiep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `kiep`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-3NblT1/prog.til\",\"line\":1,\"col\":33,\"src\":\"errs = read \\\"log.txt\\\" | lines | kiep {has \\\"ERROR\\\" it}\",\"didYouMean\":[\"keep\",\"rep\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "log-grep:til:4",
+  "task": "log-grep",
+  "lang": "til",
+  "op": "name-typo",
+  "program": "errs = reda \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n",
+  "feedback": "{\"ok\":false,\"errors\":[{\"ok\":false,\"code\":\"E_NAME\",\"msg\":\"unknown name `reda`\",\"file\":\"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-Vf1zzZ/prog.til\",\"line\":1,\"col\":8,\"src\":\"errs = reda \\\"log.txt\\\" | lines | keep {has \\\"ERROR\\\" it}\",\"didYouMean\":[\"read\",\"rep\"],\"hint\":\"all builtins are always in scope — til has no imports\",\"rule\":\"Core rules: NO imports — every builtin is always in scope; check spelling against the builtins table\"}],\"warnings\":[]}\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "log-grep:py:0",
+  "task": "log-grep",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"EROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n",
+  "feedback": "program ran but stdout was:\n0\n\nexpected:\n3\nERROR disk full again\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "log-grep:py:1",
+  "task": "log-grep",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"ERORR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n",
+  "feedback": "program ran but stdout was:\n0\n\nexpected:\n3\nERROR disk full again\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "log-grep:py:2",
+  "task": "log-grep",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for lne in lines if \"ERROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-fg7Ea7/prog.py\", line 4, in <module>\n    error_lines = [line.rstrip(\"\\n\") for lne in lines if \"ERROR\" in line]\n                                                                    ^^^^\nNameError: name 'line' is not defined. Did you mean: 'lne'?\n",
+  "feedbackKind": "error"
+ },
+ {
+  "id": "log-grep:py:3",
+  "task": "log-grep",
+  "lang": "py",
+  "op": "off-by-one",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"ERROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-0])\n",
+  "feedback": "program ran but stdout was:\n3\nERROR disk full\n\nexpected:\n3\nERROR disk full again\n",
+  "feedbackKind": "wrong-output"
+ },
+ {
+  "id": "log-grep:py:4",
+  "task": "log-grep",
+  "lang": "py",
+  "op": "name-typo",
+  "program": "with open(\"log.tat\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"ERROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n",
+  "feedback": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/til-eval-lKlnMg/prog.py\", line 1, in <module>\n    with open(\"log.tat\", \"r\") as f:\n         ^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'log.tat'\n",
+  "feedbackKind": "error"
+ }
+]

@@ -1,0 +1,11 @@
+#!/usr/bin/env til
+# repo composition: pipe `git ls-files` in, get lines-of-code by extension
+# usage: git ls-files | til scripts/loc.til
+fn ext f {
+  parts = split "." f
+  if len parts > 1 { last parts } else { "none" }
+}
+rows = stdin() | lines | map {f -> {ext: ext f, n: read f | lines | len} catch null} | keep {it}
+for p in (group {it.ext} rows | items | sortBy {p -> -(p.v | map {it.n} | sum)}) {
+  print "{p.k}\t{len p.v} files\t{p.v | map {it.n} | sum} lines"
+}

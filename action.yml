@@ -1,0 +1,17 @@
+name: 'run til'
+description: 'Run a til (тіл) program — the scripting language engineered for AI agents'
+branding: { icon: 'terminal', color: 'green' }
+inputs:
+  file:
+    description: 'path to the .til file to run'
+    required: true
+  args:
+    description: 'space-separated arguments passed to the program'
+    default: ''
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with: { node-version: 22 }
+    - shell: bash
+      run: node ${{ github.action_path }}/bin/til run ${{ inputs.file }} ${{ inputs.args }}

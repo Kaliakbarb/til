@@ -1,0 +1,15 @@
+#!/usr/bin/env til
+# find TODO/FIXME/HACK markers with line numbers in the files given as arguments
+# usage: til scripts/todo.til src/til.mjs web/index.html   (no glob builtin — use xargs)
+total = 0
+for f in args() {
+  body = read f catch null
+  if body {
+    numbered = zip (range 1 (len (lines body) + 1)) (lines body)
+    for pair in (numbered | keep {p -> rmatch 'TODO|FIXME|HACK' p[1]}) {
+      print "{f}:{pair[0]}: {trim pair[1]}"
+      total = total + 1
+    }
+  }
+}
+print "{total} markers"

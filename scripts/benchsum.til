@@ -1,0 +1,10 @@
+#!/usr/bin/env til
+# summarize bench/results.json — the same numbers as report.md, from the raw data
+rows = json (read "bench/results.json") | keep {it.ok}
+fn tot lang = rows | map {r -> r.langs[lang].o200k} | sum
+t, p, j = tot "til", tot "py", tot "js"
+print "tasks verified: {len rows}"
+print "o200k  til {t}  py {p} ({roundTo 1 (100 - 100 * t / p)}% saved)  js {j} ({roundTo 1 (100 - 100 * t / j)}% saved)"
+for r in (rows | sortBy {it.task}) {
+  print "  {r.task}\ttil {r.langs.til.o200k}\tpy {r.langs.py.o200k}\tjs {r.langs.js.o200k}"
+}

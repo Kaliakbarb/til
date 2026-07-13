@@ -16,3 +16,10 @@
 
 ## 0.1.0 — 2026-07-12
 - initial language: lexer/parser/checker/tree-walk interpreter in one dependency-free ESM file; ~70 builtins; contracts (`ensure`) + inline tests (`eg`); structured repair-oriented errors with did-you-mean; LLM.md prompt card; output-verified token benchmark; browser playground
+
+## 0.3.0 — 2026-07-13
+- `enum xs` builtin (dogfood-demanded); rounding semantics pinned with boundary tests; static contract discharge (`E_ENSURE_STATIC`) via constant folding
+- **hard suite measured**: frontier 12/12 til = python; sonnet 9/12, haiku 10/12 pass@1 — and 12/12 pass@fix at every tier after one structured-error round (eval/hard/results.md)
+- **repair experiment published**: 80 verified-failing mutants — til 40/40 = python 40/40 = minimal-feedback 40/40; honestly undecided at single-token fault depth
+- map-vs-list confusion (found twice across models in the hard suite) → E_TYPE now hints `items`
+- fuzzer: 440,000 programs, zero raw host errors; LSP server (diagnostics + quickfixes); VS Code live diagnostics; 25k-triple training corpus + QLoRA kit; constrained-decoding demo docs

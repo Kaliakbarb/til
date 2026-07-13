@@ -1,0 +1,506 @@
+[
+ {
+  "id": "coin-change",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "# Minimum coins summing exactly to 173 with denominations [1, 5, 12, 19]\ncoins = [1, 5, 12, 19]\ntarget = 173\nINF = 999999\n\ndp = [0]\nfor i in (range 1 (target + 1)) {\n  best = INF\n  for c in coins {\n    if c <= i {\n      cand = dp[i - c] + 1\n      if cand < best { best = cand }\n    }\n  }\n  push best dp\n}\n\nprint dp[target]"
+ },
+ {
+  "id": "coin-change",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "TARGET = 173\nCOINS = [1, 5, 12, 19]\n\nINF = float(\"inf\")\ndp = [0] + [INF] * TARGET\nfor amount in range(1, TARGET + 1):\n    for c in COINS:\n        if c <= amount and dp[amount - c] + 1 < dp[amount]:\n            dp[amount] = dp[amount - c] + 1\n\nprint(dp[TARGET])\n"
+ },
+ {
+  "id": "topo-order",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "# topological sort of deps.txt, lexicographically smallest order\n\nrows = read \"deps.txt\" | lines | map trim | keep {it}\n\ndeps = {}\nnames = []\nfor ln in rows {\n  parts = split \"->\" ln\n  if (len parts) < 2 { continue }\n  a = trim (parts[0])\n  b = trim (parts[1])\n  if not a in names {\n    push a names\n    deps[a] = []\n  }\n  if not b in names {\n    push b names\n    deps[b] = []\n  }\n  da = deps[a]\n  if not b in da {\n    push b da\n    deps[a] = da\n  }\n}\n\ndone = []\nremaining = sort names\nwhile remaining {\n  pick = find {n -> all {it in done} (deps[n])} remaining\n  if pick == null { break }\n  print pick\n  push pick done\n  remaining = keep {it != pick} remaining\n}"
+ },
+ {
+  "id": "topo-order",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import heapq\n\nnodes = set()\ndeps = {}  # node -> set of nodes it depends on\n\nwith open(\"deps.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line or \"->\" not in line:\n            continue\n        a, b = line.split(\"->\", 1)\n        a, b = a.strip(), b.strip()\n        if not a or not b:\n            continue\n        nodes.add(a)\n        nodes.add(b)\n        if a != b:\n            deps.setdefault(a, set()).add(b)\n\n# Build indegree (number of unmet dependencies) and reverse adjacency\nindegree = {n: 0 for n in nodes}\ndependents = {n: [] for n in nodes}  # dep -> list of nodes that depend on it\nfor a, ds in deps.items():\n    indegree[a] = len(ds)\n    for b in ds:\n        dependents[b].append(a)\n\nheap = [n for n in nodes if indegree[n] == 0]\nheapq.heapify(heap)\n\norder = []\nwhile heap:\n    n = heapq.heappop(heap)\n    order.append(n)\n    for m in dependents[n]:\n        indegree[m] -= 1\n        if indegree[m] == 0:\n            heapq.heappush(heap, m)\n\nfor n in order:\n    print(n)\n"
+ },
+ {
+  "id": "balanced-max",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "s = read \"brackets.txt\" | trim\nstack = [0 - 1]\nbest = 0\nfor p in (enum (chars s)) {\n  i = p[0]\n  c = p[1]\n  if c == \"(\" {\n    push i stack\n  } else {\n    pop stack\n    if (empty stack) {\n      push i stack\n    } else {\n      cur = i - stack[-1]\n      if cur > best { best = cur }\n    }\n  }\n}\nprint best"
+ },
+ {
+  "id": "balanced-max",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "with open(\"brackets.txt\") as f:\n    s = f.read().strip()\n\nbest = 0\nstack = [-1]\nfor i, c in enumerate(s):\n    if c == '(':\n        stack.append(i)\n    elif c == ')':\n        stack.pop()\n        if stack:\n            best = max(best, i - stack[-1])\n        else:\n            stack.append(i)\n\nprint(best)\n"
+ },
+ {
+  "id": "vm-mini",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "stack = []\nfor line in (read \"ops.txt\" | lines | map trim | keep {it}) {\n  ws = words line\n  op = ws[0]\n  if op == \"PUSH\" {\n    push (num ws[1]) stack\n  } elif op == \"ADD\" {\n    b = pop stack\n    a = pop stack\n    push (a + b) stack\n  } elif op == \"SUB\" {\n    b = pop stack\n    a = pop stack\n    push (a - b) stack\n  } elif op == \"MUL\" {\n    b = pop stack\n    a = pop stack\n    push (a * b) stack\n  } elif op == \"DUP\" {\n    t = stack[-1]\n    push t stack\n  } elif op == \"SWAP\" {\n    b = pop stack\n    a = pop stack\n    push b stack\n    push a stack\n  }\n}\nprint (stack[-1])"
+ },
+ {
+  "id": "vm-mini",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import sys\n\ndef main():\n    stack = []\n    with open(\"ops.txt\") as f:\n        for line in f:\n            parts = line.split()\n            if not parts:\n                continue\n            op = parts[0].upper()\n            if op == \"PUSH\":\n                stack.append(int(parts[1]))\n            elif op == \"ADD\":\n                a = stack.pop()\n                b = stack.pop()\n                stack.append(b + a)\n            elif op == \"SUB\":\n                a = stack.pop()\n                b = stack.pop()\n                stack.append(b - a)\n            elif op == \"MUL\":\n                a = stack.pop()\n                b = stack.pop()\n                stack.append(b * a)\n            elif op == \"DUP\":\n                stack.append(stack[-1])\n            elif op == \"SWAP\":\n                stack[-1], stack[-2] = stack[-2], stack[-1]\n    print(stack[-1])\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "bank-ledger",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "balances = {}\nrejected = 0\nfor line in (read \"txns.txt\" | lines) {\n  if (trim line) {\n    parts = words line\n    op = parts[0]\n    acct = parts[1]\n    n = num parts[2]\n    if (get acct balances) == null {\n      balances[acct] = 0\n    }\n    if op == \"deposit\" {\n      balances[acct] = balances[acct] + n\n    } else {\n      if balances[acct] - n < 0 {\n        rejected = rejected + 1\n      } else {\n        balances[acct] = balances[acct] - n\n      }\n    }\n  }\n}\nfor p in balances {\n  print \"{p.k} {p.v}\"\n}\nprint \"rejected {rejected}\""
+ },
+ {
+  "id": "bank-ledger",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import sys\n\ndef main():\n    balances = {}\n    order = []\n    rejected = 0\n    with open(\"txns.txt\") as f:\n        for line in f:\n            parts = line.split()\n            if not parts:\n                continue\n            op, acct, n = parts[0], parts[1], int(parts[2])\n            if acct not in balances:\n                balances[acct] = 0\n                order.append(acct)\n            if op == \"deposit\":\n                balances[acct] += n\n            elif op == \"withdraw\":\n                if balances[acct] - n < 0:\n                    rejected += 1\n                else:\n                    balances[acct] -= n\n    out = []\n    for acct in order:\n        out.append(f\"{acct} {balances[acct]}\")\n    out.append(f\"rejected {rejected}\")\n    sys.stdout.write(\"\\n\".join(out) + \"\\n\")\n\nmain()\n"
+ },
+ {
+  "id": "game-of-life",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "grid = read \"grid.txt\" | trim | lines | map {row -> chars row | map {c -> if c == \"#\" { 1 } else { 0 }}}\nrows = len grid\ncols = len grid[0]\noffs = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]\n\nfor g in (range 0 5) {\n  ng = []\n  for i in (range 0 rows) {\n    newrow = []\n    for j in (range 0 cols) {\n      n = 0\n      for d in offs {\n        ii = (i + d[0] + rows) % rows\n        jj = (j + d[1] + cols) % cols\n        n = n + grid[ii][jj]\n      }\n      alive = grid[i][j]\n      cell = if n == 3 or (alive == 1 and n == 2) { 1 } else { 0 }\n      push cell newrow\n    }\n    push newrow ng\n  }\n  grid = ng\n}\n\nfor row in grid {\n  print (row | map {c -> if c == 1 { \"#\" } else { \".\" }} | join \"\")\n}"
+ },
+ {
+  "id": "game-of-life",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "with open(\"grid.txt\") as f:\n    grid = [list(line.rstrip(\"\\n\")) for line in f if line.strip()]\n\nrows = len(grid)\ncols = len(grid[0])\n\nfor _ in range(5):\n    new = [[\".\"] * cols for _ in range(rows)]\n    for r in range(rows):\n        for c in range(cols):\n            n = 0\n            for dr in (-1, 0, 1):\n                for dc in (-1, 0, 1):\n                    if dr == 0 and dc == 0:\n                        continue\n                    if grid[(r + dr) % rows][(c + dc) % cols] == \"#\":\n                        n += 1\n            if grid[r][c] == \"#\":\n                new[r][c] = \"#\" if n in (2, 3) else \".\"\n            else:\n                new[r][c] = \"#\" if n == 3 else \".\"\n    grid = new\n\nprint(\"\\n\".join(\"\".join(row) for row in grid))"
+ },
+ {
+  "id": "log-window",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "errs = []\nfor line in (read \"big.log\" | lines) {\n  parts = words line\n  if len parts > 1 {\n    if parts[1] == \"ERROR\" {\n      push (num parts[0]) errs\n    }\n  }\n}\n\nbest = 0\nbestStart = 0\nj = 0\nn = len errs\nfor p in (enum errs) {\n  i = p[0]\n  start = p[1]\n  limit = start + 59\n  while j < n {\n    if errs[j] <= limit { j = j + 1 } else { break }\n  }\n  c = j - i\n  if c > best {\n    best = c\n    bestStart = start\n  }\n}\nprint \"{bestStart} {best}\""
+ },
+ {
+  "id": "log-window",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import bisect\n\nerrs = []\nwith open(\"big.log\") as f:\n    for line in f:\n        parts = line.split(maxsplit=2)\n        if len(parts) >= 2 and parts[1] == \"ERROR\":\n            errs.append(int(parts[0]))\n\nbest_start = None\nbest_count = -1\nprev = None\nfor i, t in enumerate(errs):\n    if t == prev:\n        continue  # same window already evaluated; earliest tie kept\n    prev = t\n    # errs is sorted (timestamps non-decreasing); i is first index of t\n    cnt = bisect.bisect_right(errs, t + 59) - i\n    if cnt > best_count:\n        best_count = cnt\n        best_start = t\n\nif best_start is not None:\n    print(f\"{best_start} {best_count}\")\n"
+ },
+ {
+  "id": "top-ips",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "totals = {}\nfor line in (read \"traffic.txt\" | lines) {\n  parts = words line\n  if (len parts) >= 2 {\n    ip = parts[0]\n    b = num parts[1] catch null\n    if b != null {\n      cur = totals[ip]\n      if cur == null { totals[ip] = b } else { totals[ip] = cur + b }\n    }\n  }\n}\n\nentries = items totals\nn = 3\nif (len entries) < n { n = len entries }\n\nused = []\ncount = 0\nwhile count < n {\n  best = null\n  for p in entries {\n    if not p.k in used {\n      if best == null { best = p } elif p.v > best.v { best = p }\n    }\n  }\n  print \"{best.k} {best.v}\"\n  push best.k used\n  count = count + 1\n}"
+ },
+ {
+  "id": "top-ips",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import sys\n\ndef main():\n    totals = {}  # ip -> total bytes; insertion order = first appearance\n    with open(\"traffic.txt\", \"r\") as f:\n        for line in f:\n            parts = line.split()\n            if len(parts) < 2:\n                continue\n            ip, b = parts[0], parts[1]\n            try:\n                n = int(b)\n            except ValueError:\n                continue\n            if ip in totals:\n                totals[ip] += n\n            else:\n                totals[ip] = n\n\n    # first-appearance index comes from insertion order\n    ranked = sorted(\n        enumerate(totals.items()),\n        key=lambda t: (-t[1][1], t[0])\n    )\n    for _, (ip, total) in ranked[:3]:\n        print(f\"{ip} {total}\")\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "dedupe-events",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "best = {}\nfor line in (read \"events.txt\" | lines) {\n  if trim line {\n    parts = words line\n    id = parts[0]\n    ts = num parts[1]\n    cur = best[id]\n    if cur == null or ts >= cur {\n      best[id] = ts\n    }\n  }\n}\nprint (len (keys best))\nprint (sum (vals best))"
+ },
+ {
+  "id": "dedupe-events",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import sys\n\ndef main():\n    latest = {}\n    with open(\"events.txt\", \"r\", encoding=\"utf-8\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            parts = line.split(None, 2)\n            if len(parts) < 2:\n                continue\n            eid = parts[0]\n            ts = int(parts[1])\n            # later line wins on equal ts -> use >=\n            if eid not in latest or ts >= latest[eid]:\n                latest[eid] = ts\n    print(len(latest))\n    print(sum(latest.values()))\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "parse-config",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "result = {}\nfor line in (lines (read \"app.cfg\")) {\n  t = trim line\n  if (t and not (starts \"#\" t)) {\n    parts = split \"=\" t\n    if ((len parts) > 1) {\n      key = trim parts[0]\n      val = trim (join \"=\" (skip 1 parts))\n      if (not (key in (keys result))) {\n        result[key] = val\n      }\n    }\n  }\n}\nfor p in (items result) {\n  print \"{p.k}={p.v}\"\n}"
+ },
+ {
+  "id": "parse-config",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "result = {}\nwith open(\"app.cfg\", encoding=\"utf-8\") as f:\n    for line in f:\n        stripped = line.strip()\n        if not stripped or stripped.startswith(\"#\") or \"=\" not in stripped:\n            continue\n        key, value = stripped.split(\"=\", 1)\n        key = key.strip()\n        value = value.strip()\n        if key not in result:\n            result[key] = value\nfor k, v in result.items():\n    print(f\"{k}={v}\")\n"
+ },
+ {
+  "id": "csv-quoted",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "fn parseLine line {\n  fields = []\n  cur = \"\"\n  inq = false\n  cs = chars line\n  n = len cs\n  i = 0\n  while i < n {\n    c = cs[i]\n    if inq {\n      if c == '\"' {\n        nxt = get (i + 1) cs\n        if nxt == '\"' {\n          cur = cur + '\"'\n          i = i + 1\n        } else {\n          inq = false\n        }\n      } else {\n        cur = cur + c\n      }\n    } else {\n      if c == '\"' {\n        inq = true\n      } elif c == \",\" {\n        push cur fields\n        cur = \"\"\n      } else {\n        cur = cur + c\n      }\n    }\n    i = i + 1\n  }\n  push cur fields\n  fields\n}\n\nrows = read \"parts.csv\" | lines | skip 1 | keep {it}\ntotal = 0\nfor line in rows {\n  f = parseLine line\n  print \"{f[0]}|{f[1]}\"\n  total = total + (num f[2])\n}\nprint \"total {total}\""
+ },
+ {
+  "id": "csv-quoted",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import csv\n\nwith open(\"parts.csv\", newline=\"\", encoding=\"utf-8\") as f:\n    reader = csv.reader(f)\n    next(reader, None)  # skip header\n    total = 0\n    for row in reader:\n        if not row:\n            continue\n        name, note, qty = row[0], row[1], row[2]\n        print(f\"{name}|{note}\")\n        total += int(qty.strip())\n    print(f\"total {total}\")\n"
+ },
+ {
+  "id": "roman",
+  "model": "fable",
+  "lang": "til",
+  "variant": "hard",
+  "program": "vals = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\n\nfn roman s {\n  cs = chars s\n  t = 0\n  i = 0\n  n = len cs\n  while i < n {\n    v = vals[cs[i]]\n    nxt = vals[cs[i + 1]] catch 0\n    if v < nxt { t = t - v } else { t = t + v }\n    i = i + 1\n  }\n  t\n}\neg roman \"IV\" == 4\neg roman \"MCMXCIV\" == 1994\neg roman \"III\" == 3\n\ntotal = 0\nfor r in (read \"roman.txt\" | lines | map trim | keep {it}) {\n  d = roman r\n  print \"{r} {d}\"\n  total = total + d\n}\nprint \"sum {total}\""
+ },
+ {
+  "id": "roman",
+  "model": "fable",
+  "lang": "py",
+  "variant": "hard",
+  "program": "values = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n\ndef roman_to_int(s):\n    total = 0\n    for i, ch in enumerate(s):\n        v = values[ch]\n        if i + 1 < len(s) and values[s[i + 1]] > v:\n            total -= v\n        else:\n            total += v\n    return total\n\ntotal = 0\nwith open('roman.txt') as f:\n    for line in f:\n        numeral = line.strip()\n        if not numeral:\n            continue\n        n = roman_to_int(numeral.upper())\n        print(f\"{numeral} {n}\")\n        total += n\n\nprint(f\"sum {total}\")\n"
+ },
+ {
+  "id": "coin-change",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "coins = [1, 5, 12, 19]\ntarget = 173\nINF = 999999\n\ndp = [0]\nfor i in (range 1 (target + 1)) {\n  best = INF\n  for c in coins {\n    if c <= i {\n      cand = dp[i - c] + 1\n      if cand < best {\n        best = cand\n      }\n    }\n  }\n  push best dp\n}\n\nprint dp[target]\n"
+ },
+ {
+  "id": "coin-change",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "def min_coins(target, coins):\n    INF = float('inf')\n    dp = [0] + [INF] * target\n\n    for amount in range(1, target + 1):\n        for c in coins:\n            if c <= amount and dp[amount - c] + 1 < dp[amount]:\n                dp[amount] = dp[amount - c] + 1\n\n    return dp[target]\n\n\ndef main():\n    coins = [1, 5, 12, 19]\n    target = 173\n    print(min_coins(target, coins))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "topo-order",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "raw = read \"deps.txt\" | lines | map trim | keep {it != \"\"}\nedges = raw | map (split \"->\")\n\nnodeSet = []\nfor e in edges {\n  if not e[0] in nodeSet { push e[0] nodeSet }\n  if not e[1] in nodeSet { push e[1] nodeSet }\n}\n\ndepsOf = {}\nfor n in nodeSet { depsOf[n] = [] }\nfor e in edges {\n  push e[1] depsOf[e[0]]\n}\n\nprinted = []\nremaining = sort nodeSet\n\nwhile not empty(remaining) {\n  ready = remaining | keep {n -> all {d -> d in printed} depsOf[n]}\n  chosen = ready[0]\n  print chosen\n  push chosen printed\n  remaining = remaining | keep {it != chosen}\n}\n"
+ },
+ {
+  "id": "topo-order",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import heapq\nfrom collections import defaultdict\n\n\ndef main():\n    with open(\"deps.txt\", \"r\") as f:\n        lines = f.readlines()\n\n    nodes = set()\n    edges = set()  # (dependent, dependency): dependent depends on dependency\n\n    for line in lines:\n        line = line.strip()\n        if not line:\n            continue\n        if \"->\" not in line:\n            continue\n        a, b = line.split(\"->\", 1)\n        a = a.strip()\n        b = b.strip()\n        if not a or not b:\n            continue\n        nodes.add(a)\n        nodes.add(b)\n        if a == b:\n            continue\n        edges.add((a, b))\n\n    adj = defaultdict(set)  # prerequisite -> set of dependents\n    in_degree = {n: 0 for n in nodes}\n\n    for a, b in edges:\n        # a depends on b, so b must be printed before a\n        adj[b].add(a)\n        in_degree[a] += 1\n\n    heap = [n for n in nodes if in_degree[n] == 0]\n    heapq.heapify(heap)\n\n    result = []\n    while heap:\n        node = heapq.heappop(heap)\n        result.append(node)\n        for nxt in adj.get(node, ()):\n            in_degree[nxt] -= 1\n            if in_degree[nxt] == 0:\n                heapq.heappush(heap, nxt)\n\n    for name in result:\n        print(name)\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "balanced-max",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "s = read \"brackets.txt\" | trim\nstack = [-1]\nmaxLen = 0\nfor p in (enum (chars s)) {\n  i = p[0]\n  c = p[1]\n  if c == \"(\" {\n    push i stack\n  } else {\n    pop stack\n    if empty stack {\n      push i stack\n    } else {\n      maxLen = max [maxLen, i - stack[-1]]\n    }\n  }\n}\nprint maxLen\n"
+ },
+ {
+  "id": "balanced-max",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import re\n\ndef main():\n    with open(\"brackets.txt\", \"r\") as f:\n        content = f.read()\n\n    # Keep only parenthesis characters, in case of stray whitespace/newlines\n    s = \"\".join(ch for ch in content if ch in \"()\")\n\n    max_len = 0\n    stack = [-1]  # base index for computing lengths\n\n    for i, ch in enumerate(s):\n        if ch == '(':\n            stack.append(i)\n        else:  # ch == ')'\n            stack.pop()\n            if not stack:\n                stack.append(i)\n            else:\n                max_len = max(max_len, i - stack[-1])\n\n    print(max_len)\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "vm-mini",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "rows = read \"ops.txt\" | lines | map trim | keep {it != \"\"}\nstack = []\nfor line in rows {\n  parts = split \" \" line\n  op = parts[0]\n  if op == \"PUSH\" {\n    push (num parts[1]) stack\n  } elif op == \"ADD\" {\n    a = pop stack\n    b = pop stack\n    push (a + b) stack\n  } elif op == \"SUB\" {\n    a = pop stack\n    b = pop stack\n    push (b - a) stack\n  } elif op == \"MUL\" {\n    a = pop stack\n    b = pop stack\n    push (a * b) stack\n  } elif op == \"DUP\" {\n    push stack[-1] stack\n  } elif op == \"SWAP\" {\n    a = pop stack\n    b = pop stack\n    push a stack\n    push b stack\n  }\n}\nprint stack[-1]\n"
+ },
+ {
+  "id": "vm-mini",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "def main():\n    with open(\"ops.txt\") as f:\n        lines = f.readlines()\n\n    stack = []\n\n    for raw_line in lines:\n        line = raw_line.strip()\n        if not line:\n            continue\n\n        parts = line.split()\n        op = parts[0].upper()\n\n        if op == \"PUSH\":\n            stack.append(int(parts[1]))\n        elif op == \"ADD\":\n            a = stack.pop()\n            b = stack.pop()\n            stack.append(a + b)\n        elif op == \"SUB\":\n            # first-popped is 'a', second-popped is 'b'\n            # result = second-popped minus first-popped\n            a = stack.pop()\n            b = stack.pop()\n            stack.append(b - a)\n        elif op == \"MUL\":\n            a = stack.pop()\n            b = stack.pop()\n            stack.append(a * b)\n        elif op == \"DUP\":\n            stack.append(stack[-1])\n        elif op == \"SWAP\":\n            stack[-1], stack[-2] = stack[-2], stack[-1]\n        else:\n            raise ValueError(f\"Unknown op: {op}\")\n\n    print(stack[-1])\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "bank-ledger",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "balances = {}\norder = []\nrejected = 0\n\nfor line in (read \"txns.txt\" | lines | keep {not empty (words it)}) {\n  w = words line\n  op = w[0]\n  acct = w[1]\n  n = num w[2]\n  if (get acct balances) == null {\n    balances[acct] = 0\n    push acct order\n  }\n  if op == \"deposit\" {\n    balances[acct] = balances[acct] + n\n  } elif op == \"withdraw\" {\n    if balances[acct] - n < 0 {\n      rejected = rejected + 1\n    } else {\n      balances[acct] = balances[acct] - n\n    }\n  }\n}\n\nfor acct in order {\n  print \"{acct} {balances[acct]}\"\n}\nprint \"rejected {rejected}\"\n"
+ },
+ {
+  "id": "bank-ledger",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "#!/usr/bin/env python3\ndef main():\n    balances = {}\n    order = []\n    rejected = 0\n\n    try:\n        with open(\"txns.txt\", \"r\") as f:\n            lines = f.readlines()\n    except FileNotFoundError:\n        lines = []\n\n    for raw_line in lines:\n        line = raw_line.strip()\n        if not line:\n            continue\n        parts = line.split()\n        if len(parts) != 3:\n            continue\n        action, acct, amt_str = parts\n        if action not in (\"deposit\", \"withdraw\"):\n            continue\n        try:\n            amt = int(amt_str)\n        except ValueError:\n            continue\n\n        if acct not in balances:\n            balances[acct] = 0\n            order.append(acct)\n\n        if action == \"deposit\":\n            balances[acct] += amt\n        else:  # withdraw\n            if amt > balances[acct]:\n                rejected += 1\n            else:\n                balances[acct] -= amt\n\n    for acct in order:\n        print(f\"{acct} {balances[acct]}\")\n    print(f\"rejected {rejected}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "game-of-life",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "grid = read \"grid.txt\" | lines | map trim | keep {len it > 0} | map chars\nrows = len grid\ncols = len grid[0]\n\nfn countNeighbors r c g nRows nCols {\n  offsets = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]\n  offsets | map {o ->\n    nr = (r + o[0] + nRows) % nRows\n    nc = (c + o[1] + nCols) % nCols\n    if g[nr][nc] == \"#\" { 1 } else { 0 }\n  } | sum\n}\n\nfn step g nRows nCols {\n  enum g | map {rp ->\n    r = rp[0]\n    row = rp[1]\n    enum row | map {cp ->\n      c = cp[0]\n      cell = cp[1]\n      n = countNeighbors r c g nRows nCols\n      alive = (cell == \"#\")\n      if (alive and (n == 2 or n == 3)) { \"#\" } elif ((not alive) and n == 3) { \"#\" } else { \".\" }\n    }\n  }\n}\n\ngrid = step grid rows cols\ngrid = step grid rows cols\ngrid = step grid rows cols\ngrid = step grid rows cols\ngrid = step grid rows cols\n\nfor row in grid {\n  print (join \"\" row)\n}\n"
+ },
+ {
+  "id": "game-of-life",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "def main():\n    with open(\"grid.txt\") as f:\n        lines = [line.rstrip() for line in f]\n    # drop any trailing blank lines from the file\n    while lines and lines[-1] == \"\":\n        lines.pop()\n\n    grid = [list(line) for line in lines]\n    rows = len(grid)\n    cols = len(grid[0]) if rows else 0\n\n    for _ in range(5):\n        new_grid = [[None] * cols for _ in range(rows)]\n        for r in range(rows):\n            for c in range(cols):\n                alive_neighbors = 0\n                for dr in (-1, 0, 1):\n                    for dc in (-1, 0, 1):\n                        if dr == 0 and dc == 0:\n                            continue\n                        nr = (r + dr) % rows\n                        nc = (c + dc) % cols\n                        if grid[nr][nc] == '#':\n                            alive_neighbors += 1\n                if grid[r][c] == '#':\n                    new_grid[r][c] = '#' if alive_neighbors in (2, 3) else '.'\n                else:\n                    new_grid[r][c] = '#' if alive_neighbors == 3 else '.'\n        grid = new_grid\n\n    print('\\n'.join(''.join(row) for row in grid))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "log-window",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "raw = read \"big.log\" | lines\n\nerrors = []\nfor line in raw {\n  parts = split \" \" line\n  if len parts >= 2 {\n    if parts[1] == \"ERROR\" {\n      push (num parts[0]) errors\n    }\n  }\n}\n\nn = len errors\nright = 0\nbestCount = -1\nbestStart = 0\nfor i in range 0 n {\n  start = errors[i]\n  while right < n {\n    if errors[right] <= start + 59 {\n      right = right + 1\n    } else {\n      break\n    }\n  }\n  count = right - i\n  if count > bestCount {\n    bestCount = count\n    bestStart = start\n  }\n}\n\nprint \"{bestStart} {bestCount}\"\n"
+ },
+ {
+  "id": "log-window",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import sys\n\n\ndef main():\n    error_ts = []\n\n    with open(\"big.log\", \"r\") as f:\n        for line in f:\n            line = line.rstrip(\"\\n\")\n            if not line.strip():\n                continue\n            parts = line.split(\" \", 2)\n            if len(parts) < 2:\n                continue\n            ts_str, level = parts[0], parts[1]\n            try:\n                ts = int(ts_str)\n            except ValueError:\n                continue\n            if level == \"ERROR\":\n                error_ts.append(ts)\n\n    if not error_ts:\n        return\n\n    n = len(error_ts)\n    j = 0\n    best_start = error_ts[0]\n    best_count = 0\n\n    for i in range(n):\n        start = error_ts[i]\n        if j < i:\n            j = i\n        while j + 1 < n and error_ts[j + 1] <= start + 59:\n            j += 1\n        count = j - i + 1\n        if count > best_count:\n            best_count = count\n            best_start = start\n\n    print(f\"{best_start} {best_count}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "top-ips",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "rows = read \"traffic.txt\"\n  | lines\n  | map trim\n  | keep {it != \"\"}\n  | map (split \" \")\n  | map {r -> {ip: r[0], bytes: num r[1]}}\n\ngroups = group {it.ip} rows\n\ntotals = groups\n  | enum\n  | map {pair -> {ip: pair[1].k, total: (pair[1].v | map {it.bytes} | sum), first: pair[0]}}\n\ntop3 = totals | sortBy {0 - (it.total * 100000) + it.first} | take 3\n\nfor p in top3 {\n  print \"{p.ip} {p.total}\"\n}\n"
+ },
+ {
+  "id": "top-ips",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "#!/usr/bin/env python3\nimport sys\n\ndef main():\n    totals = {}       # ip -> total bytes\n    order = {}         # ip -> first appearance index\n    idx = 0\n\n    with open(\"traffic.txt\", \"r\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            parts = line.split()\n            if len(parts) < 2:\n                continue\n            ip = parts[0]\n            try:\n                b = int(parts[1])\n            except ValueError:\n                continue\n\n            if ip not in totals:\n                totals[ip] = 0\n                order[ip] = idx\n                idx += 1\n            totals[ip] += b\n\n    ranked = sorted(totals.items(), key=lambda kv: (-kv[1], order[kv[0]]))\n\n    for ip, total in ranked[:3]:\n        print(f\"{ip} {total}\")\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "dedupe-events",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "rows = read \"events.txt\" | lines\nlatest = {}\nfor line in rows {\n  t = trim line\n  if not empty t {\n    parts = split \" \" t\n    id = parts[0]\n    ts = num parts[1]\n    existing = get id latest\n    if existing == null {\n      latest[id] = ts\n    } else {\n      if ts > existing {\n        latest[id] = ts\n      }\n    }\n  }\n}\nprint (len (keys latest))\nprint (sum (vals latest))\n"
+ },
+ {
+  "id": "dedupe-events",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "def main():\n    latest = {}\n    with open(\"events.txt\", \"r\") as f:\n        for line in f:\n            line = line.rstrip(\"\\n\")\n            if not line.strip():\n                continue\n            parts = line.split(maxsplit=2)\n            if len(parts) < 2:\n                continue\n            id_, ts_str = parts[0], parts[1]\n            ts = int(ts_str)\n            # Keep the latest event per id: highest ts wins; on a tie,\n            # the later line in the file wins (same numeric ts either way).\n            if id_ not in latest or ts >= latest[id_]:\n                latest[id_] = ts\n\n    print(len(latest))\n    print(sum(latest.values()))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "parse-config",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "lines_in = read \"app.cfg\" | lines\nresult = {}\n\nfor line in lines_in {\n  t = trim line\n  if t and not (starts \"#\" t) and (rmatch '=' t) {\n    key = trim (rsub '^([^=]*)=.*$' '$1' t)\n    value = trim (rsub '^[^=]*=(.*)$' '$1' t)\n    if (get key result) == null {\n      result[key] = value\n    }\n  }\n}\n\nfor p in result {\n  print \"{p.k}={p.v}\"\n}\n"
+ },
+ {
+  "id": "parse-config",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "def main():\n    with open(\"app.cfg\", \"r\") as f:\n        lines = f.readlines()\n\n    seen = {}\n    order = []\n\n    for line in lines:\n        stripped = line.strip()\n        if not stripped:\n            continue\n        if stripped.startswith(\"#\"):\n            continue\n        if \"=\" not in stripped:\n            continue\n        key, value = stripped.split(\"=\", 1)\n        key = key.strip()\n        value = value.strip()\n        if key in seen:\n            continue\n        seen[key] = value\n        order.append(key)\n\n    for key in order:\n        print(f\"{key}={seen[key]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "id": "csv-quoted",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "fn parseLine line {\n  cs = chars line\n  fields = []\n  cur = \"\"\n  inQuotes = false\n  i = 0\n  n = len cs\n  while i < n {\n    c = cs[i]\n    if inQuotes {\n      if c == \"\\\"\" {\n        if i + 1 < n and cs[i + 1] == \"\\\"\" {\n          cur = cur + \"\\\"\"\n          i = i + 1\n        } else {\n          inQuotes = false\n        }\n      } else {\n        cur = cur + c\n      }\n    } else {\n      if c == \"\\\"\" {\n        inQuotes = true\n      } elif c == \",\" {\n        push cur fields\n        cur = \"\"\n      } else {\n        cur = cur + c\n      }\n    }\n    i = i + 1\n  }\n  push cur fields\n  fields\n}\neg parseLine 'a,\"b, c\",3' == [\"a\", \"b, c\", \"3\"]\n\nrowLines = read \"parts.csv\" | lines | keep {it != \"\"}\ndataRows = skip 1 rowLines\n\ntotal = 0\nfor row in dataRows {\n  f = parseLine row\n  name = f[0]\n  note = f[1]\n  qty = num f[2]\n  print \"{name}|{note}\"\n  total = total + qty\n}\nprint \"total {total}\"\n</parameter>\n</invoke>\n"
+ },
+ {
+  "id": "csv-quoted",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import csv\n\nwith open(\"parts.csv\", newline=\"\") as f:\n    reader = csv.reader(f)\n    header = next(reader, None)\n\n    total = 0\n    for row in reader:\n        if not row:\n            continue\n        name, note, qty = row[0], row[1], row[2]\n        print(f\"{name}|{note}\")\n        total += int(qty.strip())\n\n    print(f\"total {total}\")\n"
+ },
+ {
+  "id": "roman",
+  "model": "sonnet",
+  "lang": "til",
+  "variant": "hard",
+  "program": "fn romanValue s {\n  vals = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\n  total = 0\n  prev = 0\n  for c in (rev (chars s)) {\n    v = vals[c]\n    if v < prev {\n      total = total - v\n    } else {\n      total = total + v\n    }\n    prev = v\n  }\n  total\n}\neg romanValue \"IV\" == 4\neg romanValue \"MCMXCIV\" == 1994\neg romanValue \"XL\" == 40\neg romanValue \"IX\" == 9\neg romanValue \"III\" == 3\neg romanValue \"CDXLIV\" == 444\neg romanValue \"MMXXVI\" == 2026\n\ntotal = 0\nfor s in (read \"roman.txt\" | lines | map trim | keep {it}) {\n  v = romanValue s\n  total = total + v\n  print \"{s} {v}\"\n}\nprint \"sum {total}\"\n"
+ },
+ {
+  "id": "roman",
+  "model": "sonnet",
+  "lang": "py",
+  "variant": "hard",
+  "program": "def roman_to_int(s):\n    values = {\n        'I': 1, 'V': 5, 'X': 10, 'L': 50,\n        'C': 100, 'D': 500, 'M': 1000,\n    }\n    total = 0\n    prev = 0\n    for ch in reversed(s):\n        val = values[ch]\n        if val < prev:\n            total -= val\n        else:\n            total += val\n            prev = val\n    return total\n\n\ndef main():\n    with open('roman.txt', 'r') as f:\n        lines = f.readlines()\n\n    total_sum = 0\n    for line in lines:\n        numeral = line.strip()\n        if not numeral:\n            continue\n        value = roman_to_int(numeral)\n        total_sum += value\n        print(f\"{numeral} {value}\")\n\n    print(f\"sum {total_sum}\")\n\n\nif __name__ == '__main__':\n    main()\n"
+ },
+ {
+  "id": "coin-change",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "amount = 173\ncoins = [1, 5, 12, 19]\n\ndp = []\nfor i in range 0 (amount + 1) {\n  push (amount + 1) dp\n}\ndp[0] = 0\n\nfor i in range 1 (amount + 1) {\n  for coin in coins {\n    if coin <= i {\n      dp[i] = min [dp[i], dp[i - coin] + 1]\n    }\n  }\n}\n\nprint dp[amount]"
+ },
+ {
+  "id": "coin-change",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\n\ndp = [float('inf')] * (amount + 1)\ndp[0] = 0\n\nfor i in range(1, amount + 1):\n    for coin in coins:\n        if coin <= i:\n            dp[i] = min(dp[i], dp[i - coin] + 1)\n\nprint(dp[amount])"
+ },
+ {
+  "id": "topo-order",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "# Read and parse dependencies\ncontent = read \"deps.txt\"\nlines = content | lines | keep {it}\n\nedges = []\nnodes = {}\n\nfor line in lines {\n  parts = split \"->\" line\n  if len parts == 2 {\n    from = trim parts[0]\n    to = trim parts[1]\n    push {from: from, to: to} edges\n    nodes[from] = true\n    nodes[to] = true\n  }\n}\n\n# Initialize graph\nall_nodes = keys nodes | sort\nin_degree = {}\nadj = {}\n\nfor node in all_nodes {\n  in_degree[node] = 0\n  adj[node] = []\n}\n\n# Build graph (a->b means b comes before a)\nfor edge in edges {\n  in_degree[edge.from] = in_degree[edge.from] + 1\n  push edge.from adj[edge.to]\n}\n\n# Topological sort with lexicographic ordering\nqueue = []\n\nfor node in all_nodes {\n  if in_degree[node] == 0 {\n    push node queue\n  }\n}\n\nwhile len queue > 0 {\n  queue = sort queue\n  current = queue[0]\n  queue = skip 1 queue\n  print current\n  \n  for neighbor in adj[current] {\n    in_degree[neighbor] = in_degree[neighbor] - 1\n    if in_degree[neighbor] == 0 {\n      push neighbor queue\n    }\n  }\n}"
+ },
+ {
+  "id": "topo-order",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "from collections import defaultdict\n\n# Read dependencies\ndependents = defaultdict(list)\nin_degree = defaultdict(int)\nall_nodes = set()\n\nwith open('deps.txt', 'r') as f:\n    for line in f:\n        line = line.strip()\n        if line:\n            a, b = line.split('->')\n            a = a.strip()\n            b = b.strip()\n            all_nodes.add(a)\n            all_nodes.add(b)\n            dependents[b].append(a)\n            in_degree[a] += 1\n\n# Initialize in_degree for all nodes\nfor node in all_nodes:\n    if node not in in_degree:\n        in_degree[node] = 0\n\n# Topological sort with lexicographic ordering\nresult = []\nprocessed = set()\n\nwhile len(result) < len(all_nodes):\n    # Find available nodes (in_degree 0, not processed)\n    available = [node for node in all_nodes \n                 if in_degree[node] == 0 and node not in processed]\n    \n    # Pick lexicographically smallest\n    available.sort()\n    current = available[0]\n    result.append(current)\n    processed.add(current)\n    \n    # Update in_degrees\n    for dependent in dependents[current]:\n        in_degree[dependent] -= 1\n\n# Print result\nfor node in result:\n    print(node)"
+ },
+ {
+  "id": "balanced-max",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "s = read \"brackets.txt\" | trim\ncs = chars s\nn = len s\nmax_len = 0\n\nfor i in (range 0 n) {\n  depth = 0\n  for j in (range i n) {\n    if cs[j] == \"(\" { depth = depth + 1 }\n    elif cs[j] == \")\" { depth = depth - 1 }\n    \n    if depth < 0 { break }\n    if depth == 0 {\n      len_found = j - i + 1\n      if len_found > max_len { max_len = len_found }\n    }\n  }\n}\n\nprint max_len"
+ },
+ {
+  "id": "balanced-max",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "with open('brackets.txt') as f:\n    s = f.read().strip()\n\nif not s:\n    print(0)\nelse:\n    n = len(s)\n    dp = [0] * n\n    max_len = 0\n    \n    for i in range(1, n):\n        if s[i] == ')':\n            if s[i-1] == '(':\n                dp[i] = (dp[i-2] if i >= 2 else 0) + 2\n            elif dp[i-1] > 0:\n                j = i - dp[i-1] - 1\n                if j >= 0 and s[j] == '(':\n                    dp[i] = dp[i-1] + 2 + (dp[j-1] if j >= 1 else 0)\n            \n            max_len = max(max_len, dp[i])\n    \n    print(max_len)\n"
+ },
+ {
+  "id": "vm-mini",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "stack = []\n\nfor line in (read \"ops.txt\" | lines | map trim | keep {it}) {\n  parts = words line\n  cmd = parts[0]\n  \n  match cmd {\n    \"PUSH\" -> {\n      push (num parts[1]) stack\n    }\n    \"ADD\" -> {\n      b = pop stack\n      a = pop stack\n      push (a + b) stack\n    }\n    \"SUB\" -> {\n      b = pop stack\n      a = pop stack\n      push (a - b) stack\n    }\n    \"MUL\" -> {\n      b = pop stack\n      a = pop stack\n      push (a * b) stack\n    }\n    \"DUP\" -> {\n      top = stack[-1]\n      push top stack\n    }\n    \"SWAP\" -> {\n      b = pop stack\n      a = pop stack\n      push b stack\n      push a stack\n    }\n  }\n}\n\nprint stack[-1]"
+ },
+ {
+  "id": "vm-mini",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "#!/usr/bin/env python3\n\nstack = []\n\nwith open('ops.txt', 'r') as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        \n        parts = line.split()\n        op = parts[0]\n        \n        if op == 'PUSH':\n            n = int(parts[1])\n            stack.append(n)\n        elif op == 'ADD':\n            b = stack.pop()\n            a = stack.pop()\n            stack.append(a + b)\n        elif op == 'SUB':\n            b = stack.pop()\n            a = stack.pop()\n            stack.append(a - b)\n        elif op == 'MUL':\n            b = stack.pop()\n            a = stack.pop()\n            stack.append(a * b)\n        elif op == 'DUP':\n            stack.append(stack[-1])\n        elif op == 'SWAP':\n            stack[-1], stack[-2] = stack[-2], stack[-1]\n\nprint(stack[-1])"
+ },
+ {
+  "id": "bank-ledger",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "txns = read \"txns.txt\" | lines\naccounts = {}\nseen_order = []\nrejected = 0\n\nfor line in txns {\n  parts = split \" \" line | keep {it}\n  \n  if len parts == 3 {\n    action = parts[0]\n    acct = parts[1]\n    amount = num parts[2]\n    \n    if not acct in accounts {\n      push acct seen_order\n      accounts[acct] = 0\n    }\n    \n    if action == \"deposit\" {\n      accounts[acct] = accounts[acct] + amount\n    } elif action == \"withdraw\" {\n      if accounts[acct] >= amount {\n        accounts[acct] = accounts[acct] - amount\n      } else {\n        rejected = rejected + 1\n      }\n    }\n  }\n}\n\nfor acct in seen_order {\n  print \"{acct} {accounts[acct]}\"\n}\n\nprint \"rejected {rejected}\""
+ },
+ {
+  "id": "bank-ledger",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "balances = {}\nfirst_seen = []\nrejected = 0\n\nwith open('txns.txt', 'r') as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        \n        parts = line.split()\n        if len(parts) < 3:\n            continue\n        \n        cmd = parts[0]\n        acct = parts[1]\n        \n        try:\n            amount = int(parts[2])\n        except ValueError:\n            continue\n        \n        if acct not in balances:\n            balances[acct] = 0\n            first_seen.append(acct)\n        \n        if cmd == 'deposit':\n            balances[acct] += amount\n        elif cmd == 'withdraw':\n            if balances[acct] >= amount:\n                balances[acct] -= amount\n            else:\n                rejected += 1\n\nfor acct in first_seen:\n    print(f\"{acct} {balances[acct]}\")\n\nprint(f\"rejected {rejected}\")"
+ },
+ {
+  "id": "game-of-life",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "fn read_grid path {\n  read path | lines | map chars\n}\n\nfn write_grid grid {\n  grid | map (join \"\") | each print\n}\n\nfn count_neighbors grid row col {\n  rows = len grid\n  cols = len grid[0]\n  count = 0\n  for dr in [-1, 0, 1] {\n    for dc in [-1, 0, 1] {\n      if (dr != 0 or dc != 0) {\n        r = (row + dr + rows) % rows\n        c = (col + dc + cols) % cols\n        if grid[r][c] == \"#\" { count = count + 1 }\n      }\n    }\n  }\n  count\n}\n\nfn next_generation grid {\n  rows = len grid\n  cols = len grid[0]\n  new_grid = []\n  for r in range 0 rows {\n    new_row = []\n    for c in range 0 cols {\n      neighbors = count_neighbors grid r c\n      cell = grid[r][c]\n      if cell == \"#\" {\n        if neighbors == 2 or neighbors == 3 {\n          push \"#\" new_row\n        } else {\n          push \".\" new_row\n        }\n      } else {\n        if neighbors == 3 {\n          push \"#\" new_row\n        } else {\n          push \".\" new_row\n        }\n      }\n    }\n    push new_row new_grid\n  }\n  new_grid\n}\n\ngrid = read_grid \"grid.txt\"\nfor i in range 0 5 {\n  grid = next_generation grid\n}\nwrite_grid grid\n"
+ },
+ {
+  "id": "game-of-life",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "def read_grid(filename):\n    \"\"\"Read the grid from file.\"\"\"\n    with open(filename, 'r') as f:\n        lines = f.read().strip().split('\\n')\n    return [list(line) for line in lines]\n\ndef count_neighbors(grid, row, col):\n    \"\"\"Count live neighbors on a torus.\"\"\"\n    rows = len(grid)\n    cols = len(grid[0])\n    count = 0\n    \n    for dr in [-1, 0, 1]:\n        for dc in [-1, 0, 1]:\n            if dr == 0 and dc == 0:\n                continue\n            r = (row + dr) % rows\n            c = (col + dc) % cols\n            if grid[r][c] == '#':\n                count += 1\n    \n    return count\n\ndef next_generation(grid):\n    \"\"\"Calculate the next generation.\"\"\"\n    rows = len(grid)\n    cols = len(grid[0])\n    new_grid = [['.' for _ in range(cols)] for _ in range(rows)]\n    \n    for row in range(rows):\n        for col in range(cols):\n            neighbors = count_neighbors(grid, row, col)\n            \n            if grid[row][col] == '#':\n                # Live cell survives with 2-3 neighbors\n                if neighbors in [2, 3]:\n                    new_grid[row][col] = '#'\n            else:\n                # Dead cell becomes alive with exactly 3 neighbors\n                if neighbors == 3:\n                    new_grid[row][col] = '#'\n    \n    return new_grid\n\ndef print_grid(grid):\n    \"\"\"Print the grid.\"\"\"\n    for row in grid:\n        print(''.join(row))\n\n# Main\ngrid = read_grid('grid.txt')\n\nfor _ in range(5):\n    grid = next_generation(grid)\n\nprint_grid(grid)"
+ },
+ {
+  "id": "log-window",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "lines = read \"big.log\" | lines\n\nparsed = map {line ->\n  parts = words line\n  {\n    ts: num parts[0],\n    level: parts[1]\n  }\n} lines\n\nerrors = keep {it.level == \"ERROR\"} parsed\n\nresults = map {err ->\n  start = err.ts\n  count = errors | keep {it.ts >= start and it.ts <= start + 59} | len\n  {start: start, count: count}\n} errors\n\nbest = fold {acc x ->\n  if acc == null { x }\n  elif x.count > acc.count { x }\n  elif x.count == acc.count and x.start < acc.start { x }\n  else { acc }\n} null results\n\nprint \"{best.start} {best.count}\""
+ },
+ {
+  "id": "log-window",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "errors = []\nwith open('big.log', 'r') as f:\n    for line in f:\n        parts = line.split()\n        if len(parts) >= 2:\n            timestamp = int(parts[0])\n            level = parts[1]\n            if level == 'ERROR':\n                errors.append(timestamp)\n\nmax_count = 0\nbest_start = None\n\nseen_starts = set()\nfor start in errors:\n    if start in seen_starts:\n        continue\n    seen_starts.add(start)\n    \n    count = sum(1 for ts in errors if start <= ts <= start + 59)\n    \n    if count > max_count:\n        max_count = count\n        best_start = start\n\nprint(best_start, max_count)"
+ },
+ {
+  "id": "top-ips",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "lines = read \"traffic.txt\" | lines | map trim | keep {it}\n\nips = {}\nfor line in lines {\n  parts = split \" \" line | keep {it}\n  if len parts >= 2 {\n    ip = parts[0]\n    bytes_val = num parts[1] catch -1\n    if bytes_val >= 0 {\n      if ip in ips {\n        ips[ip] = ips[ip] + bytes_val\n      } else {\n        ips[ip] = bytes_val\n      }\n    }\n  }\n}\n\nitems ips | sortBy {-it.v} | take 3 | each {r -> print \"{r.k} {r.v}\"}"
+ },
+ {
+  "id": "top-ips",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "ips = {}\norder = 0\n\nwith open('traffic.txt', 'r') as f:\n    for line in f:\n        parts = line.strip().split()\n        if len(parts) == 2:\n            ip, bytes_str = parts\n            try:\n                bytes_val = int(bytes_str)\n                if ip not in ips:\n                    ips[ip] = [bytes_val, order]\n                    order += 1\n                else:\n                    ips[ip][0] += bytes_val\n            except ValueError:\n                continue\n\nsorted_ips = sorted(ips.items(), key=lambda x: (-x[1][0], x[1][1]))\n\nfor i in range(min(3, len(sorted_ips))):\n    ip, (total, _) = sorted_ips[i]\n    print(f\"{ip} {total}\")"
+ },
+ {
+  "id": "dedupe-events",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "latest = fold {acc line ->\n  parts = split \" \" line\n  id = parts[0]\n  ts = num parts[1]\n  current = get id acc\n  if (current == null) or (ts >= current) {\n    put id ts acc\n  } else {\n    acc\n  }\n} {} (lines (read \"events.txt\"))\n\nprint (len (keys latest))\nprint (sum (vals latest))"
+ },
+ {
+  "id": "dedupe-events",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "#!/usr/bin/env python3\n\nlatest_events = {}\n\nwith open('events.txt', 'r') as f:\n    for line in f:\n        parts = line.split()\n        event_id = parts[0]\n        ts = int(parts[1])\n        \n        if event_id not in latest_events or ts >= latest_events[event_id]:\n            latest_events[event_id] = ts\n\ndistinct_ids = len(latest_events)\nsum_ts = sum(latest_events.values())\n\nprint(distinct_ids)\nprint(sum_ts)"
+ },
+ {
+  "id": "parse-config",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "config = read \"app.cfg\"\n  | lines\n  | map {line ->\n      trimmed = trim line\n      if not trimmed or (starts \"#\" trimmed) or not (has \"=\" trimmed) {\n        null\n      } else {\n        parts = split \"=\" trimmed\n        key = trim parts[0]\n        value = trim (join \"=\" (skip 1 parts))\n        {key, value}\n      }\n    }\n  | keep {it}\n\nseen = []\nfor item in config {\n  if not (has item.key seen) {\n    print \"{item.key}={item.value}\"\n    push item.key seen\n  }\n}\n"
+ },
+ {
+  "id": "parse-config",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "config = {}\nseen_keys = set()\n\nwith open('app.cfg', 'r') as f:\n    for line in f:\n        line = line.strip()\n        \n        if not line or line.startswith('#') or '=' not in line:\n            continue\n        \n        key, value = line.split('=', 1)\n        key = key.strip()\n        value = value.strip()\n        \n        if key not in seen_keys:\n            config[key] = value\n            seen_keys.add(key)\n\nfor key, value in config.items():\n    print(f\"{key}={value}\")"
+ },
+ {
+  "id": "csv-quoted",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "fn parseCsvLine line {\n  charList = chars line\n  fields = []\n  i = 0\n  \n  while i < len charList {\n    if charList[i] == \"\\\"\" {\n      i = i + 1\n      field = \"\"\n      while i < len charList {\n        if charList[i] == \"\\\"\" {\n          if i + 1 < len charList and charList[i + 1] == \"\\\"\" {\n            field = field + \"\\\"\"\n            i = i + 2\n          } else {\n            i = i + 1\n            break\n          }\n        } else {\n          field = field + charList[i]\n          i = i + 1\n        }\n      }\n      push field fields\n      if i < len charList and charList[i] == \",\" {\n        i = i + 1\n      }\n    } else {\n      field = \"\"\n      while i < len charList and charList[i] != \",\" {\n        field = field + charList[i]\n        i = i + 1\n      }\n      push field fields\n      if i < len charList and charList[i] == \",\" {\n        i = i + 1\n      }\n    }\n  }\n  \n  fields\n}\n\neg parseCsvLine \"bolt,\\\"small, steel\\\",40\" == [\"bolt\", \"small, steel\", \"40\"]\neg parseCsvLine \"washer,\\\"say \\\"\\\"hi\\\"\\\", ok\\\",7\" == [\"washer\", \"say \\\"hi\\\", ok\", \"7\"]\n\nlines = read \"parts.csv\" | lines | skip 1\ntotal = 0\n\nfor line in lines {\n  fields = parseCsvLine line\n  name = first fields\n  note = fields[1]\n  qty = num fields[2]\n  print \"{name}|{note}\"\n  total = total + qty\n}\n\nprint \"total {total}\""
+ },
+ {
+  "id": "csv-quoted",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "import csv\n\nwith open('parts.csv', 'r') as f:\n    reader = csv.DictReader(f)\n    total_qty = 0\n    for row in reader:\n        name = row['name']\n        note = row['note']\n        qty = int(row['qty'])\n        print(f\"{name}|{note}\")\n        total_qty += qty\n    print(f\"total {total_qty}\")"
+ },
+ {
+  "id": "roman",
+  "model": "haiku",
+  "lang": "til",
+  "variant": "hard",
+  "program": "fn romanToDecimal r {\n  values = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\n  cs = chars r\n  total = 0\n  i = 0\n  while i < len cs {\n    c = cs[i]\n    val = values[c]\n    if i + 1 < len cs and values[cs[i + 1]] > val {\n      total = total + values[cs[i + 1]] - val\n      i = i + 2\n    } else {\n      total = total + val\n      i = i + 1\n    }\n  }\n  total\n}\n\nnumerals = read \"roman.txt\" | lines | map trim | keep {it}\ntotal = 0\nfor numeral in numerals {\n  decimal = romanToDecimal numeral\n  print \"{numeral} {decimal}\"\n  total = total + decimal\n}\nprint \"sum {total}\""
+ },
+ {
+  "id": "roman",
+  "model": "haiku",
+  "lang": "py",
+  "variant": "hard",
+  "program": "def roman_to_decimal(numeral):\n    values = {\n        'I': 1,\n        'V': 5,\n        'X': 10,\n        'L': 50,\n        'C': 100,\n        'D': 500,\n        'M': 1000\n    }\n    \n    total = 0\n    for i, char in enumerate(numeral):\n        current_value = values[char]\n        # Check if the next character has a larger value (subtractive case)\n        if i + 1 < len(numeral):\n            next_value = values[numeral[i + 1]]\n            if current_value < next_value:\n                total -= current_value\n            else:\n                total += current_value\n        else:\n            # Last character, always add\n            total += current_value\n    \n    return total\n\n# Read the file\nwith open('roman.txt', 'r') as f:\n    lines = [line.strip() for line in f if line.strip()]\n\n# Convert and print\ntotal_sum = 0\nfor numeral in lines:\n    decimal = roman_to_decimal(numeral)\n    print(f\"{numeral} {decimal}\")\n    total_sum += decimal\n\nprint(f\"sum {total_sum}\")"
+ }
+]

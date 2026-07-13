@@ -1,0 +1,27 @@
+[
+ {
+  "jobId": "sonnet:top-ips",
+  "pass": true,
+  "peek": ""
+ },
+ {
+  "jobId": "sonnet:csv-quoted",
+  "pass": true,
+  "peek": ""
+ },
+ {
+  "jobId": "sonnet:roman",
+  "pass": true,
+  "peek": ""
+ },
+ {
+  "jobId": "haiku:parse-config",
+  "pass": true,
+  "peek": ""
+ },
+ {
+  "jobId": "haiku:roman",
+  "pass": true,
+  "peek": ""
+ }
+]

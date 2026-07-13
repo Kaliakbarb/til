@@ -1065,7 +1065,11 @@ function makeBuiltins(rt) {
   const short = v => { const s = display(v, true); return s.length > 40 ? s.slice(0, 37) + '…' : s }
   const want = (v, types, n, what, node) => {
     if (!types.includes(T(v)))
-      terr('E_TYPE', `${what || 'argument'} of \`${n}\` must be ${types.join(' or ')}, got ${T(v)} (${short(v)})`, node)
+      terr('E_TYPE', `${what || 'argument'} of \`${n}\` must be ${types.join(' or ')}, got ${T(v)} (${short(v)})`, node, {
+        hint: T(v) === 'map' && types.includes('list')
+          ? 'a map is not a list — pipe it through `items` first (a list of {k, v}), e.g. `m | items | map {p -> p.v}`'
+          : undefined,
+      })
   }
   const wantFn = (f, n, node) => { if (T(f) !== 'fn') terr('E_TYPE', `first argument of \`${n}\` must be a function, got ${T(f)}`, node) }
   const call1 = (f, x, node) => rt.applyN(f, [x], node)

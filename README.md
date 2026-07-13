@@ -145,8 +145,23 @@ Writing til from a 1.8k-token card was as reliable as writing native Python **do
 Haiku-class models** — the regime where unseen languages are supposed to collapse — and
 every tier's naturally-written til was 15–32% smaller than its naturally-written Python
 (hand-optimized ceilings are at parity; models don't write hand-optimized Python).
-A rules-only half-card also scored 8/8. Honest limits: one model family so far, and the
-benchmark saturated — the failure edge needs harder tasks. Cross-vendor replication:
+A rules-only half-card also scored 8/8.
+
+That suite saturated, so a **12-task hard suite** (algorithmic / stateful / large-input /
+underspecified — [eval/hard/](eval/hard/)) found the edge and the answer to it:
+
+| model | til pass@1 | python pass@1 | til pass@fix (one repair round) |
+|---|---:|---:|---:|
+| Fable 5 | **12/12** | 12/12 | 12/12 |
+| Sonnet 5 | 9/12 | 12/12 | **12/12** |
+| Haiku 4.5 | 10/12 | 12/12 | **12/12** |
+
+Frontier writes hard til cold at its Python level. Smaller models trail on first attempt —
+and **one round of til's structured-error loop closes the gap completely, at every tier**.
+The controlled repair experiment (80 verified-failing mutants + a minimal-feedback
+ablation) saturated at 40/40 in all arms — published as honestly undecided in
+[eval/hard/results.md](eval/hard/results.md), along with the failure taxonomy that already
+shipped one error-UX fix. Honest limits: one model family. Cross-vendor replication:
 
 ```bash
 EVAL_API_KEY=… EVAL_MODELS=openai/gpt-5-mini node eval/run.mjs   # any OpenAI-compatible endpoint

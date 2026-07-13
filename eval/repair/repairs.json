@@ -1,0 +1,842 @@
+[
+ {
+  "jobId": "sum-even:til:0:full",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print"
+ },
+ {
+  "jobId": "sum-even:til:1:full",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print"
+ },
+ {
+  "jobId": "sum-even:til:2:full",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print"
+ },
+ {
+  "jobId": "sum-even:til:3:full",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "sum-even:til:4:full",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "sum-even:py:0:full",
+  "task": "sum-even",
+  "lang": "py",
+  "arm": "full",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 2 == 0:\n            total += n\nprint(total)\n"
+ },
+ {
+  "jobId": "sum-even:py:1:full",
+  "task": "sum-even",
+  "lang": "py",
+  "arm": "full",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 2 == 0:\n            total += n\nprint(total)\n"
+ },
+ {
+  "jobId": "sum-even:py:2:full",
+  "task": "sum-even",
+  "lang": "py",
+  "arm": "full",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 2 == 0:\n            total += n\nprint(total)\n"
+ },
+ {
+  "jobId": "sum-even:py:3:full",
+  "task": "sum-even",
+  "lang": "py",
+  "arm": "full",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 2 == 0:\n            total += n\nprint(total)\n"
+ },
+ {
+  "jobId": "sum-even:py:4:full",
+  "task": "sum-even",
+  "lang": "py",
+  "arm": "full",
+  "program": "total = 0\nwith open(\"numbers.txt\") as f:\n    for line in f:\n        line = line.strip()\n        if not line:\n            continue\n        n = int(line)\n        if n % 2 == 0:\n            total += n\nprint(total)\n"
+ },
+ {
+  "jobId": "csv-top:til:0:full",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "full",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n"
+ },
+ {
+  "jobId": "csv-top:til:1:full",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "full",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n"
+ },
+ {
+  "jobId": "csv-top:til:2:full",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "full",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n"
+ },
+ {
+  "jobId": "csv-top:til:3:full",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "full",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\""
+ },
+ {
+  "jobId": "csv-top:til:4:full",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "full",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n"
+ },
+ {
+  "jobId": "csv-top:py:0:full",
+  "task": "csv-top",
+  "lang": "py",
+  "arm": "full",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n"
+ },
+ {
+  "jobId": "csv-top:py:1:full",
+  "task": "csv-top",
+  "lang": "py",
+  "arm": "full",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n"
+ },
+ {
+  "jobId": "csv-top:py:2:full",
+  "task": "csv-top",
+  "lang": "py",
+  "arm": "full",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n"
+ },
+ {
+  "jobId": "csv-top:py:3:full",
+  "task": "csv-top",
+  "lang": "py",
+  "arm": "full",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n"
+ },
+ {
+  "jobId": "csv-top:py:4:full",
+  "task": "csv-top",
+  "lang": "py",
+  "arm": "full",
+  "program": "import csv\n\ntotals = {}\nwith open(\"sales.csv\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        region = row[\"region\"]\n        amount = float(row[\"amount\"])\n        totals[region] = totals.get(region, 0) + amount\n\ntop_region = max(totals, key=totals.get)\ntop_total = totals[top_region]\nif top_total == int(top_total):\n    top_total = int(top_total)\n\nprint(top_region, top_total)\n"
+ },
+ {
+  "jobId": "rename-keys:til:0:full",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "full",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n"
+ },
+ {
+  "jobId": "rename-keys:til:1:full",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "full",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n"
+ },
+ {
+  "jobId": "rename-keys:til:2:full",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "full",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n"
+ },
+ {
+  "jobId": "rename-keys:til:3:full",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "full",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n"
+ },
+ {
+  "jobId": "rename-keys:til:4:full",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "full",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))"
+ },
+ {
+  "jobId": "rename-keys:py:0:full",
+  "task": "rename-keys",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \":\")))\n"
+ },
+ {
+  "jobId": "rename-keys:py:1:full",
+  "task": "rename-keys",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \":\")))\n"
+ },
+ {
+  "jobId": "rename-keys:py:2:full",
+  "task": "rename-keys",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \":\")))\n"
+ },
+ {
+  "jobId": "rename-keys:py:3:full",
+  "task": "rename-keys",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \":\")))\n"
+ },
+ {
+  "jobId": "rename-keys:py:4:full",
+  "task": "rename-keys",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"users.json\", \"r\", encoding=\"utf-8\") as f:\n    users = json.load(f)\n\nresult = [{\"name\": f\"{u['first']} {u['last']}\"} for u in users]\n\nprint(json.dumps(result, separators=(\",\", \":\")))\n"
+ },
+ {
+  "jobId": "dedup-sort:til:0:full",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "jobId": "dedup-sort:til:1:full",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "jobId": "dedup-sort:til:2:full",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "jobId": "dedup-sort:til:3:full",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"words.txt\" | words | uniq | sort | each print\n"
+ },
+ {
+  "jobId": "dedup-sort:til:4:full",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "full",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "jobId": "dedup-sort:py:0:full",
+  "task": "dedup-sort",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(word)\n"
+ },
+ {
+  "jobId": "dedup-sort:py:1:full",
+  "task": "dedup-sort",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(word)\n"
+ },
+ {
+  "jobId": "dedup-sort:py:2:full",
+  "task": "dedup-sort",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(word)\n"
+ },
+ {
+  "jobId": "dedup-sort:py:3:full",
+  "task": "dedup-sort",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(word)\n"
+ },
+ {
+  "jobId": "dedup-sort:py:4:full",
+  "task": "dedup-sort",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"words.txt\") as f:\n    words = f.read().split()\n\nfor word in sorted(set(words)):\n    print(word)\n"
+ },
+ {
+  "jobId": "fizz-sum:til:0:full",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "full",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "fizz-sum:til:1:full",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "full",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "fizz-sum:til:2:full",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "full",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "fizz-sum:til:3:full",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "full",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "fizz-sum:til:4:full",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "full",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "fizz-sum:py:0:full",
+  "task": "fizz-sum",
+  "lang": "py",
+  "arm": "full",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0))"
+ },
+ {
+  "jobId": "fizz-sum:py:1:full",
+  "task": "fizz-sum",
+  "lang": "py",
+  "arm": "full",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0))\n"
+ },
+ {
+  "jobId": "fizz-sum:py:2:full",
+  "task": "fizz-sum",
+  "lang": "py",
+  "arm": "full",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0))"
+ },
+ {
+  "jobId": "fizz-sum:py:3:full",
+  "task": "fizz-sum",
+  "lang": "py",
+  "arm": "full",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0))"
+ },
+ {
+  "jobId": "fizz-sum:py:4:full",
+  "task": "fizz-sum",
+  "lang": "py",
+  "arm": "full",
+  "program": "print(sum(n for n in range(1, 1001) if n % 3 == 0 or n % 5 == 0))\n"
+ },
+ {
+  "jobId": "grade-histogram:til:0:full",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "full",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "grade-histogram:til:1:full",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "full",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "grade-histogram:til:2:full",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "full",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "grade-histogram:til:3:full",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "full",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "grade-histogram:til:4:full",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "full",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "grade-histogram:py:0:full",
+  "task": "grade-histogram",
+  "lang": "py",
+  "arm": "full",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "jobId": "grade-histogram:py:1:full",
+  "task": "grade-histogram",
+  "lang": "py",
+  "arm": "full",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "jobId": "grade-histogram:py:2:full",
+  "task": "grade-histogram",
+  "lang": "py",
+  "arm": "full",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "jobId": "grade-histogram:py:3:full",
+  "task": "grade-histogram",
+  "lang": "py",
+  "arm": "full",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "jobId": "grade-histogram:py:4:full",
+  "task": "grade-histogram",
+  "lang": "py",
+  "arm": "full",
+  "program": "def main():\n    counts = {\"A\": 0, \"B\": 0, \"C\": 0, \"F\": 0}\n    with open(\"scores.txt\") as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            score = int(line)\n            if score >= 90:\n                counts[\"A\"] += 1\n            elif score >= 80:\n                counts[\"B\"] += 1\n            elif score >= 70:\n                counts[\"C\"] += 1\n            else:\n                counts[\"F\"] += 1\n\n    for letter in [\"A\", \"B\", \"C\", \"F\"]:\n        if counts[letter] > 0:\n            print(f\"{letter} {counts[letter]}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:0:full",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "full",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:1:full",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "full",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:2:full",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "full",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:3:full",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "full",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:4:full",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "full",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:py:0:full",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehouse, items in data.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n"
+ },
+ {
+  "jobId": "flatten-inventory:py:1:full",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehouse, items in data.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n"
+ },
+ {
+  "jobId": "flatten-inventory:py:2:full",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehouse, items in data.items():\n    for item, qy in items.items():\n        print(f\"{warehouse}.{item} {qy}\")\n"
+ },
+ {
+  "jobId": "flatten-inventory:py:3:full",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehouse, items in data.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n"
+ },
+ {
+  "jobId": "flatten-inventory:py:4:full",
+  "task": "flatten-inventory",
+  "lang": "py",
+  "arm": "full",
+  "program": "import json\n\nwith open(\"inv.json\") as f:\n    data = json.load(f)\n\nfor warehouse, items in data.items():\n    for item, qty in items.items():\n        print(f\"{warehouse}.{item} {qty}\")\n"
+ },
+ {
+  "jobId": "log-grep:til:0:full",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "full",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ },
+ {
+  "jobId": "log-grep:til:1:full",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "full",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ },
+ {
+  "jobId": "log-grep:til:2:full",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "full",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ },
+ {
+  "jobId": "log-grep:til:3:full",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "full",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ },
+ {
+  "jobId": "log-grep:til:4:full",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "full",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ },
+ {
+  "jobId": "log-grep:py:0:full",
+  "task": "log-grep",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"ERROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n"
+ },
+ {
+  "jobId": "log-grep:py:1:full",
+  "task": "log-grep",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"ERROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n"
+ },
+ {
+  "jobId": "log-grep:py:2:full",
+  "task": "log-grep",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"ERROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n"
+ },
+ {
+  "jobId": "log-grep:py:3:full",
+  "task": "log-grep",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"ERROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n"
+ },
+ {
+  "jobId": "log-grep:py:4:full",
+  "task": "log-grep",
+  "lang": "py",
+  "arm": "full",
+  "program": "with open(\"log.txt\", \"r\") as f:\n    lines = f.readlines()\n\nerror_lines = [line.rstrip(\"\\n\") for line in lines if \"ERROR\" in line]\n\nprint(len(error_lines))\nif error_lines:\n    print(error_lines[-1])\n"
+ },
+ {
+  "jobId": "sum-even:til:0:min",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print"
+ },
+ {
+  "jobId": "sum-even:til:1:min",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print"
+ },
+ {
+  "jobId": "sum-even:til:2:min",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "sum-even:til:3:min",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "sum-even:til:4:min",
+  "task": "sum-even",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"numbers.txt\" | lines | map num | keep {it % 2 == 0} | sum | print"
+ },
+ {
+  "jobId": "csv-top:til:0:min",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "min",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n"
+ },
+ {
+  "jobId": "csv-top:til:1:min",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "min",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n"
+ },
+ {
+  "jobId": "csv-top:til:2:min",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "min",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n"
+ },
+ {
+  "jobId": "csv-top:til:3:min",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "min",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n"
+ },
+ {
+  "jobId": "csv-top:til:4:min",
+  "task": "csv-top",
+  "lang": "til",
+  "arm": "min",
+  "program": "rows = read \"sales.csv\" | lines | skip 1 | map (split \",\")\nbest = group {it[0]} rows | items | map {p -> {k: p.k, v: p.v | map {num it[1]} | sum}} | top 1\nprint \"{best[0].k} {best[0].v}\"\n"
+ },
+ {
+  "jobId": "rename-keys:til:0:min",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "min",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n"
+ },
+ {
+  "jobId": "rename-keys:til:1:min",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "min",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n"
+ },
+ {
+  "jobId": "rename-keys:til:2:min",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "min",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n"
+ },
+ {
+  "jobId": "rename-keys:til:3:min",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "min",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n"
+ },
+ {
+  "jobId": "rename-keys:til:4:min",
+  "task": "rename-keys",
+  "lang": "til",
+  "arm": "min",
+  "program": "users = json (read \"users.json\")\nprint (tojson (users | map {u -> {name: \"{u.first} {u.last}\"}}))\n"
+ },
+ {
+  "jobId": "dedup-sort:til:0:min",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "jobId": "dedup-sort:til:1:min",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "jobId": "dedup-sort:til:2:min",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "jobId": "dedup-sort:til:3:min",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"words.txt\" | words | uniq | sort | each print"
+ },
+ {
+  "jobId": "dedup-sort:til:4:min",
+  "task": "dedup-sort",
+  "lang": "til",
+  "arm": "min",
+  "program": "read \"words.txt\" | words | uniq | sort | each print\n"
+ },
+ {
+  "jobId": "fizz-sum:til:0:min",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "min",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "fizz-sum:til:1:min",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "min",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "fizz-sum:til:2:min",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "min",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print\n"
+ },
+ {
+  "jobId": "fizz-sum:til:3:min",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "min",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print"
+ },
+ {
+  "jobId": "fizz-sum:til:4:min",
+  "task": "fizz-sum",
+  "lang": "til",
+  "arm": "min",
+  "program": "range 1 1001 | keep {it % 3 == 0 or it % 5 == 0} | sum | print"
+ },
+ {
+  "jobId": "grade-histogram:til:0:min",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "min",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "grade-histogram:til:1:min",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "min",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "grade-histogram:til:2:min",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "min",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "grade-histogram:til:3:min",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "min",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "grade-histogram:til:4:min",
+  "task": "grade-histogram",
+  "lang": "til",
+  "arm": "min",
+  "program": "fn grade x = if x >= 90 { \"A\" } elif x >= 80 { \"B\" } elif x >= 70 { \"C\" } else { \"F\" }\ngs = read \"scores.txt\" | lines | map num | map grade | counts\nfor g in [\"A\", \"B\", \"C\", \"F\"] {\n  if has g gs { print \"{g} {gs[g]}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:0:min",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "min",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:1:min",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "min",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:2:min",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "min",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:3:min",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "min",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "flatten-inventory:til:4:min",
+  "task": "flatten-inventory",
+  "lang": "til",
+  "arm": "min",
+  "program": "inv = json (read \"inv.json\")\nfor w in inv {\n  for item in w.v { print \"{w.k}.{item.k} {item.v}\" }\n}\n"
+ },
+ {
+  "jobId": "log-grep:til:0:min",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "min",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ },
+ {
+  "jobId": "log-grep:til:1:min",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "min",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ },
+ {
+  "jobId": "log-grep:til:2:min",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "min",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ },
+ {
+  "jobId": "log-grep:til:3:min",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "min",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ },
+ {
+  "jobId": "log-grep:til:4:min",
+  "task": "log-grep",
+  "lang": "til",
+  "arm": "min",
+  "program": "errs = read \"log.txt\" | lines | keep {has \"ERROR\" it}\nprint (len errs)\nprint (last errs)\n"
+ }
+]

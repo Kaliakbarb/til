@@ -1,0 +1,362 @@
+[
+ {
+  "jobId": "coin-change:dropped-coin:til-contracts",
+  "task": "coin-change",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "error",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c <= a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  ensure best < 999999999\n  push best dp\n}\nprint dp[amount]\n"
+ },
+ {
+  "jobId": "coin-change:dropped-coin:til-bare",
+  "task": "coin-change",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c <= a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  push best dp\n}\nprint dp[amount]\n"
+ },
+ {
+  "jobId": "coin-change:dropped-coin:py",
+  "task": "coin-change",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range(1, amount + 1):\n    best = 999999999\n    for c in coins:\n        if c <= a and dp[a - c] + 1 < best:\n            best = dp[a - c] + 1\n    dp.append(best)\nprint(dp[amount])\n"
+ },
+ {
+  "jobId": "coin-change:exact-coin-unusable:til-contracts",
+  "task": "coin-change",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "error",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c <= a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  ensure best < 999999999\n  push best dp\n}\nprint dp[amount]"
+ },
+ {
+  "jobId": "coin-change:exact-coin-unusable:til-bare",
+  "task": "coin-change",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c <= a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  push best dp\n}\nprint dp[amount]\n"
+ },
+ {
+  "jobId": "coin-change:exact-coin-unusable:py",
+  "task": "coin-change",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range(1, amount + 1):\n    best = 999999999\n    for c in coins:\n        if c <= a and dp[a - c] + 1 < best:\n            best = dp[a - c] + 1\n    dp.append(best)\nprint(dp[amount])"
+ },
+ {
+  "jobId": "vm-mini:sub-operand-swap:til-contracts",
+  "task": "vm-mini",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" { st[-1], st[-2] = st[-2], st[-1] }\n  else {\n    b, a = pop st, pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (a - b) st }\n  }\n  ensure len st >= 1\n}\nprint (last st)"
+ },
+ {
+  "jobId": "vm-mini:sub-operand-swap:til-bare",
+  "task": "vm-mini",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" { st[-1], st[-2] = st[-2], st[-1] }\n  else {\n    b, a = pop st, pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (a - b) st }\n  }\n}\nprint (last st)"
+ },
+ {
+  "jobId": "vm-mini:sub-operand-swap:py",
+  "task": "vm-mini",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "st = []\nfor line in open(\"ops.txt\").read().splitlines():\n    p = line.split()\n    op = p[0]\n    if op == \"PUSH\":\n        st.append(int(p[1]))\n    elif op == \"DUP\":\n        st.append(st[-1])\n    elif op == \"SWAP\":\n        st[-1], st[-2] = st[-2], st[-1]\n    else:\n        b, a = st.pop(), st.pop()\n        if op == \"ADD\":\n            st.append(a + b)\n        elif op == \"MUL\":\n            st.append(a * b)\n        elif op == \"SUB\":\n            st.append(a - b)\nprint(st[-1])"
+ },
+ {
+  "jobId": "vm-mini:swap-drops-instead:til-contracts",
+  "task": "vm-mini",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "error",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" {\n    b = pop st\n    a = pop st\n    push b st\n    push a st\n  }\n  else {\n    b, a = pop st, pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (a - b) st }\n  }\n  ensure len st >= 1\n}\nprint (last st)"
+ },
+ {
+  "jobId": "vm-mini:swap-drops-instead:til-bare",
+  "task": "vm-mini",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "error",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" { \n    x = st[-1]\n    y = st[-2]\n    st[-1] = y\n    st[-2] = x\n  }\n  else {\n    b = last st\n    pop st\n    a = last st\n    pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (a - b) st }\n  }\n}\nprint (last st)"
+ },
+ {
+  "jobId": "vm-mini:swap-drops-instead:py",
+  "task": "vm-mini",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "error",
+  "program": "st = []\nfor line in open(\"ops.txt\").read().splitlines():\n    p = line.split()\n    op = p[0]\n    if op == \"PUSH\":\n        st.append(int(p[1]))\n    elif op == \"DUP\":\n        st.append(st[-1])\n    elif op == \"SWAP\":\n        st[-1], st[-2] = st[-2], st[-1]\n    else:\n        b, a = st.pop(), st.pop()\n        if op == \"ADD\":\n            st.append(a + b)\n        elif op == \"MUL\":\n            st.append(a * b)\n        elif op == \"SUB\":\n            st.append(a - b)\nprint(st[-1])"
+ },
+ {
+  "jobId": "bank-ledger:deduct-then-flag-no-refund:til-contracts",
+  "task": "bank-ledger",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "error",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { \n    bal[a] = bal[a] + m \n  }\n  else {\n    if bal[a] - m < 0 {\n      rejected = rejected + 1\n    } else {\n      bal[a] = bal[a] - m\n    }\n  }\n  ensure bal[a] >= 0\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n"
+ },
+ {
+  "jobId": "bank-ledger:deduct-then-flag-no-refund:til-bare",
+  "task": "bank-ledger",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { bal[a] = bal[a] + m }\n  else {\n    if bal[a] - m < 0 {\n      rejected = rejected + 1\n    } else {\n      bal[a] = bal[a] - m\n    }\n  }\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n"
+ },
+ {
+  "jobId": "bank-ledger:deduct-then-flag-no-refund:py",
+  "task": "bank-ledger",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in open(\"txns.txt\").read().splitlines():\n    p = t.split()\n    k, a, m = p[0], p[1], int(p[2])\n    if a not in bal:\n        bal[a] = 0\n        order.append(a)\n    if k == \"deposit\":\n        bal[a] = bal[a] + m\n    else:\n        if bal[a] - m < 0:\n            rejected = rejected + 1\n        else:\n            bal[a] = bal[a] - m\nfor a in order:\n    print(f\"{a} {bal[a]}\")\nprint(f\"rejected {rejected}\")\n"
+ },
+ {
+  "jobId": "bank-ledger:reject-counter-inverted:til-contracts",
+  "task": "bank-ledger",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { bal[a] = bal[a] + m }\n  elif bal[a] >= m {\n    bal[a] = bal[a] - m\n  }\n  else {\n    rejected = rejected + 1\n  }\n  ensure bal[a] >= 0\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n"
+ },
+ {
+  "jobId": "bank-ledger:reject-counter-inverted:til-bare",
+  "task": "bank-ledger",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { bal[a] = bal[a] + m }\n  elif k == \"withdraw\" {\n    if bal[a] >= m {\n      bal[a] = bal[a] - m\n    } else {\n      rejected = rejected + 1\n    }\n  }\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n"
+ },
+ {
+  "jobId": "bank-ledger:reject-counter-inverted:py",
+  "task": "bank-ledger",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in open(\"txns.txt\").read().splitlines():\n    p = t.split()\n    k, a, m = p[0], p[1], int(p[2])\n    if a not in bal:\n        bal[a] = 0\n        order.append(a)\n    if k == \"deposit\":\n        bal[a] = bal[a] + m\n    elif k == \"withdraw\":\n        if bal[a] >= m:\n            bal[a] = bal[a] - m\n        else:\n            rejected = rejected + 1\nfor a in order:\n    print(f\"{a} {bal[a]}\")\nprint(f\"rejected {rejected}\")\n"
+ },
+ {
+  "jobId": "game-of-life:counts-self:til-contracts",
+  "task": "game-of-life",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if (dy != 0 or dx != 0) and g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n        }\n      }\n      ensure nb <= 8\n      push (nb == 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }"
+ },
+ {
+  "jobId": "game-of-life:counts-self:til-bare",
+  "task": "game-of-life",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if dy != 0 or dx != 0 {\n            if g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n          }\n        }\n      }\n      push (nb == 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }"
+ },
+ {
+  "jobId": "game-of-life:counts-self:py",
+  "task": "game-of-life",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "g = [[c == \"#\" for c in row] for row in open(\"grid.txt\").read().splitlines()]\nH, W = len(g), len(g[0])\nfor gen in range(5):\n    ng = []\n    for y in range(H):\n        row = []\n        for x in range(W):\n            nb = 0\n            for dy in [-1, 0, 1]:\n                for dx in [-1, 0, 1]:\n                    if dy == 0 and dx == 0:\n                        continue\n                    if g[(y + dy) % H][(x + dx) % W]:\n                        nb = nb + 1\n            row.append(nb == 3 or (g[y][x] and nb == 2))\n        ng.append(row)\n    g = ng\nfor row in g:\n    print(\"\".join(\"#\" if c else \".\" for c in row))"
+ },
+ {
+  "jobId": "game-of-life:birth-rule-gte:til-contracts",
+  "task": "game-of-life",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n        }\n      }\n      ensure nb <= 8\n      push (nb == 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }"
+ },
+ {
+  "jobId": "game-of-life:birth-rule-gte:til-bare",
+  "task": "game-of-life",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n        }\n      }\n      push (nb == 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }"
+ },
+ {
+  "jobId": "game-of-life:birth-rule-gte:py",
+  "task": "game-of-life",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "g = [[c == \"#\" for c in row] for row in open(\"grid.txt\").read().splitlines()]\nH, W = len(g), len(g[0])\nfor gen in range(5):\n    ng = []\n    for y in range(H):\n        row = []\n        for x in range(W):\n            nb = 0\n            for dy in [-1, 0, 1]:\n                for dx in [-1, 0, 1]:\n                    if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W]:\n                        nb = nb + 1\n            row.append((nb == 3) or (g[y][x] and nb == 2))\n        ng.append(row)\n    g = ng\nfor row in g:\n    print(\"\".join(\"#\" if c else \".\" for c in row))"
+ },
+ {
+  "jobId": "top-ips:sorted-ascending:til-contracts",
+  "task": "top-ips",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "error",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = tot[p[0]] + num p[1]\n}\ntop3 = order | sortBy {-tot[it]} | take 3\nensure tot[top3[0]] >= tot[top3[2]]\nfor ip in top3 { print \"{ip} {tot[ip]}\" }"
+ },
+ {
+  "jobId": "top-ips:sorted-ascending:til-bare",
+  "task": "top-ips",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = tot[p[0]] + num p[1]\n}\nfor ip in (order | sortBy {tot[it]} | rev | take 3) { print \"{ip} {tot[ip]}\" }"
+ },
+ {
+  "jobId": "top-ips:sorted-ascending:py",
+  "task": "top-ips",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "tot = {}\norder = []\nfor l in open(\"traffic.txt\").read().splitlines():\n    p = l.split()\n    if p[0] not in tot:\n        tot[p[0]] = 0\n        order.append(p[0])\n    tot[p[0]] = tot[p[0]] + int(p[1])\ntop3 = sorted(order, key=lambda ip: tot[ip], reverse=True)[:3]\nfor ip in top3:\n    print(f\"{ip} {tot[ip]}\")\n"
+ },
+ {
+  "jobId": "top-ips:reset-not-accumulate:til-contracts",
+  "task": "top-ips",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = tot[p[0]] + num p[1]\n}\ntop3 = order | sortBy {-tot[it]} | take 3\nensure tot[top3[0]] >= tot[top3[2]]\nfor ip in top3 { print \"{ip} {tot[ip]}\" }"
+ },
+ {
+  "jobId": "top-ips:reset-not-accumulate:til-bare",
+  "task": "top-ips",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = tot[p[0]] + num p[1]\n}\nfor ip in (order | sortBy {-tot[it]} | take 3) { print \"{ip} {tot[ip]}\" }"
+ },
+ {
+  "jobId": "top-ips:reset-not-accumulate:py",
+  "task": "top-ips",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "tot = {}\norder = []\nfor l in open(\"traffic.txt\").read().splitlines():\n    p = l.split()\n    if p[0] not in tot:\n        tot[p[0]] = 0\n        order.append(p[0])\n    tot[p[0]] += int(p[1])\ntop3 = sorted(order, key=lambda ip: -tot[ip])[:3]\nfor ip in top3:\n    print(f\"{ip} {tot[ip]}\")\n"
+ },
+ {
+  "jobId": "dedupe-events:keeps-earliest:til-contracts",
+  "task": "dedupe-events",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "error",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts >= latest[p[0]] { latest[p[0]] = ts }\n  ensure latest[p[0]] >= ts\n}\nprint (len latest)\nprint (latest | vals | sum)"
+ },
+ {
+  "jobId": "dedupe-events:keeps-earliest:til-bare",
+  "task": "dedupe-events",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts >= latest[p[0]] { latest[p[0]] = ts }\n}\nprint (len latest)\nprint (latest | vals | sum)"
+ },
+ {
+  "jobId": "dedupe-events:keeps-earliest:py",
+  "task": "dedupe-events",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "latest = {}\nfor l in open(\"events.txt\").read().splitlines():\n    p = l.split()\n    ts = int(p[1])\n    if p[0] not in latest or ts >= latest[p[0]]:\n        latest[p[0]] = ts\nprint(len(latest))\nprint(sum(latest.values()))\n"
+ },
+ {
+  "jobId": "dedupe-events:max-not-sum:til-contracts",
+  "task": "dedupe-events",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts >= latest[p[0]] { latest[p[0]] = ts }\n  ensure latest[p[0]] >= ts\n}\nprint (len latest)\nprint (latest | vals | sum)"
+ },
+ {
+  "jobId": "dedupe-events:max-not-sum:til-bare",
+  "task": "dedupe-events",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts >= latest[p[0]] { latest[p[0]] = ts }\n}\nprint (len latest)\nprint (latest | vals | sum)"
+ },
+ {
+  "jobId": "dedupe-events:max-not-sum:py",
+  "task": "dedupe-events",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "latest = {}\nfor l in open(\"events.txt\").read().splitlines():\n    p = l.split()\n    ts = int(p[1])\n    if p[0] not in latest or ts >= latest[p[0]]:\n        latest[p[0]] = ts\nprint(len(latest))\nprint(sum(latest.values()))\n"
+ },
+ {
+  "jobId": "roman:missing-M:til-contracts",
+  "task": "roman",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "error",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    ensure v\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] > v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\"\n"
+ },
+ {
+  "jobId": "roman:missing-M:til-bare",
+  "task": "roman",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "error",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] > v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\""
+ },
+ {
+  "jobId": "roman:missing-M:py",
+  "task": "roman",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "error",
+  "program": "rv = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\ndef rom(s):\n    tot = 0\n    for i, c in enumerate(s):\n        v = rv[c]\n        if i + 1 < len(s) and rv[s[i + 1]] > v:\n            tot = tot - v\n        else:\n            tot = tot + v\n    return tot\nrs = open(\"roman.txt\").read().splitlines()\nfor r in rs:\n    print(f\"{r} {rom(r)}\")\nprint(f\"sum {sum(rom(r) for r in rs)}\")"
+ },
+ {
+  "jobId": "roman:subtract-on-equal:til-contracts",
+  "task": "roman",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    ensure v\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] > v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\""
+ },
+ {
+  "jobId": "roman:subtract-on-equal:til-bare",
+  "task": "roman",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] > v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\""
+ },
+ {
+  "jobId": "roman:subtract-on-equal:py",
+  "task": "roman",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "rv = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\ndef rom(s):\n    tot = 0\n    for i, c in enumerate(s):\n        v = rv[c]\n        if i + 1 < len(s) and rv[s[i + 1]] > v:\n            tot = tot - v\n        else:\n            tot = tot + v\n    return tot\nrs = open(\"roman.txt\").read().splitlines()\nfor r in rs:\n    print(f\"{r} {rom(r)}\")\nprint(f\"sum {sum(rom(r) for r in rs)}\")\n"
+ },
+ {
+  "jobId": "balanced-max:no-sentinel-seed:til-contracts",
+  "task": "balanced-max",
+  "arm": "til-contracts",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "s = read \"brackets.txt\" | trim\nbest = 0\nstack = [-1]\nfor p in enum s {\n  if p[1] == \"(\" { push p[0] stack }\n  else {\n    pop stack\n    if empty stack { push p[0] stack }\n    elif p[0] - last stack > best { best = p[0] - last stack }\n  }\n}\nensure best % 2 == 0\nprint best"
+ },
+ {
+  "jobId": "balanced-max:no-sentinel-seed:til-bare",
+  "task": "balanced-max",
+  "arm": "til-bare",
+  "lang": "til",
+  "feedbackKind": "wrong-output",
+  "program": "s = read \"brackets.txt\" | trim\nbest = 0\nstack = [-1]\nfor p in enum s {\n  if p[1] == \"(\" { push p[0] stack }\n  else {\n    pop stack\n    if empty stack { push p[0] stack }\n    elif p[0] - last stack > best { best = p[0] - last stack }\n  }\n}\nprint best"
+ },
+ {
+  "jobId": "balanced-max:no-sentinel-seed:py",
+  "task": "balanced-max",
+  "arm": "py",
+  "lang": "py",
+  "feedbackKind": "wrong-output",
+  "program": "s = open(\"brackets.txt\").read().strip()\nbest = 0\nstack = [-1]\nfor i, c in enumerate(s):\n    if c == \"(\":\n        stack.append(i)\n    else:\n        stack.pop()\n        if not stack:\n            stack.append(i)\n        elif i - stack[-1] > best:\n            best = i - stack[-1]\nprint(best)"
+ }
+]

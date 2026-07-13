@@ -124,7 +124,7 @@ that contract.
 |---|---|---|
 | N1 frontier hard-suite parity | til 12/12 = py 12/12 (Fable) | **HOLDS** |
 | N2 small-model hard-suite | Sonnet 9/12, Haiku 10/12 (py 12/12 both) → 75–83% | **MISSES 90% bar** — the gap to close in v0.4 (fine-tune + card fixes from failure taxonomy) |
-| N3 repair vs tracebacks | 40/40 vs 40/40; minimal-feedback ablation also 40/40 | **UNDECIDED** — saturated at single-token fault depth; neither confirmed nor killed. Next test: deep-logic faults on hard suite |
+| N3 repair vs tracebacks | v1: all arms 40/40 · v2 (deep faults, haiku, contracts arm): all arms 15/15; contracts feedback even costs more tokens (98 vs 58) | **NOT SUPPORTED** at ≤80-line scale, n=185 — published per the kill-criteria contract (eval/repair2/results.md). Surviving hypothesis is *detection* (no-oracle regime: 7/15 deep faults were silent without contracts), not repair. The moat is the checker + card + tokens + sandbox — not error prose |
 | N4 model-written tokens | easy: −15…−32% til · hard: −11.8% (Sonnet) but +8–9% (Fable/Haiku) · game: −17…−20% | **BAND-DEPENDENT** — pipelines/games strongly til, algorithmic control-flow slightly python |
 | N5 card budget | 1,789 o200k with regex + enum | **HOLDS** (≤2,000) |
 | N6 fuzz | 440,000 programs, 0 raw host errors, 22s | **HOLDS** at this scale (1M nightly is ~50s) |

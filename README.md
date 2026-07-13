@@ -7,7 +7,11 @@
 **A scripting language engineered for AI agents.** The whole language fits in a
 1,777-token prompt card, programs match Python on tokens (and cost ~40% fewer than JS),
 hallucinated names are caught *before* execution, and every error is structured data
-designed to be fed back to a model for one-shot self-repair.
+built for agent loops. (Measured honestly: structured errors did **not** repair better
+than Python tracebacks at script scale — n=185, [eval/repair2/results.md](eval/repair2/results.md);
+what they uniquely do is *detect* — 7 of 15 deep faults were silent without `ensure`
+contracts. The measured moats are the pre-execution checker, the 1.8k-token teachability,
+and the sandbox.)
 
 ```
 read "input.txt" | lower | words | counts | top 5 | each {p -> print "{p.k} {p.v}"}

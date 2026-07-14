@@ -1,0 +1,692 @@
+[
+ {
+  "id": "faulty:coin-change:dropped-coin:til-contracts",
+  "task": "coin-change",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "coins = [5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c <= a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  ensure best < 999999999\n  push best dp\n}\nprint dp[amount]\n",
+  "runKind": "error",
+  "runText": "error[E_ENSURE] ensure failed: best < 999999999  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-yHGoS3/p.til:9:3\n    9 |   ensure best < 999999999\n         ^\n  locals: coins=[5, 12, 19]  amount=173  dp=[0]  a=1  best=999999999  c=19\n  hint: the values above show the state at the failing check\n"
+ },
+ {
+  "id": "faulty:coin-change:dropped-coin:til-bare",
+  "task": "coin-change",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "coins = [5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c <= a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  push best dp\n}\nprint dp[amount]\n",
+  "runKind": "output",
+  "runText": "15\n"
+ },
+ {
+  "id": "faulty:coin-change:dropped-coin:py",
+  "task": "coin-change",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "coins = [5, 12, 19]\namount = 173\ndp = [0]\nfor a in range(1, amount + 1):\n    best = 999999999\n    for c in coins:\n        if c <= a and dp[a - c] + 1 < best:\n            best = dp[a - c] + 1\n    dp.append(best)\nprint(dp[amount])\n",
+  "runKind": "output",
+  "runText": "15\n"
+ },
+ {
+  "id": "faulty:coin-change:exact-coin-unusable:til-contracts",
+  "task": "coin-change",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c < a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  ensure best < 999999999\n  push best dp\n}\nprint dp[amount]\n",
+  "runKind": "error",
+  "runText": "error[E_ENSURE] ensure failed: best < 999999999  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-mzNiy5/p.til:9:3\n    9 |   ensure best < 999999999\n         ^\n  locals: coins=[1, 5, 12, 19]  amount=173  dp=[0]  a=1  best=999999999  c=19\n  hint: the values above show the state at the failing check\n"
+ },
+ {
+  "id": "faulty:coin-change:exact-coin-unusable:til-bare",
+  "task": "coin-change",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c < a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  push best dp\n}\nprint dp[amount]\n",
+  "runKind": "output",
+  "runText": "999999999\n"
+ },
+ {
+  "id": "faulty:coin-change:exact-coin-unusable:py",
+  "task": "coin-change",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range(1, amount + 1):\n    best = 999999999\n    for c in coins:\n        if c < a and dp[a - c] + 1 < best:\n            best = dp[a - c] + 1\n    dp.append(best)\nprint(dp[amount])\n",
+  "runKind": "output",
+  "runText": "999999999\n"
+ },
+ {
+  "id": "faulty:vm-mini:sub-operand-swap:til-contracts",
+  "task": "vm-mini",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" { st[-1], st[-2] = st[-2], st[-1] }\n  else {\n    b, a = pop st, pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (b - a) st }\n  }\n  ensure len st >= 1\n}\nprint (last st)\n",
+  "runKind": "output",
+  "runText": "-20\n"
+ },
+ {
+  "id": "faulty:vm-mini:sub-operand-swap:til-bare",
+  "task": "vm-mini",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" { st[-1], st[-2] = st[-2], st[-1] }\n  else {\n    b, a = pop st, pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (b - a) st }\n  }\n}\nprint (last st)\n",
+  "runKind": "output",
+  "runText": "-20\n"
+ },
+ {
+  "id": "faulty:vm-mini:sub-operand-swap:py",
+  "task": "vm-mini",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "st = []\nfor line in open(\"ops.txt\").read().splitlines():\n    p = line.split()\n    op = p[0]\n    if op == \"PUSH\":\n        st.append(int(p[1]))\n    elif op == \"DUP\":\n        st.append(st[-1])\n    elif op == \"SWAP\":\n        st[-1], st[-2] = st[-2], st[-1]\n    else:\n        b, a = st.pop(), st.pop()\n        if op == \"ADD\":\n            st.append(a + b)\n        elif op == \"MUL\":\n            st.append(a * b)\n        elif op == \"SUB\":\n            st.append(b - a)\nprint(st[-1])\n",
+  "runKind": "output",
+  "runText": "-20\n"
+ },
+ {
+  "id": "faulty:vm-mini:swap-drops-instead:til-contracts",
+  "task": "vm-mini",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" { pop st }\n  else {\n    b, a = pop st, pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (a - b) st }\n  }\n  ensure len st >= 1\n}\nprint (last st)\n",
+  "runKind": "error",
+  "runText": "error[E_TYPE] `-` needs numbers, got null and num  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-dAkuTQ/p.til:12:32\n   12 |     elif op == \"SUB\" { push (a - b) st }\n                                       ^\n"
+ },
+ {
+  "id": "faulty:vm-mini:swap-drops-instead:til-bare",
+  "task": "vm-mini",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" { pop st }\n  else {\n    b, a = pop st, pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (a - b) st }\n  }\n}\nprint (last st)\n",
+  "runKind": "error",
+  "runText": "error[E_TYPE] `-` needs numbers, got null and num  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-P6uJ8J/p.til:12:32\n   12 |     elif op == \"SUB\" { push (a - b) st }\n                                       ^\n"
+ },
+ {
+  "id": "faulty:vm-mini:swap-drops-instead:py",
+  "task": "vm-mini",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "st = []\nfor line in open(\"ops.txt\").read().splitlines():\n    p = line.split()\n    op = p[0]\n    if op == \"PUSH\":\n        st.append(int(p[1]))\n    elif op == \"DUP\":\n        st.append(st[-1])\n    elif op == \"SWAP\":\n        st.pop()\n    else:\n        b, a = st.pop(), st.pop()\n        if op == \"ADD\":\n            st.append(a + b)\n        elif op == \"MUL\":\n            st.append(a * b)\n        elif op == \"SUB\":\n            st.append(a - b)\nprint(st[-1])\n",
+  "runKind": "error",
+  "runText": "Traceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-LOHANv/p.py\", line 12, in <module>\n    b, a = st.pop(), st.pop()\n                     ^^^^^^^^\nIndexError: pop from empty list\n"
+ },
+ {
+  "id": "faulty:bank-ledger:deduct-then-flag-no-refund:til-contracts",
+  "task": "bank-ledger",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { bal[a] = bal[a] + m }\n  else {\n    bal[a] = bal[a] - m\n    if bal[a] < 0 { rejected = rejected + 1 }\n  }\n  ensure bal[a] >= 0\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n",
+  "runKind": "error",
+  "runText": "error[E_ENSURE] ensure failed: bal[a] >= 0  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-BQJPnZ/p.til:16:3\n   16 |   ensure bal[a] >= 0\n          ^\n  locals: bal={bek: 376, erlan: -295}  order=[\"bek\", \"erlan\"]  rejected=1  t=\"withdraw erlan 295\"  p=[\"withdraw\", \"erlan\", \"295\"]  k=\"withdraw\"  a=\"erlan\"  m=295\n  hint: the values above show the state at the failing check\n"
+ },
+ {
+  "id": "faulty:bank-ledger:deduct-then-flag-no-refund:til-bare",
+  "task": "bank-ledger",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { bal[a] = bal[a] + m }\n  else {\n    bal[a] = bal[a] - m\n    if bal[a] < 0 { rejected = rejected + 1 }\n  }\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n",
+  "runKind": "output",
+  "runText": "bek 1491\nerlan 2165\ndana -342\nalia 1604\nrejected 7\n"
+ },
+ {
+  "id": "faulty:bank-ledger:deduct-then-flag-no-refund:py",
+  "task": "bank-ledger",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in open(\"txns.txt\").read().splitlines():\n    p = t.split()\n    k, a, m = p[0], p[1], int(p[2])\n    if a not in bal:\n        bal[a] = 0\n        order.append(a)\n    if k == \"deposit\":\n        bal[a] = bal[a] + m\n    else:\n        bal[a] = bal[a] - m\n        if bal[a] < 0:\n            rejected = rejected + 1\nfor a in order:\n    print(f\"{a} {bal[a]}\")\nprint(f\"rejected {rejected}\")\n",
+  "runKind": "output",
+  "runText": "bek 1491\nerlan 2165\ndana -342\nalia 1604\nrejected 7\n"
+ },
+ {
+  "id": "faulty:bank-ledger:reject-counter-inverted:til-contracts",
+  "task": "bank-ledger",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { bal[a] = bal[a] + m }\n  elif bal[a] >= m {\n    bal[a] = bal[a] - m\n    rejected = rejected + 1\n  }\n  ensure bal[a] >= 0\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n",
+  "runKind": "output",
+  "runText": "bek 1491\nerlan 2460\ndana 262\nalia 1803\nrejected 17\n"
+ },
+ {
+  "id": "faulty:bank-ledger:reject-counter-inverted:til-bare",
+  "task": "bank-ledger",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { bal[a] = bal[a] + m }\n  elif bal[a] >= m {\n    bal[a] = bal[a] - m\n    rejected = rejected + 1\n  }\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n",
+  "runKind": "output",
+  "runText": "bek 1491\nerlan 2460\ndana 262\nalia 1803\nrejected 17\n"
+ },
+ {
+  "id": "faulty:bank-ledger:reject-counter-inverted:py",
+  "task": "bank-ledger",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in open(\"txns.txt\").read().splitlines():\n    p = t.split()\n    k, a, m = p[0], p[1], int(p[2])\n    if a not in bal:\n        bal[a] = 0\n        order.append(a)\n    if k == \"deposit\":\n        bal[a] = bal[a] + m\n    elif bal[a] >= m:\n        bal[a] = bal[a] - m\n        rejected = rejected + 1\nfor a in order:\n    print(f\"{a} {bal[a]}\")\nprint(f\"rejected {rejected}\")\n",
+  "runKind": "output",
+  "runText": "bek 1491\nerlan 2460\ndana 262\nalia 1803\nrejected 17\n"
+ },
+ {
+  "id": "faulty:game-of-life:counts-self:til-contracts",
+  "task": "game-of-life",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n        }\n      }\n      ensure nb <= 8\n      push (nb == 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }\n",
+  "runKind": "output",
+  "runText": "....##...#..\n...##.##....\n..#..#.##...\n..#..#.#.#..\n#.##...#...#\n......#...#.\n......#.....\n...##.#...##\n###.......##\n######......\n"
+ },
+ {
+  "id": "faulty:game-of-life:counts-self:til-bare",
+  "task": "game-of-life",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n        }\n      }\n      push (nb == 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }\n",
+  "runKind": "output",
+  "runText": "....##...#..\n...##.##....\n..#..#.##...\n..#..#.#.#..\n#.##...#...#\n......#...#.\n......#.....\n...##.#...##\n###.......##\n######......\n"
+ },
+ {
+  "id": "faulty:game-of-life:counts-self:py",
+  "task": "game-of-life",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "g = [[c == \"#\" for c in row] for row in open(\"grid.txt\").read().splitlines()]\nH, W = len(g), len(g[0])\nfor gen in range(5):\n    ng = []\n    for y in range(H):\n        row = []\n        for x in range(W):\n            nb = 0\n            for dy in [-1, 0, 1]:\n                for dx in [-1, 0, 1]:\n                    if g[(y + dy) % H][(x + dx) % W]:\n                        nb = nb + 1\n            row.append(nb == 3 or (g[y][x] and nb == 2))\n        ng.append(row)\n    g = ng\nfor row in g:\n    print(\"\".join(\"#\" if c else \".\" for c in row))\n",
+  "runKind": "output",
+  "runText": "....##...#..\n...##.##....\n..#..#.##...\n..#..#.#.#..\n#.##...#...#\n......#...#.\n......#.....\n...##.#...##\n###.......##\n######......\n"
+ },
+ {
+  "id": "faulty:game-of-life:birth-rule-gte:til-contracts",
+  "task": "game-of-life",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n        }\n      }\n      ensure nb <= 8\n      push (nb >= 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }\n",
+  "runKind": "output",
+  "runText": "############\n############\n############\n############\n############\n############\n############\n############\n############\n############\n"
+ },
+ {
+  "id": "faulty:game-of-life:birth-rule-gte:til-bare",
+  "task": "game-of-life",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n        }\n      }\n      push (nb >= 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }\n",
+  "runKind": "output",
+  "runText": "############\n############\n############\n############\n############\n############\n############\n############\n############\n############\n"
+ },
+ {
+  "id": "faulty:game-of-life:birth-rule-gte:py",
+  "task": "game-of-life",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "g = [[c == \"#\" for c in row] for row in open(\"grid.txt\").read().splitlines()]\nH, W = len(g), len(g[0])\nfor gen in range(5):\n    ng = []\n    for y in range(H):\n        row = []\n        for x in range(W):\n            nb = 0\n            for dy in [-1, 0, 1]:\n                for dx in [-1, 0, 1]:\n                    if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W]:\n                        nb = nb + 1\n            row.append(nb >= 3 or (g[y][x] and nb == 2))\n        ng.append(row)\n    g = ng\nfor row in g:\n    print(\"\".join(\"#\" if c else \".\" for c in row))\n",
+  "runKind": "output",
+  "runText": "############\n############\n############\n############\n############\n############\n############\n############\n############\n############\n"
+ },
+ {
+  "id": "faulty:top-ips:sorted-ascending:til-contracts",
+  "task": "top-ips",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = tot[p[0]] + num p[1]\n}\ntop3 = order | sortBy {tot[it]} | take 3\nensure tot[top3[0]] >= tot[top3[2]]\nfor ip in top3 { print \"{ip} {tot[ip]}\" }\n",
+  "runKind": "error",
+  "runText": "error[E_ENSURE] ensure failed: tot[top3[0]] >= tot[top3[2]]  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-ZfQvc1/p.til:12:1\n   12 | ensure tot[top3[0]] >= tot[top3[2]]\n        ^\n  locals: tot={\"10.0.1.19\": 1213765, \"10.0.3.3\": 1277107, \"10.0.0.26\": …  order=[\"10.0.1.19\", \"10.0.3.3\", \"10.0.0.26\", \"10.0.2.25\", \"10.0…  l=\"10.0.2.14 6340\"  p=[\"10.0.2.14\", \"6340\"]  top3=[\"10.0.1.42\", \"10.0.0.44\", \"10.0.0.24\"]\n  hint: the values above show the state at the failing check\n"
+ },
+ {
+  "id": "faulty:top-ips:sorted-ascending:til-bare",
+  "task": "top-ips",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = tot[p[0]] + num p[1]\n}\nfor ip in (order | sortBy {tot[it]} | take 3) { print \"{ip} {tot[ip]}\" }\n",
+  "runKind": "output",
+  "runText": "10.0.1.42 1032633\n10.0.0.44 1075579\n10.0.0.24 1149638\n"
+ },
+ {
+  "id": "faulty:top-ips:sorted-ascending:py",
+  "task": "top-ips",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "tot = {}\norder = []\nfor l in open(\"traffic.txt\").read().splitlines():\n    p = l.split()\n    if p[0] not in tot:\n        tot[p[0]] = 0\n        order.append(p[0])\n    tot[p[0]] = tot[p[0]] + int(p[1])\ntop3 = sorted(order, key=lambda ip: tot[ip])[:3]\nfor ip in top3:\n    print(f\"{ip} {tot[ip]}\")\n",
+  "runKind": "output",
+  "runText": "10.0.1.42 1032633\n10.0.0.44 1075579\n10.0.0.24 1149638\n"
+ },
+ {
+  "id": "faulty:top-ips:reset-not-accumulate:til-contracts",
+  "task": "top-ips",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = num p[1]\n}\ntop3 = order | sortBy {-tot[it]} | take 3\nensure tot[top3[0]] >= tot[top3[2]]\nfor ip in top3 { print \"{ip} {tot[ip]}\" }\n",
+  "runKind": "output",
+  "runText": "10.0.1.19 9322\n10.0.1.48 9248\n10.0.3.3 9147\n"
+ },
+ {
+  "id": "faulty:top-ips:reset-not-accumulate:til-bare",
+  "task": "top-ips",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = num p[1]\n}\nfor ip in (order | sortBy {-tot[it]} | take 3) { print \"{ip} {tot[ip]}\" }\n",
+  "runKind": "output",
+  "runText": "10.0.1.19 9322\n10.0.1.48 9248\n10.0.3.3 9147\n"
+ },
+ {
+  "id": "faulty:top-ips:reset-not-accumulate:py",
+  "task": "top-ips",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "tot = {}\norder = []\nfor l in open(\"traffic.txt\").read().splitlines():\n    p = l.split()\n    if p[0] not in tot:\n        tot[p[0]] = 0\n        order.append(p[0])\n    tot[p[0]] = int(p[1])\ntop3 = sorted(order, key=lambda ip: -tot[ip])[:3]\nfor ip in top3:\n    print(f\"{ip} {tot[ip]}\")\n",
+  "runKind": "output",
+  "runText": "10.0.1.19 9322\n10.0.1.48 9248\n10.0.3.3 9147\n"
+ },
+ {
+  "id": "faulty:dedupe-events:keeps-earliest:til-contracts",
+  "task": "dedupe-events",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts <= latest[p[0]] { latest[p[0]] = ts }\n  ensure latest[p[0]] >= ts\n}\nprint (len latest)\nprint (latest | vals | sum)\n",
+  "runKind": "error",
+  "runText": "error[E_ENSURE] ensure failed: latest[p[0]] >= ts  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-hUoVl3/p.til:6:3\n    6 |   ensure latest[p[0]] >= ts\n         ^\n  locals: latest={id321: 24939, id767: 37922, id102: 39155, id324: 64711, …  l=\"id267 8457 p98\"  p=[\"id267\", \"8457\", \"p98\"]  ts=8457\n  hint: the values above show the state at the failing check\n"
+ },
+ {
+  "id": "faulty:dedupe-events:keeps-earliest:til-bare",
+  "task": "dedupe-events",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts <= latest[p[0]] { latest[p[0]] = ts }\n}\nprint (len latest)\nprint (latest | vals | sum)\n",
+  "runKind": "output",
+  "runText": "801\n6903315\n"
+ },
+ {
+  "id": "faulty:dedupe-events:keeps-earliest:py",
+  "task": "dedupe-events",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "latest = {}\nfor l in open(\"events.txt\").read().splitlines():\n    p = l.split()\n    ts = int(p[1])\n    if p[0] not in latest or ts <= latest[p[0]]:\n        latest[p[0]] = ts\nprint(len(latest))\nprint(sum(latest.values()))\n",
+  "runKind": "output",
+  "runText": "801\n6903315\n"
+ },
+ {
+  "id": "faulty:dedupe-events:max-not-sum:til-contracts",
+  "task": "dedupe-events",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts >= latest[p[0]] { latest[p[0]] = ts }\n  ensure latest[p[0]] >= ts\n}\nprint (len latest)\nprint (latest | vals | max)\n",
+  "runKind": "output",
+  "runText": "801\n99994\n"
+ },
+ {
+  "id": "faulty:dedupe-events:max-not-sum:til-bare",
+  "task": "dedupe-events",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts >= latest[p[0]] { latest[p[0]] = ts }\n}\nprint (len latest)\nprint (latest | vals | max)\n",
+  "runKind": "output",
+  "runText": "801\n99994\n"
+ },
+ {
+  "id": "faulty:dedupe-events:max-not-sum:py",
+  "task": "dedupe-events",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "latest = {}\nfor l in open(\"events.txt\").read().splitlines():\n    p = l.split()\n    ts = int(p[1])\n    if p[0] not in latest or ts >= latest[p[0]]:\n        latest[p[0]] = ts\nprint(len(latest))\nprint(max(latest.values()))\n",
+  "runKind": "output",
+  "runText": "801\n99994\n"
+ },
+ {
+  "id": "faulty:roman:missing-M:til-contracts",
+  "task": "roman",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    ensure v\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] > v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\"\n",
+  "runKind": "error",
+  "runText": "XIV 14\nerror[E_ENSURE] ensure failed: v  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-6RiQnz/p.til:7:5\n    7 |     ensure v\n           ^\n  locals: s=\"MCMXCIV\"  cs=[\"M\", \"C\", \"M\", \"X\", \"C\", \"I\", \"V\"]  tot=0  p=[0, \"M\"]  v=null\n  hint: the values above show the state at the failing check\n"
+ },
+ {
+  "id": "faulty:roman:missing-M:til-bare",
+  "task": "roman",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] > v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\"\n",
+  "runKind": "error",
+  "runText": "XIV 14\nerror[E_TYPE] cannot compare num > null  at /var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-RDDGwk/p.til:7:47\n    7 |     if p[0] + 1 < len cs and rv[cs[p[0] + 1]] > v { tot = tot - v }\n                                                     ^\n  locals: s=\"MCMXCIV\"  cs=[\"M\", \"C\", \"M\", \"X\", \"C\", \"I\", \"V\"]  tot=0  p=[0, \"M\"]  v=null\n  hint: comparisons need two numbers or two strings\n"
+ },
+ {
+  "id": "faulty:roman:missing-M:py",
+  "task": "roman",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "rv = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500}\ndef rom(s):\n    tot = 0\n    for i, c in enumerate(s):\n        v = rv[c]\n        if i + 1 < len(s) and rv[s[i + 1]] > v:\n            tot = tot - v\n        else:\n            tot = tot + v\n    return tot\nrs = open(\"roman.txt\").read().splitlines()\nfor r in rs:\n    print(f\"{r} {rom(r)}\")\nprint(f\"sum {sum(rom(r) for r in rs)}\")\n",
+  "runKind": "error",
+  "runText": "XIV 14\nTraceback (most recent call last):\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-a3YRec/p.py\", line 13, in <module>\n    print(f\"{r} {rom(r)}\")\n                 ^^^^^^\n  File \"/var/folders/by/_6j3mqg120j0jy3n0x_ggt5r0000gn/T/det-a3YRec/p.py\", line 5, in rom\n    v = rv[c]\n        ~~^^^\nKeyError: 'M'\n"
+ },
+ {
+  "id": "faulty:roman:subtract-on-equal:til-contracts",
+  "task": "roman",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    ensure v\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] >= v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\"\n",
+  "runKind": "output",
+  "runText": "XIV 14\nMCMXCIV 1994\nXL 40\nIX 9\nLVIII 54\nCDXLIV 444\nMMXXVI 6\nIII -1\nsum 2560\n"
+ },
+ {
+  "id": "faulty:roman:subtract-on-equal:til-bare",
+  "task": "roman",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] >= v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\"\n",
+  "runKind": "output",
+  "runText": "XIV 14\nMCMXCIV 1994\nXL 40\nIX 9\nLVIII 54\nCDXLIV 444\nMMXXVI 6\nIII -1\nsum 2560\n"
+ },
+ {
+  "id": "faulty:roman:subtract-on-equal:py",
+  "task": "roman",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "rv = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\ndef rom(s):\n    tot = 0\n    for i, c in enumerate(s):\n        v = rv[c]\n        if i + 1 < len(s) and rv[s[i + 1]] >= v:\n            tot = tot - v\n        else:\n            tot = tot + v\n    return tot\nrs = open(\"roman.txt\").read().splitlines()\nfor r in rs:\n    print(f\"{r} {rom(r)}\")\nprint(f\"sum {sum(rom(r) for r in rs)}\")\n",
+  "runKind": "output",
+  "runText": "XIV 14\nMCMXCIV 1994\nXL 40\nIX 9\nLVIII 54\nCDXLIV 444\nMMXXVI 6\nIII -1\nsum 2560\n"
+ },
+ {
+  "id": "faulty:balanced-max:no-sentinel-seed:til-contracts",
+  "task": "balanced-max",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "s = read \"brackets.txt\" | trim\nbest = 0\nstack = []\nfor p in enum s {\n  if p[1] == \"(\" { push p[0] stack }\n  else {\n    pop stack\n    if empty stack { push p[0] stack }\n    elif p[0] - last stack > best { best = p[0] - last stack }\n  }\n}\nensure best % 2 == 0\nprint best\n",
+  "runKind": "output",
+  "runText": "752\n"
+ },
+ {
+  "id": "faulty:balanced-max:no-sentinel-seed:til-bare",
+  "task": "balanced-max",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "buggy",
+  "program": "s = read \"brackets.txt\" | trim\nbest = 0\nstack = []\nfor p in enum s {\n  if p[1] == \"(\" { push p[0] stack }\n  else {\n    pop stack\n    if empty stack { push p[0] stack }\n    elif p[0] - last stack > best { best = p[0] - last stack }\n  }\n}\nprint best\n",
+  "runKind": "output",
+  "runText": "752\n"
+ },
+ {
+  "id": "faulty:balanced-max:no-sentinel-seed:py",
+  "task": "balanced-max",
+  "arm": "py",
+  "lang": "py",
+  "truth": "buggy",
+  "program": "s = open(\"brackets.txt\").read().strip()\nbest = 0\nstack = []\nfor i, c in enumerate(s):\n    if c == \"(\":\n        stack.append(i)\n    else:\n        stack.pop()\n        if not stack:\n            stack.append(i)\n        elif i - stack[-1] > best:\n            best = i - stack[-1]\nprint(best)\n",
+  "runKind": "output",
+  "runText": "752\n"
+ },
+ {
+  "id": "healthy:coin-change:til-contracts",
+  "task": "coin-change",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "correct",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c <= a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  ensure best < 999999999\n  push best dp\n}\nprint dp[amount]\n",
+  "runKind": "output",
+  "runText": "11\n"
+ },
+ {
+  "id": "healthy:coin-change:til-bare",
+  "task": "coin-change",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "correct",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range 1 (amount + 1) {\n  best = 999999999\n  for c in coins {\n    if c <= a and dp[a - c] + 1 < best { best = dp[a - c] + 1 }\n  }\n  push best dp\n}\nprint dp[amount]\n",
+  "runKind": "output",
+  "runText": "11\n"
+ },
+ {
+  "id": "healthy:coin-change:py",
+  "task": "coin-change",
+  "arm": "py",
+  "lang": "py",
+  "truth": "correct",
+  "program": "coins = [1, 5, 12, 19]\namount = 173\ndp = [0]\nfor a in range(1, amount + 1):\n    best = 999999999\n    for c in coins:\n        if c <= a and dp[a - c] + 1 < best:\n            best = dp[a - c] + 1\n    dp.append(best)\nprint(dp[amount])\n",
+  "runKind": "output",
+  "runText": "11\n"
+ },
+ {
+  "id": "healthy:vm-mini:til-contracts",
+  "task": "vm-mini",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "correct",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" { st[-1], st[-2] = st[-2], st[-1] }\n  else {\n    b, a = pop st, pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (a - b) st }\n  }\n  ensure len st >= 1\n}\nprint (last st)\n",
+  "runKind": "output",
+  "runText": "20\n"
+ },
+ {
+  "id": "healthy:vm-mini:til-bare",
+  "task": "vm-mini",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "correct",
+  "program": "st = []\nfor line in (read \"ops.txt\" | lines) {\n  p = words line\n  op = p[0]\n  if op == \"PUSH\" { push (num p[1]) st }\n  elif op == \"DUP\" { push (last st) st }\n  elif op == \"SWAP\" { st[-1], st[-2] = st[-2], st[-1] }\n  else {\n    b, a = pop st, pop st\n    if op == \"ADD\" { push (a + b) st }\n    elif op == \"MUL\" { push (a * b) st }\n    elif op == \"SUB\" { push (a - b) st }\n  }\n}\nprint (last st)\n",
+  "runKind": "output",
+  "runText": "20\n"
+ },
+ {
+  "id": "healthy:vm-mini:py",
+  "task": "vm-mini",
+  "arm": "py",
+  "lang": "py",
+  "truth": "correct",
+  "program": "st = []\nfor line in open(\"ops.txt\").read().splitlines():\n    p = line.split()\n    op = p[0]\n    if op == \"PUSH\":\n        st.append(int(p[1]))\n    elif op == \"DUP\":\n        st.append(st[-1])\n    elif op == \"SWAP\":\n        st[-1], st[-2] = st[-2], st[-1]\n    else:\n        b, a = st.pop(), st.pop()\n        if op == \"ADD\":\n            st.append(a + b)\n        elif op == \"MUL\":\n            st.append(a * b)\n        elif op == \"SUB\":\n            st.append(a - b)\nprint(st[-1])\n",
+  "runKind": "output",
+  "runText": "20\n"
+ },
+ {
+  "id": "healthy:bank-ledger:til-contracts",
+  "task": "bank-ledger",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "correct",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { bal[a] = bal[a] + m }\n  elif bal[a] >= m { bal[a] = bal[a] - m }\n  else { rejected = rejected + 1 }\n  ensure bal[a] >= 0\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n",
+  "runKind": "output",
+  "runText": "bek 1491\nerlan 2460\ndana 262\nalia 1803\nrejected 4\n"
+ },
+ {
+  "id": "healthy:bank-ledger:til-bare",
+  "task": "bank-ledger",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "correct",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in (read \"txns.txt\" | lines) {\n  p = words t\n  k, a, m = p[0], p[1], num p[2]\n  if not has a bal {\n    bal[a] = 0\n    push a order\n  }\n  if k == \"deposit\" { bal[a] = bal[a] + m }\n  elif bal[a] >= m { bal[a] = bal[a] - m }\n  else { rejected = rejected + 1 }\n}\nfor a in order { print \"{a} {bal[a]}\" }\nprint \"rejected {rejected}\"\n",
+  "runKind": "output",
+  "runText": "bek 1491\nerlan 2460\ndana 262\nalia 1803\nrejected 4\n"
+ },
+ {
+  "id": "healthy:bank-ledger:py",
+  "task": "bank-ledger",
+  "arm": "py",
+  "lang": "py",
+  "truth": "correct",
+  "program": "bal = {}\norder = []\nrejected = 0\nfor t in open(\"txns.txt\").read().splitlines():\n    p = t.split()\n    k, a, m = p[0], p[1], int(p[2])\n    if a not in bal:\n        bal[a] = 0\n        order.append(a)\n    if k == \"deposit\":\n        bal[a] = bal[a] + m\n    elif bal[a] >= m:\n        bal[a] = bal[a] - m\n    else:\n        rejected = rejected + 1\nfor a in order:\n    print(f\"{a} {bal[a]}\")\nprint(f\"rejected {rejected}\")\n",
+  "runKind": "output",
+  "runText": "bek 1491\nerlan 2460\ndana 262\nalia 1803\nrejected 4\n"
+ },
+ {
+  "id": "healthy:game-of-life:til-contracts",
+  "task": "game-of-life",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "correct",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n        }\n      }\n      ensure nb <= 8\n      push (nb == 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }\n",
+  "runKind": "output",
+  "runText": "..#....#####\n#.#.........\n#.##..#...##\n###....#.###\n..#.#.#.....\n..#####....#\n.#.....#..#.\n......##...#\n#..........#\n..........##\n"
+ },
+ {
+  "id": "healthy:game-of-life:til-bare",
+  "task": "game-of-life",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "correct",
+  "program": "g = read \"grid.txt\" | lines | map chars | map (map {it == \"#\"})\nH, W = len g, len g[0]\nfor gen in range 0 5 {\n  ng = []\n  for y in range 0 H {\n    row = []\n    for x in range 0 W {\n      nb = 0\n      for dy in [-1, 0, 1] {\n        for dx in [-1, 0, 1] {\n          if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W] { nb = nb + 1 }\n        }\n      }\n      push (nb == 3 or (g[y][x] and nb == 2)) row\n    }\n    push row ng\n  }\n  g = ng\n}\nfor row in g { print (row | map {if it { \"#\" } else { \".\" }} | join \"\") }\n",
+  "runKind": "output",
+  "runText": "..#....#####\n#.#.........\n#.##..#...##\n###....#.###\n..#.#.#.....\n..#####....#\n.#.....#..#.\n......##...#\n#..........#\n..........##\n"
+ },
+ {
+  "id": "healthy:game-of-life:py",
+  "task": "game-of-life",
+  "arm": "py",
+  "lang": "py",
+  "truth": "correct",
+  "program": "g = [[c == \"#\" for c in row] for row in open(\"grid.txt\").read().splitlines()]\nH, W = len(g), len(g[0])\nfor gen in range(5):\n    ng = []\n    for y in range(H):\n        row = []\n        for x in range(W):\n            nb = 0\n            for dy in [-1, 0, 1]:\n                for dx in [-1, 0, 1]:\n                    if (dx != 0 or dy != 0) and g[(y + dy) % H][(x + dx) % W]:\n                        nb = nb + 1\n            row.append(nb == 3 or (g[y][x] and nb == 2))\n        ng.append(row)\n    g = ng\nfor row in g:\n    print(\"\".join(\"#\" if c else \".\" for c in row))\n",
+  "runKind": "output",
+  "runText": "..#....#####\n#.#.........\n#.##..#...##\n###....#.###\n..#.#.#.....\n..#####....#\n.#.....#..#.\n......##...#\n#..........#\n..........##\n"
+ },
+ {
+  "id": "healthy:top-ips:til-contracts",
+  "task": "top-ips",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "correct",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = tot[p[0]] + num p[1]\n}\ntop3 = order | sortBy {-tot[it]} | take 3\nensure tot[top3[0]] >= tot[top3[2]]\nfor ip in top3 { print \"{ip} {tot[ip]}\" }\n",
+  "runKind": "output",
+  "runText": "10.0.0.7 3990616\n10.0.1.9 2909933\n10.0.0.26 2641219\n"
+ },
+ {
+  "id": "healthy:top-ips:til-bare",
+  "task": "top-ips",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "correct",
+  "program": "tot = {}\norder = []\nfor l in (read \"traffic.txt\" | lines) {\n  p = words l\n  if not has p[0] tot {\n    tot[p[0]] = 0\n    push p[0] order\n  }\n  tot[p[0]] = tot[p[0]] + num p[1]\n}\nfor ip in (order | sortBy {-tot[it]} | take 3) { print \"{ip} {tot[ip]}\" }\n",
+  "runKind": "output",
+  "runText": "10.0.0.7 3990616\n10.0.1.9 2909933\n10.0.0.26 2641219\n"
+ },
+ {
+  "id": "healthy:top-ips:py",
+  "task": "top-ips",
+  "arm": "py",
+  "lang": "py",
+  "truth": "correct",
+  "program": "tot = {}\norder = []\nfor l in open(\"traffic.txt\").read().splitlines():\n    p = l.split()\n    if p[0] not in tot:\n        tot[p[0]] = 0\n        order.append(p[0])\n    tot[p[0]] = tot[p[0]] + int(p[1])\ntop3 = sorted(order, key=lambda ip: -tot[ip])[:3]\nfor ip in top3:\n    print(f\"{ip} {tot[ip]}\")\n",
+  "runKind": "output",
+  "runText": "10.0.0.7 3990616\n10.0.1.9 2909933\n10.0.0.26 2641219\n"
+ },
+ {
+  "id": "healthy:dedupe-events:til-contracts",
+  "task": "dedupe-events",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "correct",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts >= latest[p[0]] { latest[p[0]] = ts }\n  ensure latest[p[0]] >= ts\n}\nprint (len latest)\nprint (latest | vals | sum)\n",
+  "runKind": "output",
+  "runText": "801\n73677206\n"
+ },
+ {
+  "id": "healthy:dedupe-events:til-bare",
+  "task": "dedupe-events",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "correct",
+  "program": "latest = {}\nfor l in (read \"events.txt\" | lines) {\n  p = words l\n  ts = num p[1]\n  if not has p[0] latest or ts >= latest[p[0]] { latest[p[0]] = ts }\n}\nprint (len latest)\nprint (latest | vals | sum)\n",
+  "runKind": "output",
+  "runText": "801\n73677206\n"
+ },
+ {
+  "id": "healthy:dedupe-events:py",
+  "task": "dedupe-events",
+  "arm": "py",
+  "lang": "py",
+  "truth": "correct",
+  "program": "latest = {}\nfor l in open(\"events.txt\").read().splitlines():\n    p = l.split()\n    ts = int(p[1])\n    if p[0] not in latest or ts >= latest[p[0]]:\n        latest[p[0]] = ts\nprint(len(latest))\nprint(sum(latest.values()))\n",
+  "runKind": "output",
+  "runText": "801\n73677206\n"
+ },
+ {
+  "id": "healthy:roman:til-contracts",
+  "task": "roman",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "correct",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    ensure v\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] > v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\"\n",
+  "runKind": "output",
+  "runText": "XIV 14\nMCMXCIV 1994\nXL 40\nIX 9\nLVIII 58\nCDXLIV 444\nMMXXVI 2026\nIII 3\nsum 4588\n"
+ },
+ {
+  "id": "healthy:roman:til-bare",
+  "task": "roman",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "correct",
+  "program": "rv = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\nfn rom s {\n  cs = chars s\n  tot = 0\n  for p in enum cs {\n    v = rv[p[1]]\n    if p[0] + 1 < len cs and rv[cs[p[0] + 1]] > v { tot = tot - v }\n    else { tot = tot + v }\n  }\n  tot\n}\nrs = read \"roman.txt\" | lines\nfor r in rs { print \"{r} {rom r}\" }\nprint \"sum {rs | map rom | sum}\"\n",
+  "runKind": "output",
+  "runText": "XIV 14\nMCMXCIV 1994\nXL 40\nIX 9\nLVIII 58\nCDXLIV 444\nMMXXVI 2026\nIII 3\nsum 4588\n"
+ },
+ {
+  "id": "healthy:roman:py",
+  "task": "roman",
+  "arm": "py",
+  "lang": "py",
+  "truth": "correct",
+  "program": "rv = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\ndef rom(s):\n    tot = 0\n    for i, c in enumerate(s):\n        v = rv[c]\n        if i + 1 < len(s) and rv[s[i + 1]] > v:\n            tot = tot - v\n        else:\n            tot = tot + v\n    return tot\nrs = open(\"roman.txt\").read().splitlines()\nfor r in rs:\n    print(f\"{r} {rom(r)}\")\nprint(f\"sum {sum(rom(r) for r in rs)}\")\n",
+  "runKind": "output",
+  "runText": "XIV 14\nMCMXCIV 1994\nXL 40\nIX 9\nLVIII 58\nCDXLIV 444\nMMXXVI 2026\nIII 3\nsum 4588\n"
+ },
+ {
+  "id": "healthy:balanced-max:til-contracts",
+  "task": "balanced-max",
+  "arm": "til-contracts",
+  "lang": "til",
+  "truth": "correct",
+  "program": "s = read \"brackets.txt\" | trim\nbest = 0\nstack = [-1]\nfor p in enum s {\n  if p[1] == \"(\" { push p[0] stack }\n  else {\n    pop stack\n    if empty stack { push p[0] stack }\n    elif p[0] - last stack > best { best = p[0] - last stack }\n  }\n}\nensure best % 2 == 0\nprint best\n",
+  "runKind": "output",
+  "runText": "758\n"
+ },
+ {
+  "id": "healthy:balanced-max:til-bare",
+  "task": "balanced-max",
+  "arm": "til-bare",
+  "lang": "til",
+  "truth": "correct",
+  "program": "s = read \"brackets.txt\" | trim\nbest = 0\nstack = [-1]\nfor p in enum s {\n  if p[1] == \"(\" { push p[0] stack }\n  else {\n    pop stack\n    if empty stack { push p[0] stack }\n    elif p[0] - last stack > best { best = p[0] - last stack }\n  }\n}\nprint best\n",
+  "runKind": "output",
+  "runText": "758\n"
+ },
+ {
+  "id": "healthy:balanced-max:py",
+  "task": "balanced-max",
+  "arm": "py",
+  "lang": "py",
+  "truth": "correct",
+  "program": "s = open(\"brackets.txt\").read().strip()\nbest = 0\nstack = [-1]\nfor i, c in enumerate(s):\n    if c == \"(\":\n        stack.append(i)\n    else:\n        stack.pop()\n        if not stack:\n            stack.append(i)\n        elif i - stack[-1] > best:\n            best = i - stack[-1]\nprint(best)\n",
+  "runKind": "output",
+  "runText": "758\n"
+ }
+]

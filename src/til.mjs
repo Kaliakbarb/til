@@ -391,7 +391,9 @@ class Parser {
       const p = this.peek()
       if (p.t === 'punct' && p.v === '.') {
         this.eat()
-        const n = this.expect('id', undefined, 'field name after .')
+        if (!this.at('id')) terr('E_SYNTAX', `expected field name after ., got ${tokDesc(this.peek())}`, p,
+          { hint: 'write decimals with digits on both sides (1.0, 0.5); dot accesses map fields: m.key' })
+        const n = this.eat()
         e = { k: 'Dot', obj: e, name: n.v, line: p.line, col: p.col, s: e.s, e: n.e }
         continue
       }

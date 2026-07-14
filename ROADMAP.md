@@ -118,6 +118,19 @@ fine-tuning doesn't close it, the in-context-teaching thesis fails the same way.
 repo's credibility so far comes from publishing the −10.5%→−2.3% collapse; v1.0 keeps
 that contract.
 
+## 6.5 v0.4 decisions (recorded 2026-07-14)
+
+- **Map-vs-list verbs: keep explicit `items`, no auto-coercion.** Two models independently
+  piped `group`'s map into list-only verbs, which argues for auto-`items` — but the priors
+  conflict (Python iterates dict *keys*; til's items are `{k, v}` pairs), so silent
+  coercion would fix one confusion by planting a subtler one, and it would break til's
+  "one deliberate coercion" guarantee. The shipped answer is the `E_TYPE` hint
+  ("pipe through `items` first") + card idiom; both hard-suite failures repaired in one
+  round once the hint existed. Revisit only if the hint fails to prevent the error in a
+  future eval round.
+- **Capability profiles land in v0.4** (`fetch`, `sql` behind `# needs:` + `--allow`) —
+  EXPANSION Layer 2, kept out of the core card by design (docs/HOSTS.md).
+
 ## 7. Post-sprint scoreboard (2026-07-13, all sprints executed)
 
 | metric | result | verdict |

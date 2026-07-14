@@ -1822,6 +1822,52 @@ usage:
 flags: --json (machine-readable errors/results) · --no-eg (run: skip eg assertions)
        --strict (check: every fn needs an eg) · --no-io (check: forbid read/write/env/stdin)`
 
+// ---------------------------------------------------------------------------
+// Capability host profiles (Layer 2): a script declares `# needs: fetch, sql`
+// in its opening comment lines; the invoker must grant each with --allow.
+// Capability-based by construction — generated code has zero ambient authority.
+// These builtins are NOT part of the core language card (see docs/HOSTS.md).
+// ---------------------------------------------------------------------------
+
+export function parseNeeds(src) {
+  for (const line of src.split('\n').slice(0, 8)) {
+    const m = line.match(/^#\s*needs:\s*(.+)$/)
+    if (m) return m[1].split(',').map(s => s.trim()).filter(Boolean)
+  }
+  return []
+}
+
+export async function capabilityBuiltins(needs) {
+  const caps = {}
+  for (const need of needs) {
+    if (need === 'fetch') {
+      const { execFileSync } = await import('node:child_process')
+      caps.fetch = {
+        arity: 1,
+        fn: url => {
+          if (typeof url !== 'string' || !/^https?:\/\//.test(url)) throw new Error(`fetch needs an http(s) url, got ${JSON.stringify(String(url).slice(0, 60))}`)
+          return execFileSync('curl', ['-fsSL', '--max-time', '20', url], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 })
+        },
+      }
+    } else if (need === 'sql') {
+      const { DatabaseSync } = await import('node:sqlite')
+      caps.sql = {
+        arity: 2,
+        fn: (dbPath, query) => {
+          const db = new DatabaseSync(String(dbPath))
+          try {
+            const rows = db.prepare(String(query)).all()
+            return rows.map(r => new Map(Object.entries(r).map(([k, v]) => [k, typeof v === 'bigint' ? Number(v) : v])))
+          } finally { db.close() }
+        },
+      }
+    } else {
+      throw new TilError('E_HOST', `unknown capability \`${need}\` — known: fetch, sql`)
+    }
+  }
+  return caps
+}
+
 // GBNF grammar (llama.cpp / XGrammar dialect) for constrained decoding.
 // Deliberately a PERMISSIVE SUPERSET of til: it accepts every valid program plus
 // some invalid ones (it ignores the two whitespace-sensitivity rules and arity).
@@ -1877,7 +1923,13 @@ export async function main(argv) {
   const strict = argv.includes('--strict')
   const noIo = argv.includes('--no-io')
   const noEg = argv.includes('--no-eg')
-  const args = argv.filter(a => !['--json', '--strict', '--no-io', '--no-eg'].includes(a))
+  const allowed = new Set()
+  const args = []
+  for (let i = 0; i < argv.length; i++) {
+    if (['--json', '--strict', '--no-io', '--no-eg'].includes(argv[i])) continue
+    if (argv[i] === '--allow') { allowed.add(argv[++i]); continue }
+    args.push(argv[i])
+  }
   let cmd = args[0]
   if (cmd && cmd.endsWith('.til')) { args.unshift('run'); cmd = 'run' }
 
@@ -1907,9 +1959,19 @@ export async function main(argv) {
       const file = args[1]
       if (!file) { host.print(USAGE); return 2 }
       const src = readSrc(file)
+      const needs = parseNeeds(src)
+      const denied = needs.filter(n => !allowed.has(n) && !allowed.has('all'))
+      if (denied.length) {
+        const msg = `script declares \`# needs: ${denied.join(', ')}\` — grant with ${denied.map(n => `--allow ${n}`).join(' ')}`
+        if (json) host.print(JSON.stringify({ ok: false, code: 'E_CAPABILITY', msg, needs }))
+        else process.stderr.write(`til: ${msg}\n`)
+        return 2
+      }
+      let caps = {}
+      try { caps = await capabilityBuiltins(needs) } catch (e) { return reportError(e, src, file) }
       let ast
       try { ast = parse(src, { file }) } catch (e) { return reportError(e, src, file) }
-      const { errors, warnings } = check(ast)
+      const { errors, warnings } = check(ast, { extraNames: needs })
       for (const w of warnings) process.stderr.write(formatError({ ...w, message: 'warning: ' + w.msg }, src, { color, file }) + '\n')
       if (errors.length) {
         if (json) { host.print(JSON.stringify({ ok: false, errors: errors.map(e => errorJson({ ...e, message: e.msg }, src, file)) })); return 1 }
@@ -1917,7 +1979,7 @@ export async function main(argv) {
         return 1
       }
       let rt2
-      try { rt2 = run(src, { ast, host, file, args: args.slice(2) }).rt } catch (e) { return reportError(e, src, file) }
+      try { rt2 = run(src, { ast, host, file, args: args.slice(2), builtins: caps }).rt } catch (e) { return reportError(e, src, file) }
       // eg assertions run by default (CodeT-style: shipped tests execute every run)
       if (!noEg && rt2.egs.length) {
         const results = runEgs(rt2)
@@ -1940,7 +2002,7 @@ export async function main(argv) {
       const src = readSrc(file)
       let ast
       try { ast = parse(src, { file }) } catch (e) { return reportError(e, src, file) }
-      const { errors, warnings } = check(ast, { strict, noIo })
+      const { errors, warnings } = check(ast, { strict, noIo, extraNames: parseNeeds(src) })
       if (json) { host.print(JSON.stringify({ ok: errors.length === 0, errors: errors.map(e => errorJson({ ...e, message: e.msg }, src, file)), warnings: warnings.map(w => errorJson({ ...w, message: w.msg }, src, file)) })); return errors.length ? 1 : 0 }
       for (const w of warnings) process.stderr.write(formatError({ ...w, message: 'warning: ' + w.msg }, src, { color, file }) + '\n')
       for (const e of errors) process.stderr.write(formatError({ ...e, message: e.msg }, src, { color, file }) + '\n')

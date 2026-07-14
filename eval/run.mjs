@@ -26,7 +26,7 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(here, '..')
 const TIL = path.join(root, 'bin', 'til')
 const CARD = fs.readFileSync(path.join(root, 'LLM.md'), 'utf8')
-const tasks = JSON.parse(fs.readFileSync(path.join(here, 'tasks.json'), 'utf8'))
+const tasks = JSON.parse(fs.readFileSync(process.env.EVAL_TASKS || path.join(here, 'tasks.json'), 'utf8'))
 
 const BASE = process.env.EVAL_BASE_URL || 'https://openrouter.ai/api/v1'
 const KEY = process.env.EVAL_API_KEY
@@ -50,15 +50,30 @@ ${tasks.length} tasks, til vs python, same specs, same verifier.`)
   process.exit(0)
 }
 
+const sleep = ms => new Promise(r => setTimeout(r, ms))
 async function chat(model, messages) {
-  const res = await fetch(`${BASE}/chat/completions`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', authorization: `Bearer ${KEY}` },
-    body: JSON.stringify({ model, messages, temperature: 0, max_tokens: 1200 }),
-  })
-  if (!res.ok) throw new Error(`${model}: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`)
-  const j = await res.json()
-  return j.choices[0].message.content || ''
+  let lastErr
+  for (let attempt = 0; attempt < 8; attempt++) {
+    if (attempt) await sleep(Math.min(60000, 4000 * 2 ** attempt))
+    const res = await fetch(`${BASE}/chat/completions`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${KEY}` },
+      body: JSON.stringify({ model, messages, temperature: 0, max_tokens: 1200 }),
+    }).catch(e => ({ ok: false, status: 0, text: async () => String(e) }))
+    const body = await res.text()
+    if (res.ok) {
+      try {
+        const j = JSON.parse(body)
+        const content = j.choices?.[0]?.message?.content
+        if (content) return content
+        lastErr = `empty completion: ${body.slice(0, 150)}`
+      } catch (e) { lastErr = `bad json: ${body.slice(0, 150)}` }
+    } else {
+      lastErr = `HTTP ${res.status} ${body.slice(0, 150)}`
+      if (![429, 408, 500, 502, 503, 0].includes(res.status) && !/rate-limited|429/.test(body)) break
+    }
+  }
+  throw new Error(`${model}: ${lastErr}`)
 }
 
 function extract(text, lang) {
@@ -118,12 +133,16 @@ function taskPrompt(task) {
 
 const rows = []
 for (const model of MODELS) {
+  modelLoop:
   for (const lang of ['til', 'py']) {
     let p1 = 0, pFix = 0, toks = 0
     const fails = []
     for (const task of tasks) {
       const messages = [{ role: 'system', content: SYS[lang] }, { role: 'user', content: taskPrompt(task) }]
-      let code = extract(await chat(model, messages), lang === 'til' ? 'til' : 'python')
+      let raw
+      try { raw = await chat(model, messages) }
+      catch (e) { console.error(`! ${model} unreachable (${String(e).slice(0, 120)}) — skipping remaining ${lang} tasks`); rows.push({ model, lang, p1, pFix, n: tasks.length, toks, fails, aborted: true }); continue modelLoop }
+      let code = extract(raw, lang === 'til' ? 'til' : 'python')
       toks += o200k(code).length
       let r = (lang === 'til' ? runTil : runPy)(code, task)
       if (r.pass) { p1++; pFix++; process.stdout.write(`✓ ${model} ${lang} ${task.id}\n`); continue }
@@ -131,7 +150,8 @@ for (const model of MODELS) {
       for (let i = 0; i < REPAIR_ROUNDS && !repaired; i++) {
         messages.push({ role: 'assistant', content: '```' + lang + '\n' + code + '```' })
         messages.push({ role: 'user', content: `That failed. Error:\n${r.err}\nOutput ONLY the corrected program in a fence.` })
-        code = extract(await chat(model, messages), lang === 'til' ? 'til' : 'python')
+        try { code = extract(await chat(model, messages), lang === 'til' ? 'til' : 'python') }
+        catch (e) { console.error(`! repair call failed: ${String(e).slice(0, 100)}`); break }
         r = (lang === 'til' ? runTil : runPy)(code, task)
         if (r.pass) { pFix++; repaired = true }
       }
@@ -152,5 +172,5 @@ for (const r of rows.filter(x => x.fails.length)) {
   for (const f of r.fails) L.push(`- **${f.task}**: ${f.err.split('\n')[0]}`)
   L.push('')
 }
-fs.writeFileSync(path.join(here, 'results.md'), L.join('\n') + '\n')
+fs.writeFileSync(process.env.EVAL_OUT || path.join(here, 'results.md'), L.join('\n') + '\n')
 console.log('\nwrote eval/results.md')

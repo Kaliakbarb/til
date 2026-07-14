@@ -1,7 +1,7 @@
 {
   "name": "til-lang",
   "version": "0.3.0",
-  "description": "til (тіл) — a scripting language engineered for AI agents: the whole spec is a 1.8k-token prompt card, token parity with Python, errors built for self-repair.",
+  "description": "til (тіл) — a scripting language engineered for AI agents: the whole spec is a 1.8k-token prompt card, hallucination-proof closed world, measured token economy, sandboxed by construction.",
   "type": "module",
   "bin": {
     "til": "bin/til"
